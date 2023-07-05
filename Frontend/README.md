@@ -27,3 +27,7 @@ npm run dev
 ```sh
 npm run build
 ```
+
+
+
+### 注意：APP.vue以及router文件夹里的index.js严禁修改，只允许修改components里的vue文件

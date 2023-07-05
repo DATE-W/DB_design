@@ -1,5 +1,7 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
+<script>
+export default {
+    name: 'App',
+}
 </script>
 
 <template>
@@ -7,4 +9,8 @@ import { RouterLink, RouterView } from 'vue-router'
 </template>
 
 <style scoped>
+#app {
+    width: 100%;
+    height: 100%;
+}
 </style>
