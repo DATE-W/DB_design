@@ -18,6 +18,10 @@ const router = createRouter({
       path: '/signup',
       component: () => import('../components/signup.vue')
     },
+    {
+      path: '/recover',
+      component: () => import('../components/recover.vue')
+    }
   ]
 })
 
