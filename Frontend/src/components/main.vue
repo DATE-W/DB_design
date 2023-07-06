@@ -35,7 +35,7 @@
             <span class="user-avatar">
               <img src="avatar.jpg" alt="Avatar" />
             </span>
-            <el-dropdown-menu slot="dropdown">
+            <el-dropdown-menu v-slot: dropdown>
               <el-dropdown-item>登录</el-dropdown-item>
               <el-dropdown-item>注册</el-dropdown-item>
             </el-dropdown-menu>
