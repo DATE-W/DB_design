@@ -21,6 +21,10 @@ const router = createRouter({
     {
       path: '/recover',
       component: () => import('../components/recover.vue')
+    },
+    {
+      path: '/forum',
+      component: () => import('../components/forum.vue')
     }
   ]
 })
