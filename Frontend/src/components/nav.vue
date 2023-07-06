@@ -7,11 +7,11 @@
             mode="horizontal"
             active-text-color="#409eff"
             @select="handleMenuSelect">
-            <el-menu-item index="1">首页</el-menu-item>
-            <el-menu-item index="2">新闻</el-menu-item>
-            <el-menu-item index="3">社区</el-menu-item>
-            <el-menu-item index="4">赛事</el-menu-item>
-            <el-menu-item index="5">球员信息</el-menu-item>
+            <el-menu-item index="1" @click="redirectToMain">首页</el-menu-item>
+            <el-menu-item index="2" @click="redirectToNews">新闻</el-menu-item>
+            <el-menu-item index="3" @click="redirectToForum">论坛</el-menu-item>
+            <el-menu-item index="4" @click="redirectToGames"> 赛事</el-menu-item>
+            <el-menu-item index="5" @click="redirectToPlayers">球员信息</el-menu-item>
           </el-menu>
         </div>
         <div class="nav-right">
@@ -44,6 +44,10 @@ export default {
       // 跳转到注册页面的逻辑
       this.$router.push('/signup');
     },
+    redirectToForum() {
+      //跳转到论坛页面的逻辑
+      this.$router.push('/forum')
+    }
   },
 };
 </script>

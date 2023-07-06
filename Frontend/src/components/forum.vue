@@ -1,6 +1,7 @@
 <template>
     <div class="common-layout">
         <el-container>
+            <my-nav></my-nav>
             <el-header :class="['forum-header', selectedColor]">
                 {{ selectedTopic }}
                 <br>
@@ -71,7 +72,7 @@
   
 <script>
 import { defineComponent } from 'vue';
-
+import MyNav from './nav.vue';
 export default defineComponent({
     data() {
         return {
@@ -106,5 +107,8 @@ export default defineComponent({
             this.selectedDescription = button.description;
         },
     },
+    components: {
+      'my-nav': MyNav
+    }
 });
 </script>
