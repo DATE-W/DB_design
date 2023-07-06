@@ -9,9 +9,9 @@
             @select="handleMenuSelect">
             <el-menu-item index="1" @click="redirectToMain">首页</el-menu-item>
             <el-menu-item index="2" @click="redirectToNews">新闻</el-menu-item>
-            <el-menu-item index="3" @click="redirectToforum">社区</el-menu-item>
-            <el-menu-item index="4" @click="redirectToGames">赛事</el-menu-item>
-            <el-menu-item index="5" @click="redirectToPLayer">球员信息</el-menu-item>
+            <el-menu-item index="3" @click="redirectToForum">论坛</el-menu-item>
+            <el-menu-item index="4" @click="redirectToGames"> 赛事</el-menu-item>
+            <el-menu-item index="5" @click="redirectToPlayers">球员信息</el-menu-item>
           </el-menu>
         </div>
         <div class="nav-right">
@@ -20,7 +20,7 @@
             <img src="avatar.jpg" alt="Avatar" />
           </span>
           <template #dropdown>
-            <el-dropdown-menu v-slot="dropdown">
+            <el-dropdown-menu v-slot: dropdown>
               <el-dropdown-item @click="redirectToLogin">登录</el-dropdown-item>
               <el-dropdown-item @click="redirectToRegister">注册</el-dropdown-item>
             </el-dropdown-menu>
@@ -44,9 +44,9 @@ export default {
       // 跳转到注册页面的逻辑
       this.$router.push('/signup');
     },
-    redirectToforum(){
+    redirectToForum() {
       //跳转到论坛页面的逻辑
-      this.$router.push('/forum');
+      this.$router.push('/forum')
     }
   },
 };
