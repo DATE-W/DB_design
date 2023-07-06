@@ -15,12 +15,17 @@
         <div class="mainbox">
           
           <el-space direction="vertical">
+<<<<<<< Updated upstream
             <h1 style="color: #525252;font-family: Nunito Sans;font-size: 30px;font-style: normal;font-weight: 700;line-height: normal;">Reset password to retrieve it</h1>    
+=======
+            <h1 class="labelH">Reset password to retrieve it</h1>    
+>>>>>>> Stashed changes
             <el-text tag="i" style="font-size: 15px;">Answer security questions and retrieve password</el-text>
           </el-space>
           <div>
            <label for="securityAns" class="inputtext" style="left: -182px;">密保问题：&nbsp;&nbsp;&nbsp;</label>
            <p >{{ securityQ }}</p>
+<<<<<<< Updated upstream
            <label for="securityAns" class="inputtext">密保答案：&nbsp;&nbsp;&nbsp;</label>
            <input type="text" id="securityAns" v-model="securityAns" required  class="inputbox">
 
@@ -29,6 +34,16 @@
               <input  v-model="newPword" :type="passwordVisible ? 'text' : 'password'" class="inputbox">
             <br>
               <label for="confirmPword" class="inputtext">确认新密码：</label>
+=======
+           <label for="securityAns" class="inputtext" style="left: -182px;">密保答案：&nbsp;&nbsp;&nbsp;</label>
+           <input type="text" id="securityAns" v-model="securityAns" required  class="inputbox">
+
+           <br>
+              <label for="newPword" class="inputtext" style="left: -180px;">输入新密码：</label>
+              <input  v-model="newPword" :type="passwordVisible ? 'text' : 'password'" class="inputbox">
+            <br>
+              <label for="confirmPword" class="inputtext" style="left: -180px;">确认新密码：</label>
+>>>>>>> Stashed changes
               <input id="confirmPword" v-model="confirmPword" :type="passwordVisible ? 'text' : 'password'" required  class="inputbox">
               <el-text tag="i" class="labeltext">Please remember your password!</el-text>
             <br>&nbsp;
@@ -81,6 +96,13 @@ export default {
 </script>
 
 <style scoped>
+<<<<<<< Updated upstream
+=======
+.labelH1{
+  color: #525252;font-family: Nunito Sans;font-size: 30px;font-style: normal;font-weight: 700;line-height: normal;
+}
+
+>>>>>>> Stashed changes
   .common-layout {
     height: 100vh; /* 设置容器高度为视口高度 */
     width: 100%; /* 设置容器宽度为100% */
@@ -152,7 +174,10 @@ export default {
     font-style: normal;
     font-weight: 600;
     line-height: normal;
+<<<<<<< Updated upstream
     left: -180px;
+=======
+>>>>>>> Stashed changes
     bottom: 5px;
   }
 
