@@ -15,24 +15,14 @@
           </el-menu>
         </div>
         <div class="nav-right">
-<<<<<<< Updated upstream
-          <el-dropdown trigger="hover">
-            <span class="user-avatar">
-              <img src="avatar.jpg" alt="Avatar" />
-            </span>
-            <el-dropdown-menu v-slot: dropdown>
-              <el-dropdown-item>登录</el-dropdown-item>
-              <el-dropdown-item>注册</el-dropdown-item>
-=======
         <el-dropdown trigger="hover">
           <span class="user-avatar">
             <img src="avatar.jpg" alt="Avatar" />
           </span>
           <template #dropdown>
-            <el-dropdown-menu v-slot="dropdown">
+            <el-dropdown-menu v-slot: dropdown>
               <el-dropdown-item @click="redirectToLogin">登录</el-dropdown-item>
               <el-dropdown-item @click="redirectToRegister">注册</el-dropdown-item>
->>>>>>> Stashed changes
             </el-dropdown-menu>
           </template>
         </el-dropdown>
