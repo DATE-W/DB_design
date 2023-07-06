@@ -9,7 +9,9 @@
         <label for="password">密码：</label>
         <input type="password" id="password" v-model="password" pattern="[a-zA-Z0-9]+" required maxlength="15">
         <p>密码只能由数字和字母组成，且长度不超过15个字符</p>
-        <br>
+        <label for="confirmpassword">确认密码：</label>
+        <input type="password" id="confirmpassword" v-model="confirmpassword" pattern="[a-zA-Z0-9]+" required maxlength="15">
+        <br><br>
         <label for="securityQ">密保问题：</label>
         <input type="text" id="securityQ" v-model="securityQ" pattern="[\u4e00-\u9fa5\d\s\p{P}]+"
           required maxlength="10">
@@ -37,6 +39,10 @@
     },
     methods: {
       register() {
+        if(this.password !== this.confirmpassword) {
+        alert('确认密码与新密码不一致');
+        return;
+      }
         // 在这里编写注册逻辑，可以发送请求将账号、密码、密保问题和密保答案提交到服务器
         console.log('账号:', this.account);
         console.log('密码:', this.password);
