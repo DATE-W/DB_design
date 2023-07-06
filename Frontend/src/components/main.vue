@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
     <el-header>
     <my-nav></my-nav>
     </el-header>
@@ -12,6 +12,7 @@
       'my-nav': MyNav
     }
   };
+<<<<<<< Updated upstream
 </script> -->
 <template>
     <el-header>
@@ -101,6 +102,10 @@
     margin-right: 20px;
   }
   </style>
+=======
+</script>
+
+>>>>>>> Stashed changes
   
 <!-- <button @click="this.$router.push('/signin')">登录</button>
 <button @click="this.$router.push('/signup')">注册</button> -->
