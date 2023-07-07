@@ -1,16 +1,21 @@
 <script>
+import carousel from './signinCarousel.vue';
 export default {
   data() {
     return {
       account: '',
       password: '',
+      confirmpassword: '',
       securityQ: '',
       securityAns: ''
     };
   },
+  components: {
+      'my-carousel': carousel
+  },
   methods: {
     register() {
-      if(this.password !== this.confirmpassword) {
+      if(this.password != this.confirmpassword) {
       alert('确认密码与新密码不一致');
       return;
     }
@@ -19,7 +24,11 @@ export default {
       console.log('密码:', this.password);
       console.log('密保问题:', this.securityQ);
       console.log('密保答案:', this.securityAns);
-    }
+    },
+    redirectToLogin() {
+      // 跳转到登录页面的逻辑
+      this.$router.push('/signin');
+    },
   }
 };
 </script>
@@ -28,13 +37,7 @@ export default {
   <div class="common-layout">
     <el-container>
         <el-aside>
-          <div style="height:20%">
-            <img src="../assets/img/football_logo.png" class="logoBox">
-            <text class="footGameTypography">FootGame</text>
-          </div>
-          <div style="height: 80%;">
-            <img src="../assets/img/players_left.png">
-          </div>
+          <my-carousel />
         </el-aside>
         <el-main>
             <!-- 注册 -->
@@ -49,73 +52,75 @@ export default {
                 <!-- 输入账号 -->
                 <div class="subBox">
                     <label for="account" class="subTittle subTittleTypography" >账号：</label>
-                    <input 
+                    <el-input 
                     type="text" 
                     id="account" 
                     v-model="account" 
                     pattern="[a-zA-Z0-9]+" 
                     required maxlength="10" 
                     class="inputBox inputTypography"
-                    >
-                    <p class="holderTypography">账号只能由数字和字母组成，且长度不超过10个字符</p>
+                    placeholder="账号只能由数字和字母组成，且长度不超过10个字符"
+                    />
                 </div>
                 <!-- 输入密码 -->
                 <div class="subBox">
                     <label for="password" class="subTittle subTittleTypography" >密码：</label>
-                    <input 
+                    <el-input 
                     type="password" 
                     id="password" 
                     v-model="password" 
                     pattern="[a-zA-Z0-9]+" 
                     required maxlength="15"
                     class="inputBox inputTypography"
-                    >
-                    <p class="holderTypography">密码只能由数字和字母组成，且长度不超过15个字符</p>
+                    show-password
+                    placeholder="密码只能由数字和字母组成，且长度不超过15个字符"
+                    />
                 </div>
-                <!-- 输入密码 -->
+                <!-- 再次输入密码 -->
                 <div class="subBox">
                     <label for="confirmpassword" class="subTittle subTittleTypography">确认密码：</label>
-                    <input 
+                    <el-input 
                     type="password" 
                     id="confirmpassword" 
                     v-model="confirmpassword" 
                     pattern="[a-zA-Z0-9]+" 
                     required maxlength="15"
                     class="inputBox inputTypography"
-                    >
-                    <p class="holderTypography">请再次输入密码</p>
+                    show-password
+                    placeholder="请再次输入密码"
+                    />
                 </div>
                 <!-- 密保问题 -->
                 <div class="subBox">
                     <label for="securityQ" class="subTittle subTittleTypography">密保问题：</label>
-                    <input 
+                    <el-input 
                     type="text" 
                     id="securityQ" 
                     v-model="securityQ" 
                     pattern="[\u4e00-\u9fa5\d\s\p{P}]+"
                     required maxlength="10"
                     class="inputBox inputTypography"
-                    >
-                    <p class="holderTypography">密保问题只能包含中文、数字和标点符号，且长度不超过10个字符</p>
+                    placeholder="密保问题只能包含中文、数字和标点符号，且长度不超过10个字符"
+                    />
                 </div>
                 <!-- 密保答案 -->
                 <div class="subBox">
                     <label for="securityAns" class="subTittle subTittleTypography">密保答案：</label>
-                    <input 
+                    <el-input 
                     type="text" 
                     id="securityAns" 
                     v-model="securityAns" 
                     pattern="[\u4e00-\u9fa5\d\s\p{P}]+"
                     required maxlength="10"
                     class="inputBox inputTypography"
-                    >
-                    <p class="holderTypography">密保答案只能包含中文、数字和标点符号，且长度不超过10个字符</p>
+                    placeholder="密保答案只能包含中文、数字和标点符号，且长度不超过10个字符"
+                    />
                 </div>
               </form>
             </div>
             <!-- 注册按钮 -->
             <div>
-              <text class="havePos haveText">
+              <text @click="redirectToLogin" class="havePos haveText">
                 已经有账号了？
               </text>
               <button type="submit" class="signupBtn">
@@ -262,6 +267,7 @@ export default {
   bottom: -4vw;
 }
 .haveText{
+  cursor: pointer;
   color: #494F7A;
   font-family: Poppins;
   font-size: 1rem;
