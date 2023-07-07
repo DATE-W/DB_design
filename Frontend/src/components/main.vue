@@ -1,6 +1,7 @@
 <template>
+<my-nav></my-nav>
     <el-header>
-    <my-nav></my-nav>
+    
     </el-header>
     <el-main>
     <div class="main-container">
@@ -18,7 +19,7 @@
             <el-menu-item index="7" @click="GamesFJ">法甲</el-menu-item>
         </el-menu>
         <el-row class="Game-col-container">
-          <el-card class="Game-card" v-for="item in getLimitedGames()">
+          <el-card class="Game-card" v-for="item in getLimitedGames()" :key=item.index>
           <template #header>
             <div class="card-header">
             <span>Card name</span>
