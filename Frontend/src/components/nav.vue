@@ -3,9 +3,9 @@
       <div class="nav-container">
         <div class="nav-left">
           <div class="nav-logo">Logo</div>
-          <el-menu
-            mode="horizontal"
-            active-text-color="#409eff"
+          <el-menu class="nav-menu"
+            mode="horizontal" 
+            active-text-color= "#409eff"
             @select="handleMenuSelect">
             <el-menu-item index="1" @click="redirectToMain">首页</el-menu-item>
             <el-menu-item index="2" @click="redirectToNews">新闻</el-menu-item>
@@ -47,6 +47,10 @@ export default {
     redirectToForum() {
       //跳转到论坛页面的逻辑
       this.$router.push('/forum')
+    },
+    redirectToMain(){
+      //跳转到首页页面的逻辑
+      this.$router.push('/')
     }
   },
 };
@@ -59,7 +63,11 @@ export default {
     height: 60px;
     padding: 0 20px;
   }
-  
+
+  .nav-menu{
+
+  }
+
   .nav-left {
     display: flex;
     align-items: center;
