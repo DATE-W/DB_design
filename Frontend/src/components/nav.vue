@@ -16,13 +16,14 @@
         </div>
         <div class="nav-right">
         <el-dropdown trigger="hover">
-          <span class="user-avatar">
+          <span class="user-avatar" @click="redirectToPersonal">
             <img src="avatar.jpg" alt="Avatar" />
           </span>
           <template #dropdown>
             <el-dropdown-menu v-slot: dropdown>
               <el-dropdown-item @click="redirectToLogin">登录</el-dropdown-item>
               <el-dropdown-item @click="redirectToRegister">注册</el-dropdown-item>
+              <el-dropdown-item @click="redirectToPersonal">个人中心</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -51,6 +52,10 @@ export default {
     redirectToMain(){
       //跳转到首页页面的逻辑
       this.$router.push('/')
+    },
+    redirectToPersonal(){
+      //跳转到个人中心页面的逻辑
+      this.$router.push('/personal')
     }
   },
 };
