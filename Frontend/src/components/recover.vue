@@ -2,12 +2,7 @@
   <div class="common-layout">
     <el-container>
       <el-aside width="50%" class="leftBg">
-        <br>
-          <div>
-            <img src="../assets/img/logo.png" class="leftLogo1">
-            <p class="leftLogo2">FootGame</p>
-         </div>
-          
+        <my-carousel></my-carousel>
       </el-aside>
       <el-main>
         <div class="right">
@@ -22,18 +17,16 @@
            <label for="securityAns" class="inputtext" style="left: -182px;">密保问题：&nbsp;&nbsp;&nbsp;</label>
            <p >{{ securityQ }}</p>
            <label for="securityAns" class="inputtext" style="left: -182px;">密保答案：&nbsp;&nbsp;&nbsp;</label>
-           <input type="text" id="securityAns" v-model="securityAns" required  class="inputbox">
+           <el-input type="text" id="securityAns" v-model="securityAns" required  class="inputbox"/>
 
            <br>
               <label for="newPword" class="inputtext" style="left: -180px;">输入新密码：</label>
-              <input  v-model="newPword" :type="passwordVisible ? 'text' : 'password'" class="inputbox">
+              <el-input  type="password" v-model="newPword" show-password class="inputbox"/>
             <br>
               <label for="confirmPword" class="inputtext" style="left: -180px;">确认新密码：</label>
-              <input id="confirmPword" v-model="confirmPword" :type="passwordVisible ? 'text' : 'password'" required  class="inputbox">
+              <el-input id="confirmPword" v-model="confirmPword"  show-password required  class="inputbox"/>
               <el-text tag="i" class="labeltext">Please remember your password!</el-text>
             <br>&nbsp;
-            <br>&nbsp;
-              <button @click="ShoworHide">{{ passwordVisible ? '隐藏密码' : '显示密码' }}</button>
             <br>
               <button @click="recoverPword" class="button">确认修改</button>
           </div>
@@ -48,9 +41,8 @@
 </template>
 
 
-
-
 <script>
+import carousel from './signinCarousel.vue';
 export default {
   data() {
     return {
@@ -60,6 +52,9 @@ export default {
       confirmPword: '',
       passwordVisible: false
     };
+  },
+  components: {
+      'my-carousel': carousel
   },
   methods: {
     ShoworHide() {
@@ -167,7 +162,7 @@ export default {
     align-items: center;
     gap: 13px;
     border-radius: 5px;
-    border: 1px solid #DED2D9;
+    border: 0;
   }
 
   .button{
