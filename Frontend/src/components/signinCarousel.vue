@@ -16,10 +16,10 @@
   </style>
     
   <script>
-  import carousel1 from '../assets/img/carousel1.jpg';
-  import carousel2 from '../assets/img/carousel2.jpg';
-  import carousel3 from '../assets/img/carousel3.jpg';
-  import carousel4 from '../assets/img/carousel4.jpg';
+  import carousel1 from '../assets/img/carousel1.png';
+  import carousel2 from '../assets/img/carousel2.png';
+  import carousel3 from '../assets/img/carousel3.png';
+  import carousel4 from '../assets/img/carousel4.png';
   
   export default {
     methods: {
