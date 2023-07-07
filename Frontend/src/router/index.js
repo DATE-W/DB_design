@@ -21,6 +21,17 @@ const router = createRouter({
     {
       path: '/recover',
       component: () => import('../components/recover.vue')
+<<<<<<< Updated upstream
+=======
+    },
+    {
+      path: '/forum',
+      component: () => import('../components/forum.vue')
+    },
+    {
+      path: '/EditPost',
+      component: () => import('../components/EditPost.vue')
+>>>>>>> Stashed changes
     }
   ]
 })
