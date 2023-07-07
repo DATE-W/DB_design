@@ -15,6 +15,7 @@
             <el-menu-item index="5" @click="GamesXJ">西甲</el-menu-item>
             <el-menu-item index="6" @click="GamesDJ"> 德甲</el-menu-item>
             <el-menu-item index="7" @click="GamesFJ">法甲</el-menu-item>
+            <el-menu-item index="8" @click="redirectToGames">更多赛事信息</el-menu-item>
         </el-menu>
         <!-- 赛事信息卡片 -->
         <el-row class="Game-col-container">
@@ -52,20 +53,21 @@
     data(){
       return{
       GamesMsg: [
-        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
-        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
-        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
-        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
-        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
-        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
-        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
-        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
-        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
-        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
-        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
-        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60}
+        {Game:"中超",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"英超",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"德甲",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"中超",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"中超",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"中超",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"意甲",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"法甲",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"法甲",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"法甲",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"中超",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"中超",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60}
       ],
-      maxItems:9
+      maxItems:9,
+      GameSelect:"ALL"
       }
     },
     components: {
@@ -73,29 +75,41 @@
     },
     methods: {
       getLimitedGames() {
-        return this.GamesMsg.slice(0, this.maxItems);
+        // return this.GamesMsg.slice(0, this.maxItems);
+        return this.GamesMsg.filter(item => item.Game === this.GameSelect || this.GameSelect==="ALL").slice(0, this.maxItems);
       },
       GamesAll(){
         //选择全部赛事
+        this.GameSelect="ALL";
       },
       GamesZC(){
         //选择中超赛事
+        this.GameSelect="中超";
       },
       GamesYC(){
         //选择英超赛事
+        this.GameSelect="英超";
       },
       GamesYJ(){
         //选择意甲赛事
+        this.GameSelect="意甲";
       },
       GamesXJ(){
         //选择西甲赛事
+        this.GameSelect="西甲";
       },
       GamesDJ(){
         //选择德甲赛事
+        this.GameSelect="德甲";
       },
       GamesFJ(){
         //选择法甲赛事
-      }   
+        this.GameSelect="法甲";
+      },
+      redirectToGames(){
+      //跳转到个人中心页面的逻辑
+      this.$router.push('/Games')
+    }
     }
   };
 </script>

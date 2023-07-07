@@ -56,8 +56,20 @@ export default {
     redirectToPersonal(){
       //跳转到个人中心页面的逻辑
       this.$router.push('/personal')
+    },
+    redirectToGames(){
+      //跳转到赛事页面的逻辑
+      this.$router.push('/Games')
+    },
+    redirectToNews(){
+      //跳转到新闻页面的逻辑
+      this.$router.push('/News')
+    },
+    redirectToPlayers(){
+      //跳转到新闻页面的逻辑
+      this.$router.push('/Players')
     }
-  },
+  }
 };
 </script>
   <style>
