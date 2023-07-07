@@ -5,39 +5,44 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <el-aside style="width: 100vh;">
+      <el-aside style="width: 50%;">
+        <img src="../assets/img/recover_logo.png" class="imgR">
         <!-- 注册字体 -->
         <div class="FontLayout">
-          <p class="FontTypography">登录</p>
+          <el-space direction="vertical" style="text-align:center">
+                <h1 class="labelH1 excenter">Login to your Account</h1>    
+                <el-text tag="i" class="excenter" style="font-size: 0.9rem;">See popular football news and trends</el-text>
+              </el-space>
         </div>
         <!-- 输入内容 -->
         <form @submit.prevent="register">
           <!-- 输入账号 -->
-          <div class="subBox" style="top: 30vh;">
-            <label for="account" class="subTittle subTittleTypography">账号：</label>
+          <div class="subBox" style="top: 38vh;">
+            <label for="account" class="inputText">账号：</label>
             <el-input type="text" id="account" v-model="account" pattern="[a-zA-Z0-9]+" required maxlength="10"
-              class="inputBox inputTypography" placeholder="账号只能由数字和字母组成，且长度不超过10个字符"></el-input>
+              class="inputBox" placeholder="账号只能由数字和字母组成，且长度不超过10个字符"></el-input>
           </div>
           <!-- 输入密码 -->
           <div class="subBox" style="top:50vh;">
-            <label for="password" class="subTittle subTittleTypography">密码：</label>
+            <label for="password" class="inputText">密码：</label>
             <el-input type="password" id="password" v-model="password" pattern="[a-zA-Z0-9]+" required maxlength="15"
-              class="inputBox inputTypography" placeholder="密码只能由数字和字母组成，且长度不超过15个字符" show-password></el-input>
+              class="inputBox" placeholder="密码只能由数字和字母组成，且长度不超过15个字符" show-password></el-input>
           </div>
           <!-- 登入按钮 -->
-          <button class="signupBtn" style="left: 7vw; bottom: 15vh;">
+          <button class="signupBtn" style="left: 12vw; bottom: 28vh;">
             <text class="btnText">登录</text>
           </button>
           
           <!-- 找回密码 -->
-          <p class="tag" @click="redirectToRecover">忘记密码？</p>
+          <p class="tag" @click="redirectToRecover">Forgot Password?</p>
         </form>
         <!-- 注册按钮 -->
-        <button class="signupBtn" style="left: 21vw; bottom: 15vh;" @click="redirectToRegister">
+        <button class="signupBtn" style="left: 27vw; bottom: 28vh;" @click="redirectToRegister">
             <text class="btnText">注册</text>
         </button>
       </el-aside>
-      <el-main>
+      <!-- 右侧走马灯 -->
+      <el-main style="width: 50%;">
         <my-carousel></my-carousel>
       </el-main>
     </el-container>
@@ -79,10 +84,15 @@ export default {
 <style scoped>
 .tag {
   cursor: pointer;
-  color: grey;
   text-decoration: underline;
-  margin-top: 60vh;
-  margin-left: 30vw;
+  margin-top: 50vh;
+  margin-left: 31vw;
+  color: #7F265B;
+ font-family: Nunito Sans;
+ font-size: 12px;
+ font-style: normal;
+ font-weight: 600;
+ line-height: normal;
 }
 .el-main {
   position: absolute;
@@ -98,77 +108,57 @@ export default {
 .FontLayout {
   display: flex;
   position: absolute;
-  width: 134px;
-  height: 89px;
-  top: 10px;
-  left: 100px;
+  width: 30vw;
+  height: 20vh;
+  top: 6vh;
+  left: -3vw;
   flex-direction: column;
   flex-shrink: 0;
-}
-
-.FontTypography {
-  color: #3E4772;
-  font-family: Poppins;
-  font-size: 60px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
 }
 
 /*用来装入每一个子标题+输入框的box*/
 .subBox {
   position: absolute;
-  left: 100px;
-  width: 600px;
-  height: 70px;
+  left: 3vw;
+  width: 25vw;
+  height: 5vw;
   flex-shrink: 0;
-}
-
-/*每一个子标题的位置及样式*/
-.subTittle {
-  display: flex;
-  position: relative;
-  left: 0px;
-  width: 100px;
-  height: 44.917px;
-  flex-direction: column;
-  flex-shrink: 0;
-  text-align: left;
-}
-
-.subTittleTypography {
-  color: #000;
-  font-family: Poppins;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
 }
 
 /*每一个输入框的样式及内置提示*/
 .inputBox {
+  position: relative;
+  left:6.5vw;
+  display: flex;
+  width: 30vw;
+  padding: 0.5vh 0.6vw;
+  align-items: center;
+  gap: 0;
+  border-radius: 0.31rem;
   border: 0;
-  position: absolute;
-  left: 0px;
-  width: 400px;
-  height: 40px;
-  flex-shrink: 0;
-  text-align: center;
 }
 
-.inputTypography {
-  border-radius: 30px;
-  background: #F1F1F1;
+/*每一个子标题的位置及样式*/
+.inputText{
+  left:7.3vw;
+  position: relative;
+  color: var(--gray-3, #828282);
+  font-family: Nunito Sans;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
 }
 
-/* 注册按钮 */
+/* 按钮 */
 .signupBtn {
   position: absolute;
-  width: 180px;
-  height: 35px;
+  width: 10vw;
+  height: 2.6vw;
   flex-shrink: 0;
-  border-radius: 30px;
-  background: #2E375D;
+  border-radius: 0.5rem;
+  background: #007DFA;
+  border: 0;
 }
 
 .btnText {
@@ -178,6 +168,34 @@ export default {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+}
+
+/*右侧左上logo样式 */
+.imgR {
+  top: 13vh;
+  left: 3vw;
+  width: 4vw;
+  height: 7vh;
+  position: relative;
+}
+
+/*注册标题 */
+.labelH1{
+    color: #525252;
+    font-family: Nunito Sans;
+    font-size: 1.8rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+/*右侧标题位置设置 */
+.excenter{
+  text-align:center;
+  line-height:1;
+  position: relative;
+  top:13vh;
+  left:11.5vw;
 }
 
 /*图标后FootGame字体*/
@@ -204,4 +222,6 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: contain;
-}</style>
+}
+
+</style>
