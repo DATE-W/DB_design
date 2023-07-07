@@ -20,7 +20,7 @@
                 <el-aside width="20vw">
                     <div class="button-container">
                         <el-button class="postButton" round>
-                            <text class="postButtonText">点此发帖</text>
+                            <text class="postButtonText" @click="redirectToEditPost">点此发帖</text>
                         </el-button>
                         <div v-for="row in buttonRows" :key="row">
                             <el-button v-for="button in row" :key="button.type" @click="selectTopic(button)" class="raceButtonBox" text>
@@ -192,6 +192,9 @@ export default defineComponent({
             this.selectedColor = button.color;
             this.selectedDescription = button.description;
         },
+        redirectToEditPost(){
+            this.$router.push('/EditPost')
+        }
     },
 });
 </script>
