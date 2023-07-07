@@ -7,10 +7,10 @@ namespace DBwebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class Register : ControllerBase
+    public class Register : ControllerBase  
     {
         [HttpPost]
-        public async Task<bool> normalRegisterAsync(string account, string password, string userName)
+        public async Task<string> normalRegisterAsync(string account, string password, string userName)
         {
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             if (ORACLEConnectTry.getConn() == true)
@@ -30,21 +30,21 @@ namespace DBwebAPI.Controllers
                     int count = await sqlOrm.Insertable(usr).ExecuteCommandAsync();
                     if (count == 1)
                     {
-                        return true;
+                        return "Success";
                     }
                     else
                     {
-                        return false;
+                        return "error code=2";//用户注册的账户已存在
                     }
                 }
                 catch (Exception)
                 {
-                    return false;
+                    return "error code=114514";//未知错误
                 }
             }
             else
             {
-                return false;
+                return "error code=0";//连接数据库失败
             }
         }
     }

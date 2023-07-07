@@ -10,7 +10,7 @@ namespace DBwebAPI.Controllers
     public class Login : ControllerBase
     {
         [HttpGet] 
-        public string LoginConcroller(string account, string password)
+        public async Task<string> LoginConcrollerAsync(string account, string password)
         {
             ORACLEconn  ORACLEConnectTry=new ORACLEconn();
             if (ORACLEConnectTry.getConn() == true) {
@@ -19,11 +19,11 @@ namespace DBwebAPI.Controllers
                     SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                     //进行用户查询
                     List<Usr> tempUsr = new List<Usr>();
-                    tempUsr = sqlORM.Queryable<Usr>().Where(it => it.account == account && it.userPassword == password).ToList();
+                    tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.account == account && it.userPassword == password).ToListAsync();
                     //int shit = sqlORM.Queryable<Usr>().Max(it => it.user_id);
                     //return $"{shit}";
                     //判断用户是否存在
-                    if (tempUsr.Count() == 0) return "id或密码错误";
+                    if (tempUsr.Count() == 0) return "error code=1";//用户账户或密码错误
                     else
                     {
                         createToken tempToken= new createToken();
@@ -34,12 +34,12 @@ namespace DBwebAPI.Controllers
                 }
                 catch (Exception)
                 {
-                    return "error";
+                    return "error code=114514";//位置错误
                 }
             }
             else
             {
-                return "连接数据库失败";
+                return "error code=0";//连接数据库失败
             }
 
         }

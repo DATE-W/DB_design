@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "0G2mMBuCHXyndnIb2j35ru+1cb2Z1B4p/PjRSB+L/X4=",
+  "Hash": "ZoekUw6Vpb6ZM8Con/zSkbTFKTSppxHfninKjPdFSgc=",
   "Source": "DBwebAPI",
   "BasePath": "_content/DBwebAPI",
   "Mode": "Default",
@@ -10,17 +10,17 @@
     {
       "Name": "DBwebAPI\\wwwroot",
       "Source": "DBwebAPI",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\App.vue",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\App.vue",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/App.vue",
       "AssetKind": "All",
@@ -34,10 +34,10 @@
       "OriginalItemSpec": "wwwroot\\src\\App.vue"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\css\\main.css",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\css\\main.css",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/assets/css/main.css",
       "AssetKind": "All",
@@ -51,10 +51,10 @@
       "OriginalItemSpec": "wwwroot\\src\\assets\\css\\main.css"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\carousel1.png",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\carousel1.png",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/assets/img/carousel1.png",
       "AssetKind": "All",
@@ -68,10 +68,10 @@
       "OriginalItemSpec": "wwwroot\\src\\assets\\img\\carousel1.png"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\carousel2.png",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\carousel2.png",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/assets/img/carousel2.png",
       "AssetKind": "All",
@@ -85,10 +85,10 @@
       "OriginalItemSpec": "wwwroot\\src\\assets\\img\\carousel2.png"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\carousel3.png",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\carousel3.png",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/assets/img/carousel3.png",
       "AssetKind": "All",
@@ -102,10 +102,10 @@
       "OriginalItemSpec": "wwwroot\\src\\assets\\img\\carousel3.png"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\carousel4.png",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\carousel4.png",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/assets/img/carousel4.png",
       "AssetKind": "All",
@@ -119,10 +119,10 @@
       "OriginalItemSpec": "wwwroot\\src\\assets\\img\\carousel4.png"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\football_logo.png",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\football_logo.png",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/assets/img/football_logo.png",
       "AssetKind": "All",
@@ -136,10 +136,10 @@
       "OriginalItemSpec": "wwwroot\\src\\assets\\img\\football_logo.png"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\logo.png",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\logo.png",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/assets/img/logo.png",
       "AssetKind": "All",
@@ -153,10 +153,10 @@
       "OriginalItemSpec": "wwwroot\\src\\assets\\img\\logo.png"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\players_left.png",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\players_left.png",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/assets/img/players_left.png",
       "AssetKind": "All",
@@ -170,10 +170,10 @@
       "OriginalItemSpec": "wwwroot\\src\\assets\\img\\players_left.png"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\recover.png",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\recover.png",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/assets/img/recover.png",
       "AssetKind": "All",
@@ -187,10 +187,10 @@
       "OriginalItemSpec": "wwwroot\\src\\assets\\img\\recover.png"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\recover_logo.png",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\recover_logo.png",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/assets/img/recover_logo.png",
       "AssetKind": "All",
@@ -204,10 +204,10 @@
       "OriginalItemSpec": "wwwroot\\src\\assets\\img\\recover_logo.png"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\Striker1.png",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\assets\\img\\Striker1.png",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/assets/img/Striker1.png",
       "AssetKind": "All",
@@ -221,10 +221,10 @@
       "OriginalItemSpec": "wwwroot\\src\\assets\\img\\Striker1.png"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\EditPost.vue",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\EditPost.vue",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/components/EditPost.vue",
       "AssetKind": "All",
@@ -238,10 +238,10 @@
       "OriginalItemSpec": "wwwroot\\src\\components\\EditPost.vue"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\forum.vue",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\forum.vue",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/components/forum.vue",
       "AssetKind": "All",
@@ -255,10 +255,10 @@
       "OriginalItemSpec": "wwwroot\\src\\components\\forum.vue"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\main.vue",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\main.vue",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/components/main.vue",
       "AssetKind": "All",
@@ -272,10 +272,10 @@
       "OriginalItemSpec": "wwwroot\\src\\components\\main.vue"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\nav.vue",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\nav.vue",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/components/nav.vue",
       "AssetKind": "All",
@@ -289,10 +289,10 @@
       "OriginalItemSpec": "wwwroot\\src\\components\\nav.vue"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\recover.vue",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\recover.vue",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/components/recover.vue",
       "AssetKind": "All",
@@ -306,10 +306,10 @@
       "OriginalItemSpec": "wwwroot\\src\\components\\recover.vue"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\signin.vue",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\signin.vue",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/components/signin.vue",
       "AssetKind": "All",
@@ -323,10 +323,10 @@
       "OriginalItemSpec": "wwwroot\\src\\components\\signin.vue"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\signinCarousel.vue",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\signinCarousel.vue",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/components/signinCarousel.vue",
       "AssetKind": "All",
@@ -340,10 +340,10 @@
       "OriginalItemSpec": "wwwroot\\src\\components\\signinCarousel.vue"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\signup.vue",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\components\\signup.vue",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/components/signup.vue",
       "AssetKind": "All",
@@ -357,10 +357,10 @@
       "OriginalItemSpec": "wwwroot\\src\\components\\signup.vue"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\main.js",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\main.js",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/main.js",
       "AssetKind": "All",
@@ -374,10 +374,10 @@
       "OriginalItemSpec": "wwwroot\\src\\main.js"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\router\\index.js",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\router\\index.js",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/router/index.js",
       "AssetKind": "All",
@@ -391,10 +391,10 @@
       "OriginalItemSpec": "wwwroot\\src\\router\\index.js"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\views\\AboutView.vue",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\views\\AboutView.vue",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/views/AboutView.vue",
       "AssetKind": "All",
@@ -408,10 +408,10 @@
       "OriginalItemSpec": "wwwroot\\src\\views\\AboutView.vue"
     },
     {
-      "Identity": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\views\\HomeView.vue",
+      "Identity": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\src\\views\\HomeView.vue",
       "SourceId": "DBwebAPI",
       "SourceType": "Discovered",
-      "ContentRoot": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
+      "ContentRoot": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\wwwroot\\",
       "BasePath": "_content/DBwebAPI",
       "RelativePath": "src/views/HomeView.vue",
       "AssetKind": "All",

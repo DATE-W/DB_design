@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\DBwebAPI.csproj": {}
+    "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\DBwebAPI.csproj": {}
   },
   "projects": {
-    "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\DBwebAPI.csproj": {
+    "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\DBwebAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\DBwebAPI.csproj",
+        "projectUniqueName": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\DBwebAPI.csproj",
         "projectName": "DBwebAPI",
-        "projectPath": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\DBwebAPI.csproj",
-        "packagesPath": "C:\\Users\\23898\\.nuget\\packages\\",
-        "outputPath": "E:\\db_git\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\obj\\",
+        "projectPath": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\DBwebAPI.csproj",
+        "packagesPath": "C:\\Users\\13293\\.nuget\\packages\\",
+        "outputPath": "D:\\homework\\DB\\DB_design\\Backend\\DBwebAPI\\DBwebAPI\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\23898\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\13293\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -67,8 +67,7 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -80,7 +79,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files (x86)\\dotnet\\sdk\\6.0.411\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
         }
       }
     }
