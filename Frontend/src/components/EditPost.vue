@@ -55,10 +55,9 @@
   </template>
   
   <script>
-  import { defineComponent } from 'vue';
   import MyNav from './nav.vue';
   
-  export default defineComponent({
+  export default{
     components: {
       'my-nav': MyNav
     },
@@ -102,7 +101,7 @@
         }
       }
     }
-  });
+  };
   </script>
   
   <style scoped>
