@@ -82,6 +82,7 @@
     height:0.7vw;
 }
 
+
 /* 发帖按钮 */
 .postButton{
     margin-top: 1vw;
