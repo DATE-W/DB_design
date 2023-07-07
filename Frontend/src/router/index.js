@@ -25,7 +25,11 @@ const router = createRouter({
     {
       path: '/forum',
       component: () => import('../components/forum.vue')
-    }
+    },
+    {
+      path: '/EditPost',
+      component: () => import('../components/EditPost.vue')
+    },
   ]
 })
 
