@@ -20,19 +20,22 @@
             </el-space>
             <div>
               <!-- 密保问题 -->
-              <label for="securityAns" class="inputtext" style="left: -10.5vw;">密保问题：&nbsp;&nbsp;&nbsp;</label>
+              <label for="securityAns" class="inputtext" style="left: -13vw;">密保问题：&nbsp;&nbsp;&nbsp;</label>
               <p>{{ securityQ }}</p>
               <!-- 密保答案 -->
-              <label for="securityAns" class="inputtext" style="left: -10.5vw;">密保答案：&nbsp;&nbsp;&nbsp;</label>
+              <label for="securityAns" class="inputtext" style="left: -13vw;">密保答案：&nbsp;&nbsp;&nbsp;</label>
               <el-input type="text" id="securityAns" v-model="securityAns" required class="inputbox" />
               <br>
               <!-- 新密码 -->
-              <label for="newPword" class="inputtext" style="left: -10.4vw;">输入新密码：</label>
-              <el-input type="password" v-model="newPword" show-password class="inputbox" />
+              <label for="newPword" class="inputtext" style="left: -12.9vw;">输入新密码：</label>
+              <el-input  type="password"  id="password"   v-model="newPword"  pattern="[a-zA-Z0-9]+"  required maxlength="15" class="inputbox"
+                    show-password placeholder="密码只能由数字和字母组成，且长度不超过15个字符"/>
               <br>
               <!-- 确认密码 -->
-              <label for="confirmPword" class="inputtext" style="left: -10.4vw;">确认新密码：</label>
-              <el-input id="confirmPword" v-model="confirmPword" show-password required class="inputbox" />
+              <label for="confirmPword" class="inputtext" style="left: -12.9vw;">确认新密码：</label>
+              <!-- <el-input id="confirmPword" v-model="confirmPword" show-password required class="inputbox" /> -->
+              <el-input  type="password"  id="confirmPword"   v-model="confirmPword"  pattern="[a-zA-Z0-9]+"  required maxlength="15" class="inputbox"
+                    show-password placeholder="密码只能由数字和字母组成，且长度不超过15个字符"/>
               <!-- 温馨提示 -->
               <el-text tag="i" class="labeltext">Please remember your password!</el-text>
               <br>&nbsp;
@@ -153,35 +156,41 @@ export default {
   position: relative;
   color: var(--gray-3, #828282);
   font-family: Nunito Sans;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-  bottom: 0.0001vh;
+  bottom: 1vh;
+  top:0.5vh;
 }
 
 /*输入框 */
 .inputbox {
   position: relative;
   display: flex;
-  width: 26.5vw;
+  width: 33vw;
   padding: 1.3vh 0.6vw;
   align-items: center;
   gap: 0.78rem;
   border-radius: 0.31rem;
   border: 0;
+  bottom: 2vh;
+  top:0.5vh;
 }
 
 /*确认按钮 */
 .button {
+  position: relative;
+  top:3vh;
+  left:0.5vw;
   display: flex;
-  width: 26vw;
-  padding: 1.2vh 0.6vw 1.2vh 0.6vw;
+  width: 32vw;
+  padding: 1.3vh 0.6vw 1.2vh 0.6vw;
   justify-content: center;
-  align-items: center;
   gap: 0.78rem;
   border-radius: 0.31rem;
   background: #007DFA;
+  /*文字设置*/
   color: #FFF;
   font-family: Nunito Sans;
   font-size: 1.1rem;
@@ -189,6 +198,7 @@ export default {
   font-weight: 800;
   line-height: normal;
   border: 0;
+  
 }
 
 /*温馨提示样式*/
@@ -196,7 +206,7 @@ export default {
   color: #7F265B;
   font-size: 0.6rem;
   position: relative;
-  left: 7.5vw;
+  left: 10vw;
   top: 0;
   bottom: 1vh;
 }
