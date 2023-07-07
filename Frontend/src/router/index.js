@@ -30,6 +30,10 @@ const router = createRouter({
       path: '/EditPost',
       component: () => import('../components/EditPost.vue')
     },
+    {
+      path: '/personal',
+      component: () => import('../components/personal.vue')
+    },
   ]
 })
 

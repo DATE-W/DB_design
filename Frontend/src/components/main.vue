@@ -1,11 +1,9 @@
 <template>
 <my-nav></my-nav>
-    <el-header>
-    
-    </el-header>
     <el-main>
     <div class="main-container">
       <div class="top-section">
+        <!-- 赛事信息筛选菜单 -->
         <el-menu class="Games-menu"
             mode="horizontal" 
             active-text-color= "#409eff"
@@ -18,24 +16,29 @@
             <el-menu-item index="6" @click="GamesDJ"> 德甲</el-menu-item>
             <el-menu-item index="7" @click="GamesFJ">法甲</el-menu-item>
         </el-menu>
+        <!-- 赛事信息卡片 -->
         <el-row class="Game-col-container">
-          <el-card class="Game-card" v-for="item in getLimitedGames()" :key=item.index>
-          <template #header>
+          <el-card shadow="hover" class="Game-card" v-for="item in getLimitedGames()" :key=item.index>
+          <!-- <template #header>
             <div class="card-header">
             <span>Card name</span>
             <el-button class="button" text>更多</el-button>
             </div>
-          </template>
+          </template> -->
           <div class="Game-content">
               <div class="column-status">{{item.status}}</div>
-              <div class="column-team1">{{item.team1}} <br> {{ item.score1 }}</div>
-              <div class="column-team1">{{item.team2}} <br> {{ item.score2 }}</div>
+              <div class="column-team1">{{item.team1}}   {{ item.score1 }}</div>
+              <div class="column-team1">{{item.team2}}   {{ item.score2 }}</div>
+              <el-button class="button" text>详细赛事信息</el-button>
             </div>
           </el-card>
         </el-row>
       </div>
+      <!-- 下半部分 -->
       <div class="bottom-section">
+        <!-- 左侧新闻板块 -->
         <div class="left-side">左侧</div>
+        <!-- 右侧社区板块 -->
         <div class="right-side">右侧</div>
       </div>
     </div>
@@ -56,9 +59,13 @@
         {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
         {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
         {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
+        {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60},
         {Game:"其他",time:"",status:"已结束",team1:"中国",score1:74,team2:"澳大利亚",score2:60}
       ],
-      maxItems:6
+      maxItems:9
       }
     },
     components: {
