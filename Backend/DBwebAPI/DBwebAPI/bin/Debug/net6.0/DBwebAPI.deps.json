@@ -9,8 +9,9 @@
       "DBwebAPI/1.0.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.JwtBearer": "6.0.19",
+          "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "1.18.1",
           "Oracle.ManagedDataAccess.Core": "3.21.100",
-          "SqlSugarCore": "5.1.4.88",
+          "SqlSugarCore": "5.1.4.89",
           "Swashbuckle.AspNetCore": "6.2.3"
         },
         "runtime": {
@@ -179,6 +180,7 @@
           }
         }
       },
+      "Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.18.1": {},
       "Microsoft.Win32.Registry/4.7.0": {
         "dependencies": {
           "System.Security.AccessControl": "6.0.0",
@@ -349,7 +351,7 @@
           }
         }
       },
-      "SqlSugarCore/5.1.4.88": {
+      "SqlSugarCore/5.1.4.89": {
         "dependencies": {
           "Microsoft.Data.SqlClient": "2.1.4",
           "Microsoft.Data.Sqlite": "5.0.5",
@@ -364,8 +366,8 @@
         },
         "runtime": {
           "lib/netstandard2.1/SqlSugar.dll": {
-            "assemblyVersion": "5.1.4.88",
-            "fileVersion": "5.1.4.88"
+            "assemblyVersion": "5.1.4.89",
+            "fileVersion": "5.1.4.89"
           }
         }
       },
@@ -846,6 +848,13 @@
       "path": "microsoft.openapi/1.2.3",
       "hashPath": "microsoft.openapi.1.2.3.nupkg.sha512"
     },
+    "Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.18.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RtNQEQQ/bgaxzrsZEkPB+/DFaUgNiq8GtZz/R4lt+mKXPcEvEuawlbl0PB1s7ND9kvkUVZtMphPxE9Ma1VGiFg==",
+      "path": "microsoft.visualstudio.azure.containers.tools.targets/1.18.1",
+      "hashPath": "microsoft.visualstudio.azure.containers.tools.targets.1.18.1.nupkg.sha512"
+    },
     "Microsoft.Win32.Registry/4.7.0": {
       "type": "package",
       "serviceable": true,
@@ -916,12 +925,12 @@
       "path": "sqlitepclraw.provider.dynamic_cdecl/2.0.4",
       "hashPath": "sqlitepclraw.provider.dynamic_cdecl.2.0.4.nupkg.sha512"
     },
-    "SqlSugarCore/5.1.4.88": {
+    "SqlSugarCore/5.1.4.89": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-3QRJ/AY/G4enHOO1QNDLLMPhAZfMYXfxVT/nCLGrpoQHKovtaBsALf9dhBQDElir1+tDOV//BuG+f/ecvdM2eQ==",
-      "path": "sqlsugarcore/5.1.4.88",
-      "hashPath": "sqlsugarcore.5.1.4.88.nupkg.sha512"
+      "sha512": "sha512-ddlZSZTvuqpTSpy7ROl/qE02qiJ9LY9hX5lx7WgcT7Q7UCCG4ljIk97gnWJV+pdWeHpTprF9xWLSCZKquYlEnw==",
+      "path": "sqlsugarcore/5.1.4.89",
+      "hashPath": "sqlsugarcore.5.1.4.89.nupkg.sha512"
     },
     "SqlSugarCore.Dm/1.2.0": {
       "type": "package",

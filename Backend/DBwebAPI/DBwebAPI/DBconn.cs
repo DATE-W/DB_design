@@ -7,7 +7,7 @@ namespace DBwebAPI
 {
     public class DBconn
     {
-        public static string constr = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=orcl)));Persist Security Info=True;User ID=c##test;Password=021120;";
+        public static string constr = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=110.40.206.206)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=xe)));Persist Security Info=True;User ID=test;Password=TJUdb2023;";
         public SqlSugarClient sqlORM = null;
         public bool Conn()
         {
