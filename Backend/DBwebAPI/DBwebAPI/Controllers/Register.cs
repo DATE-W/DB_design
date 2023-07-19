@@ -25,7 +25,7 @@ namespace DBwebAPI.Controllers
                     usr.user_id = user_id;
                     usr.userName = userName;
                     usr.userPassword = password;
-                    usr.account = account;
+                    usr.userAccount = account;
                     usr.createDateTime = DateTime.Now.ToString();
                     int count = await sqlOrm.Insertable(usr).ExecuteCommandAsync();
                     if (count == 1)

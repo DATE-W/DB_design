@@ -6,7 +6,7 @@ using DBwebAPI.Controllers;
 namespace DBwebAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class Login : ControllerBase
     {
         [HttpGet] 
@@ -19,9 +19,7 @@ namespace DBwebAPI.Controllers
                     SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                     //进行用户查询
                     List<Usr> tempUsr = new List<Usr>();
-                    tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.account == account && it.userPassword == password).ToListAsync();
-                    //int shit = sqlORM.Queryable<Usr>().Max(it => it.user_id);
-                    //return $"{shit}";
+                    tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account && it.userPassword == password).ToListAsync();
                     //判断用户是否存在
                     if (tempUsr.Count() == 0)
                     {
