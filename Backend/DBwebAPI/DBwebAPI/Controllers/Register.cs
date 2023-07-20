@@ -6,11 +6,11 @@ using DBwebAPI.Controllers;
 namespace DBwebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]/[action]")]
     public class Register : ControllerBase  
     {
         [HttpPost]
-        public async Task<string> normalRegisterAsync(string account, string password, string userName)
+        public async Task<string> normalRegisterAsync(string account, string password, string userName,string userSecQue,string userSecAns)
         {
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             if (ORACLEConnectTry.getConn() == true)
@@ -26,7 +26,9 @@ namespace DBwebAPI.Controllers
                     usr.userName = userName;
                     usr.userPassword = password;
                     usr.userAccount = account;
-                    usr.createDateTime = DateTime.Now.ToString();
+                    usr.userSecQue = userSecQue;
+                    usr.userSecAns = userSecAns;
+                    usr.createDateTime = DateTime.Now;
                     int count = await sqlOrm.Insertable(usr).ExecuteCommandAsync();
                     if (count == 1)
                     {
@@ -37,8 +39,9 @@ namespace DBwebAPI.Controllers
                         return "error code=2";//用户注册的账户已存在
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    System.Console.WriteLine(ex.Message);
                     return "error code=114514";//未知错误
                 }
             }
