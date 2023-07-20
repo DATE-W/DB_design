@@ -9,8 +9,16 @@ namespace DBwebAPI.Controllers
     [Route("api/[controller]/[action]")]
     public class Register : ControllerBase  
     {
+        public class RegisterRequest
+        {
+            public string Account { get; set; }
+            public string Password { get; set; }
+            public string UserName { get; set; }
+            public string UserSecQue { get; set; }
+            public string UserSecAns { get; set; }
+        }
         [HttpPost]
-        public async Task<string> normalRegisterAsync(string account, string password, string userName,string userSecQue,string userSecAns)
+        public async Task<string> normalRegisterAsync([FromBody] RegisterRequest registerRequest)
         {
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             if (ORACLEConnectTry.getConn() == true)
@@ -23,11 +31,11 @@ namespace DBwebAPI.Controllers
                     int user_id = sqlOrm.Queryable<Usr>().Max(it => it.user_id) + 1;
                     Usr usr = new Usr();
                     usr.user_id = user_id;
-                    usr.userName = userName;
-                    usr.userPassword = password;
-                    usr.userAccount = account;
-                    usr.userSecQue = userSecQue;
-                    usr.userSecAns = userSecAns;
+                    usr.userName = registerRequest.UserName;
+                    usr.userPassword = registerRequest.Password;
+                    usr.userAccount = registerRequest.Account;
+                    usr.userSecQue = registerRequest.UserSecQue;
+                    usr.userSecAns = registerRequest.UserSecAns;
                     usr.createDateTime = DateTime.Now;
                     int count = await sqlOrm.Insertable(usr).ExecuteCommandAsync();
                     if (count == 1)
