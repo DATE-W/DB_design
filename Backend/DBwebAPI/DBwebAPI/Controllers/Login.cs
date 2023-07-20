@@ -15,13 +15,16 @@ namespace DBwebAPI.Controllers
         [HttpGet] 
         public async Task<string> LoginConcrollerAsync([FromBody]JObject json)
         {
+            Console.WriteLine("GET Login!");
             ORACLEconn  ORACLEConnectTry=new ORACLEconn();
+            Console.WriteLine("Conn success!");
 
             //提取参数
             var jsonStr = JsonConvert.SerializeObject(json);
             var jsonParams = JsonConvert.DeserializeObject<dynamic>(jsonStr);
             string username = jsonParams["username"];
             string passwordHash = jsonParams["passwordHash"];
+            Console.WriteLine("json get success!");
             //string securityQ = jsonParams["securityQ"];
             //string securityAnsHash = jsonParams["securityAnsHash"];
 
