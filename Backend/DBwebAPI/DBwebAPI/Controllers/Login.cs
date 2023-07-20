@@ -2,6 +2,9 @@
 using SqlSugar;
 using DBwebAPI.Models;
 using DBwebAPI.Controllers;
+using Newtonsoft.Json.Linq;
+using System.Security.Principal;
+using Newtonsoft.Json;
 
 namespace DBwebAPI.Controllers
 {
@@ -10,16 +13,27 @@ namespace DBwebAPI.Controllers
     public class Login : ControllerBase
     {
         [HttpGet] 
-        public async Task<string> LoginConcrollerAsync(string account, string password)
+        public async Task<string> LoginConcrollerAsync([FromBody]JObject json)
         {
             ORACLEconn  ORACLEConnectTry=new ORACLEconn();
+
+            //提取参数
+            var jsonStr = JsonConvert.SerializeObject(json);
+            var jsonParams = JsonConvert.DeserializeObject<dynamic>(jsonStr);
+            string username = jsonParams["username"];
+            string password = jsonParams["password"];
+            //string securityQ = jsonParams["securityQ"];
+            //string securityAnsHash = jsonParams["securityAnsHash"];
+
             if (ORACLEConnectTry.getConn() == true) {
                 try
                 {
                     SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                     //进行用户查询
                     List<Usr> tempUsr = new List<Usr>();
-                    tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account && it.userPassword == password).ToListAsync();
+                    tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userName == username 
+                    && it.userPassword == password)
+                        .ToListAsync();
                     //判断用户是否存在
                     if (tempUsr.Count() == 0)
                     {
@@ -28,7 +42,7 @@ namespace DBwebAPI.Controllers
                     else
                     {
                         createToken tempToken= new createToken();
-                        string token = tempToken.createTokenFun(account, password);
+                        string token = tempToken.createTokenFun(username, password);
                         return token;
                     }
 

@@ -265,3 +265,6 @@ D:\homework\DB\DB_design\Backend\DBwebAPI\DBwebAPI\obj\Debug\net6.0\refint\DBweb
 D:\homework\DB\DB_design\Backend\DBwebAPI\DBwebAPI\obj\Debug\net6.0\DBwebAPI.pdb
 D:\homework\DB\DB_design\Backend\DBwebAPI\DBwebAPI\obj\Debug\net6.0\DBwebAPI.genruntimeconfig.cache
 D:\homework\DB\DB_design\Backend\DBwebAPI\DBwebAPI\obj\Debug\net6.0\ref\DBwebAPI.dll
+E:\db_git\DB_design\Backend\DBwebAPI\DBwebAPI\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
+E:\db_git\DB_design\Backend\DBwebAPI\DBwebAPI\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+E:\db_git\DB_design\Backend\DBwebAPI\DBwebAPI\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
