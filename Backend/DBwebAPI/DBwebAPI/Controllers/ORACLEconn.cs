@@ -5,7 +5,7 @@ using SqlSugar;
 namespace DBwebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]/[action]")]
     public class ORACLEconn : Controller
     {
         public SqlSugarClient sqlORM = null;
