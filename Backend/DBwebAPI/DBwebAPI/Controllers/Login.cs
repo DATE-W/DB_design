@@ -21,7 +21,7 @@ namespace DBwebAPI.Controllers
             var jsonStr = JsonConvert.SerializeObject(json);
             var jsonParams = JsonConvert.DeserializeObject<dynamic>(jsonStr);
             string username = jsonParams["username"];
-            string password = jsonParams["password"];
+            string passwordHash = jsonParams["passwordHash"];
             //string securityQ = jsonParams["securityQ"];
             //string securityAnsHash = jsonParams["securityAnsHash"];
 
@@ -32,7 +32,7 @@ namespace DBwebAPI.Controllers
                     //进行用户查询
                     List<Usr> tempUsr = new List<Usr>();
                     tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userName == username 
-                    && it.userPassword == password)
+                    && it.userPassword == passwordHash)
                         .ToListAsync();
                     //判断用户是否存在
                     if (tempUsr.Count() == 0)
@@ -42,7 +42,7 @@ namespace DBwebAPI.Controllers
                     else
                     {
                         createToken tempToken= new createToken();
-                        string token = tempToken.createTokenFun(username, password);
+                        string token = tempToken.createTokenFun(username, passwordHash);
                         return token;
                     }
 
