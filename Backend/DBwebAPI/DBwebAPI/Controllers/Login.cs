@@ -12,8 +12,13 @@ namespace DBwebAPI.Controllers
     [Route("api/[controller]/[action]")]
     public class Login : ControllerBase
     {
-        [HttpGet] 
-        public async Task<string> LoginConcrollerAsync([FromBody]JObject json)
+        public class LoginRequest
+        {
+            public string Account { get; set; }
+            public string Password { get; set; }
+        }
+        [HttpPost] 
+        public async Task<string> LoginConcrollerAsync([FromBody] LoginRequest json)
         {
             Console.WriteLine("GET Login!");
             ORACLEconn  ORACLEConnectTry=new ORACLEconn();
