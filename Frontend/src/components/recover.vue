@@ -28,14 +28,14 @@
               <br>
               <!-- 新密码 -->
               <label for="newPword" class="inputtext" style="left: -12.9vw;">输入新密码：</label>
-              <el-input  type="password"  id="password"   v-model="newPword"  pattern="[a-zA-Z0-9]+"  required maxlength="15" class="inputbox"
-                    show-password placeholder="密码只能由数字和字母组成，且长度不超过15个字符"/>
+              <el-input type="password" id="password" v-model="newPword" pattern="[a-zA-Z0-9]+" required maxlength="15"
+                class="inputbox" show-password placeholder="密码只能由数字和字母组成，且长度不超过15个字符" />
               <br>
               <!-- 确认密码 -->
               <label for="confirmPword" class="inputtext" style="left: -12.9vw;">确认新密码：</label>
               <!-- <el-input id="confirmPword" v-model="confirmPword" show-password required class="inputbox" /> -->
-              <el-input  type="password"  id="confirmPword"   v-model="confirmPword"  pattern="[a-zA-Z0-9]+"  required maxlength="15" class="inputbox"
-                    show-password placeholder="密码只能由数字和字母组成，且长度不超过15个字符"/>
+              <el-input type="password" id="confirmPword" v-model="confirmPword" pattern="[a-zA-Z0-9]+" required
+                maxlength="15" class="inputbox" show-password placeholder="密码只能由数字和字母组成，且长度不超过15个字符" />
               <!-- 温馨提示 -->
               <el-text tag="i" class="labeltext">Please remember your password!</el-text>
               <br>&nbsp;
@@ -161,7 +161,7 @@ export default {
   font-weight: 700;
   line-height: normal;
   bottom: 1vh;
-  top:0.5vh;
+  top: 0.5vh;
 }
 
 /*输入框 */
@@ -175,14 +175,14 @@ export default {
   border-radius: 0.31rem;
   border: 0;
   bottom: 2vh;
-  top:0.5vh;
+  top: 0.5vh;
 }
 
 /*确认按钮 */
 .button {
   position: relative;
-  top:3vh;
-  left:0.5vw;
+  top: 3vh;
+  left: 0.5vw;
   display: flex;
   width: 32vw;
   padding: 1.3vh 0.6vw 1.2vh 0.6vw;
@@ -198,7 +198,7 @@ export default {
   font-weight: 800;
   line-height: normal;
   border: 0;
-  
+
 }
 
 /*温馨提示样式*/
