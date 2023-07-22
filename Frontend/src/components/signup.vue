@@ -123,6 +123,12 @@ export default {
         <!-- 输入内容 -->
         <div class="maininputbox">
           <form @submit.prevent="register">
+             <!-- 输入用户名 -->
+             <div class="subBox">
+              <label for="account_name" class="inputText" left=10.3vw;>用户名：</label>
+              <el-input type="text" id="account_name" v-model="account" pattern="[a-zA-Z0-9]+" required maxlength="10"
+                class="inputBox" placeholder="用户名长度不超过10个字符" />
+            </div>
             <!-- 输入账号 -->
             <div class="subBox">
               <label for="account" class="inputText" left=10.3vw;>账号：</label>
@@ -194,7 +200,7 @@ export default {
   position: relative;
   left: 5%;
   width: 25vw;
-  height: 5vw;
+  height: 4.3vw;
   flex-shrink: 0;
 }
 
@@ -229,7 +235,7 @@ export default {
   left: 1.5vw;
   width: 30vw;
   height: 2.6vw;
-  top: 10vh;
+  top: 6.7vh;
   flex-shrink: 0;
   border-radius: 0.31rem;
   background: #007DFA;
@@ -250,7 +256,7 @@ export default {
   left: 67%;
   width: 0.5vw;
   height: 2.5vw;
-  top: 15vh;
+  top: 11vh;
 }
 
 .haveText {
@@ -265,7 +271,7 @@ export default {
 
 /*右侧左上角logo*/
 .imgR {
-  top: 8vh;
+  top: 3vh;
   left: 4vw;
   width: 4vw;
   height: 7vh;
@@ -287,14 +293,14 @@ export default {
   text-align: center;
   line-height: 1;
   position: relative;
-  top: 7vh;
+  top: 3vh;
   left: 9.5vw;
 }
 
 /*右侧输出框控制 */
 .maininputbox {
   position: relative;
-  top: 9vh;
+  top: 5vh;
 
 }
 
@@ -303,7 +309,7 @@ export default {
   font-size: 0.6rem;
   position: relative;
   left: 23vw;
-  top: -2vh;
+  top: -1vh;
   bottom: 1vh;
 }
 </style>

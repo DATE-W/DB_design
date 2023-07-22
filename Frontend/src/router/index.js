@@ -26,6 +26,10 @@ const router = createRouter({
       component: () => import('../components/forum.vue')
     },
     {
+      path: '/Detail',
+      component: () => import('../components/detail.vue')
+    },
+    {
       path: '/EditPost',
       component: () => import('../components/EditPost.vue')
     },
