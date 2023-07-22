@@ -17,9 +17,15 @@ namespace DBwebAPI.Controllers
             public string UserSecQue { get; set; }
             public string UserSecAns { get; set; }
         }
-        [HttpPost]
-        public async Task<string> normalRegisterAsync([FromBody] RegisterRequest registerRequest)
+        public class CustomResponse
         {
+            public string ok { get; set; }
+            public object value { get; set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> normalRegisterAsync([FromBody] RegisterRequest registerRequest)
+        {
+            int count = -1;
             Console.WriteLine("GET Register!");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             if (ORACLEConnectTry.getConn() == true)
@@ -38,36 +44,41 @@ namespace DBwebAPI.Controllers
                     usr.userSecQue = registerRequest.UserSecQue;
                     usr.userSecAns = registerRequest.UserSecAns;
                     usr.createDateTime = DateTime.Now;
-                    Console.WriteLine("user_id= "+ user_id);
-                    Console.WriteLine("userName= "+ usr.userName);
+                    Console.WriteLine("user_id= " + user_id);
+                    Console.WriteLine("userName= " + usr.userName);
                     Console.WriteLine("userPassword= " + usr.userPassword);
-                    Console.WriteLine("userAccount= "+ usr.userAccount);
-                    Console.WriteLine("userSecQue= "+ usr.userSecQue);
+                    Console.WriteLine("userAccount= " + usr.userAccount);
+                    Console.WriteLine("userSecQue= " + usr.userSecQue);
                     Console.WriteLine("userSecAns= " + usr.userSecAns);
                     Console.WriteLine("createDateTime= " + usr.createDateTime);
-                    int count = await sqlOrm.Insertable(usr).ExecuteCommandAsync();
-                    if (count == 1)
+                    bool accountExists = sqlOrm.Queryable<Usr>().Any(u => u.userAccount == registerRequest.Account);
+                    if (accountExists)
                     {
-                        Console.WriteLine("注册成功");
-                        return "Success";
+                        Console.WriteLine("账号已存在");
+                        return Ok(new CustomResponse { ok = "no", value = "账户已存在" });
                     }
                     else
                     {
-                        Console.WriteLine("注册失败");
-                        return "Fail";//用户注册的账户已存在
+                        count = await sqlOrm.Insertable(usr).ExecuteCommandAsync();
+                        if (count == 1)
+                        {
+                            Console.WriteLine("注册成功");
+                            return Ok(new CustomResponse { ok = "yes", value = "Success" });
+                        }
+                        else
+                        {
+                            Console.WriteLine("注册失败");
+                            return Ok(new CustomResponse { ok = "no", value = "Fail" });
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("未知错误");
                     System.Console.WriteLine(ex.Message);
-                    return "UNKNOWN";//未知错误
                 }
             }
-            else
-            {
-                return "Fail_Access";//连接数据库失败
-            }
+            return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" });//未知错误
         }
     }
 }

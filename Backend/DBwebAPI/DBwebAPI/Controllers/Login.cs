@@ -17,22 +17,27 @@ namespace DBwebAPI.Controllers
             public string Account { get; set; }
             public string Password { get; set; }
         }
-        [HttpPost] 
-        public async Task<string> LoginPassword([FromBody] LoginRequest json)
+        public class CustomResponse
+        {
+            public string ok { get; set; }
+            public object value { get; set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> LoginPassword([FromBody] LoginRequest json)
         {
             Console.WriteLine("GET Login!");
-            ORACLEconn  ORACLEConnectTry=new ORACLEconn();
-
+            ORACLEconn ORACLEConnectTry = new ORACLEconn();
             //提取参数
 
             string account = json.Account;
             string passwordHash = json.Password;
-            Console.WriteLine("account="+ account);
-            Console.WriteLine("passwordHash= "+passwordHash);
+            Console.WriteLine("account=" + account);
+            Console.WriteLine("passwordHash= " + passwordHash);
             //string securityQ = jsonParams["securityQ"];
             //string securityAnsHash = jsonParams["securityAnsHash"];
 
-            if (ORACLEConnectTry.getConn() == true) {
+            if (ORACLEConnectTry.getConn() == true)
+            {
                 try
                 {
                     SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
@@ -45,27 +50,20 @@ namespace DBwebAPI.Controllers
                     if (tempUsr.Count() == 0)
                     {
                         Console.WriteLine("登录失败");
-                        return "Fail";//用户账户或密码错误
+                        return Ok(new CustomResponse { ok = "no", value = "Fail" });//用户账户或密码错误
                     }
                     else
                     {
                         Console.WriteLine("登录成功");
-                        createToken tempToken= new createToken();
-                        string token = tempToken.createTokenFun(account, passwordHash);
-                        return token;
+                        return Ok(new CustomResponse { ok = "yes", value = "Success" });
                     }
-
                 }
                 catch (Exception)
                 {
-                    return "UNKNOWN";//位置错误
+                    return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" }); // Internal server error
                 }
             }
-            else
-            {
-                return "Fail_Access";//连接数据库失败
-            }
-
+            else { return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" }); };
         }
     }
 }
