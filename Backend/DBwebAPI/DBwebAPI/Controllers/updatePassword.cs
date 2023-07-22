@@ -11,7 +11,7 @@ namespace DBwebAPI.Controllers
     {
         public class UserAccountRequest
         {
-            public string UserAccount { get; set;}
+            public string UserAccount { get; set; }
         }
         public class PasswordUpdateRequest
         {
@@ -29,9 +29,10 @@ namespace DBwebAPI.Controllers
         public async Task<IActionResult> GetUserSecQue([FromBody] UserAccountRequest json)
         {
             string account = json.UserAccount;
-            Console.WriteLine("account= "+account);
+            Console.WriteLine("account= " + account);
             // Check if the ORACLE connection is successful
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
+            ORACLEConnectTry.getConn();
             try
             {
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
@@ -47,7 +48,7 @@ namespace DBwebAPI.Controllers
                     return Ok(new CustomResponse { ok = "yes", value = "userSecQues.FirstOrDefault()" });
                 }
                 else
-                { 
+                {
                     Console.WriteLine("WrongAccount");
                     return Ok(new CustomResponse { ok = "no", value = "WrongAccount" }); // User account not found 
                 }
@@ -69,12 +70,7 @@ namespace DBwebAPI.Controllers
             Console.WriteLine("UpdatePassword");
             // Check if the ORACLE connection is successful
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
-            if (!ORACLEConnectTry.getConn())
-            {
-                Console.WriteLine("Fail_Access");
-                return Ok(new CustomResponse { ok = "no", value = "Fail_Access" });// Failed to connect to the database
-            }
-
+            ORACLEConnectTry.getConn();
             try
             {
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
