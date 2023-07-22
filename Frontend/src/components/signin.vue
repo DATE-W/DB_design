@@ -10,9 +10,9 @@
         <!-- 注册字体 -->
         <div class="FontLayout">
           <el-space direction="vertical" style="text-align:center">
-                <h1 class="labelH1 excenter">Login to your Account</h1>    
-                <el-text tag="i" class="excenter" style="font-size: 0.9rem;">See popular football news and trends</el-text>
-              </el-space>
+            <h1 class="labelH1 excenter">Login to your Account</h1>
+            <el-text tag="i" class="excenter" style="font-size: 0.9rem;">See popular football news and trends</el-text>
+          </el-space>
         </div>
         <!-- 输入内容 -->
         <form @submit.prevent="register">
@@ -32,13 +32,13 @@
           <button class="signupBtn" style="left: 12vw; bottom: 28vh;">
             <text class="btnText">登录</text>
           </button>
-          
+
           <!-- 找回密码 -->
-          <p class="tag" @click="redirectToRecover">Forgot Password?</p>
+          <el-button class="tag" text @click="redirectToRecover">Forgot Password?</el-button>
         </form>
         <!-- 注册按钮 -->
         <button class="signupBtn" style="left: 27vw; bottom: 28vh;" @click="redirectToRegister">
-            <text class="btnText">注册</text>
+          <text class="btnText">注册</text>
         </button>
       </el-aside>
       <!-- 右侧走马灯 -->
@@ -51,6 +51,7 @@
 
 <script>
 import carousel from './signinCarousel.vue';
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 export default {
   data() {
@@ -61,7 +62,7 @@ export default {
     };
   },
   components: {
-      'my-carousel': carousel
+    'my-carousel': carousel
   },
   methods: {
     register() {
@@ -74,10 +75,32 @@ export default {
       this.$router.push('/signup');
     },
     redirectToRecover() {
-      // 跳转到忘记密码页面的逻辑
-      this.$router.push('/recover');
+      //打开弹窗
+      ElMessageBox.prompt('请输入您的账号以修改密码', 'Tip', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        inputType: 'text',
+        inputErrorMessage: '不存在该账号',
+      }).then(({ value }) => {
+        if (value) {
+          ElMessage({
+              type: 'success',
+              message: `您的账号是:${value}`,
+            })
+          // 跳转到忘记密码页面的逻辑
+          this.$router.push('/recover');
+        } else {
+          // 输入为空或取消输入，不进行跳转
+        }
+      })
+      .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '取消找回',
+      })
+    })
     },
-  }
+  },
 };
 </script>
 
@@ -88,12 +111,13 @@ export default {
   margin-top: 50vh;
   margin-left: 31vw;
   color: #7F265B;
- font-family: Nunito Sans;
- font-size: 12px;
- font-style: normal;
- font-weight: 600;
- line-height: normal;
+  font-family: Nunito Sans;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
 }
+
 .el-main {
   position: absolute;
   background: linear-gradient(180deg, #77B0FE 0%, rgba(119, 176, 254, 0.10) 100%);
@@ -128,7 +152,7 @@ export default {
 /*每一个输入框的样式及内置提示*/
 .inputBox {
   position: relative;
-  left:6.5vw;
+  left: 6.5vw;
   display: flex;
   width: 30vw;
   padding: 0.5vh 0.6vw;
@@ -139,8 +163,8 @@ export default {
 }
 
 /*每一个子标题的位置及样式*/
-.inputText{
-  left:7.3vw;
+.inputText {
+  left: 7.3vw;
   position: relative;
   color: var(--gray-3, #828282);
   font-family: Nunito Sans;
@@ -180,22 +204,22 @@ export default {
 }
 
 /*注册标题 */
-.labelH1{
-    color: #525252;
-    font-family: Nunito Sans;
-    font-size: 1.8rem;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
+.labelH1 {
+  color: #525252;
+  font-family: Nunito Sans;
+  font-size: 1.8rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
 }
 
 /*右侧标题位置设置 */
-.excenter{
-  text-align:center;
-  line-height:1;
+.excenter {
+  text-align: center;
+  line-height: 1;
   position: relative;
-  top:13vh;
-  left:11.5vw;
+  top: 13vh;
+  left: 11.5vw;
 }
 
 /*图标后FootGame字体*/
@@ -223,5 +247,4 @@ export default {
   height: 100%;
   object-fit: contain;
 }
-
 </style>
