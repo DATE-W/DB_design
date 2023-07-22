@@ -18,8 +18,13 @@ namespace DBwebAPI.Controllers
             public string UserSecAns { get; set; }
             public string NewPassword { get; set; }
         }
+        public class CustomResponse
+        {
+            public string Ok { get; set; }
+            public object Value { get; set; }
+        }
         [HttpPost]
-        public async Task<string> GetUserSecQue([FromBody] UserAccountRequest json)
+        public async Task<IActionResult> GetUserSecQue([FromBody] UserAccountRequest json)
         {
             // Extract parameters
             string account = json.UserAccount;
@@ -27,11 +32,6 @@ namespace DBwebAPI.Controllers
             Console.WriteLine("GET GetUserSecQue");
             // Check if the ORACLE connection is successful
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
-            if (!ORACLEConnectTry.getConn())
-            {
-                Console.WriteLine("Fail_Access");
-                return "Fail_Access"; // Failed to connect to the database
-            }
 
             try
             {
@@ -45,20 +45,20 @@ namespace DBwebAPI.Controllers
                 if (userSecQues.Count == 0)
                 {
                     Console.WriteLine("WrongAccount");
-                    return "WrongAccount"; // User account not found
+                    return Ok(new CustomResponse { Ok = "no", Value = "WrongAccount" }); // User account not found
                 }
                 Console.WriteLine(userSecQues.FirstOrDefault());
-                return userSecQues.FirstOrDefault();
+                return Ok(new CustomResponse { Ok = "yes", Value = userSecQues.FirstOrDefault() });
             }
             catch (Exception)
             {
                 Console.WriteLine("UNKNOWN");
-                return "UNKNOWN"; // Internal server error
-            }
+                return Ok(new CustomResponse { Ok = "no", Value = "UNKNOWN" }); // Internal server error
+                }
         }
 
         [HttpPost]
-        public async Task<string> UpdatePassword([FromBody] PasswordUpdateRequest json)
+        public async Task<IActionResult> UpdatePassword([FromBody] PasswordUpdateRequest json)
         {
             // Extract parameters
             string account = json.UserAccount;
@@ -70,7 +70,7 @@ namespace DBwebAPI.Controllers
             if (!ORACLEConnectTry.getConn())
             {
                 Console.WriteLine("Fail_Access");
-                return "Fail_Access"; // Failed to connect to the database
+                return Ok(new CustomResponse { Ok = "no", Value = "Fail_Access" });// Failed to connect to the database
             }
 
             try
@@ -84,14 +84,14 @@ namespace DBwebAPI.Controllers
 
                 if (user == null)
                 {
-                    Console.WriteLine("wrongAccount");
-                    return "wrongAccount"; // User account not found
+                    Console.WriteLine("WrongAccount");
+                    return Ok(new CustomResponse { Ok = "no", Value = "WrongAccount" }); // User account not found
                 }
 
                 if (user.userSecAns != userSecAns)
                 {
-                    Console.WriteLine("wrongAns");
-                    return "wrongAns"; // Security answer does not match
+                    Console.WriteLine("WrongAns");
+                    return Ok(new CustomResponse { Ok = "no", Value = "WrongAns" }); // Security answer does not match
                 }
 
                 // Update the user password
@@ -103,19 +103,19 @@ namespace DBwebAPI.Controllers
                 if (updateResult > 0)
                 {
                     Console.WriteLine("Success");
-                    return "Success"; // Password updated successfully
+                    return Ok(new CustomResponse { Ok = "yes", Value = "Success" }); // Password updated successfully
                 }
                 else
                 {
                     Console.WriteLine("updateFailed");
-                    return "updateFailed"; // Failed to update password
+                    return Ok(new CustomResponse { Ok = "no", Value = "updateFailed" }); // Failed to update password
                 }
             }
             catch (Exception)
             {
                 Console.WriteLine("UNKNOWN");
-                return "UNKNOWN"; // Internal server error
-            }
+                return Ok(new CustomResponse { Ok = "no", Value = "UNKNOWN" }); // Internal server error
+                }
         }
     }
 }

@@ -10,7 +10,7 @@ namespace DBwebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class Login : ControllerBase
+    public class LoginController : ControllerBase
     {
         public class LoginRequest
         {
