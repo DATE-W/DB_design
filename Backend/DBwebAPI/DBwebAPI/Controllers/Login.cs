@@ -18,11 +18,10 @@ namespace DBwebAPI.Controllers
             public string Password { get; set; }
         }
         [HttpPost] 
-        public async Task<string> LoginConcrollerAsync([FromBody] LoginRequest json)
+        public async Task<string> LoginPassword([FromBody] LoginRequest json)
         {
             Console.WriteLine("GET Login!");
             ORACLEconn  ORACLEConnectTry=new ORACLEconn();
-            Console.WriteLine("Conn success!");
 
             //提取参数
 
