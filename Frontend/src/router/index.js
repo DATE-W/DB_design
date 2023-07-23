@@ -19,6 +19,7 @@ const router = createRouter({
     },
     {
       path: '/recover',
+      name: 'Recover',
       component: () => import('../components/recover.vue')
     },
     {
@@ -52,4 +53,4 @@ const router = createRouter({
   ]
 })
 
-export default router
+export default router;

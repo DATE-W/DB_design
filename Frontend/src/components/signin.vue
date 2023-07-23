@@ -53,12 +53,15 @@
 <script>
 import axios from 'axios';
 import carousel from './signinCarousel.vue';
-import { ElMessage } from 'element-plus';
+
+import { ElMessage, ElMessageBox } from 'element-plus';
+
 export default {
   data() {
     return {
       account: '',
       password: '',
+      secQUE: '',
     };
   },
   components: {
@@ -72,9 +75,80 @@ export default {
       // 跳转到注册页面的逻辑
       this.$router.push('/signup');
     },
-    redirectToRecover() {
+    async redirectToRecover() {
       // 跳转到忘记密码页面的逻辑
-      this.$router.push('/recover');
+      //this.$router.push('/recover');
+      //打开弹窗
+      let confirmed = false; // 初始化标志位为false
+      ElMessageBox.prompt('请输入您的账号以修改密码', '修改密码', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        inputType: 'text',
+        inputErrorMessage: '不存在该账号',
+      }).then(async ({ value }) => {
+        let response
+        try {
+          response = await axios.post('/api/ForgetPassword/GetUserSecQue', {
+            userAccount: String(value)
+          })
+          console.log(response)
+        } catch (err) {
+          if (err.response.data.result == 'fail') {
+            ElMessage({
+              message: err.response.data.msg,
+              grouping: false,
+              type: 'error',
+            })
+          } else {
+            ElMessage({
+              message: '未知错误',
+              grouping: false,
+              type: 'error',
+            })
+          }
+          return
+        }
+        if (response.data.ok == "yes") {
+          confirmed = true; // 设置标志位为true
+          ElMessage({
+            type: 'success',
+            message: `您的账号是:${value}`,
+          })
+          this.secQUE = response.data.value;
+          const secQ = this.secQUE;
+          console.log(secQ)
+          // 跳转到忘记密码页面的逻辑
+          this.$router.push({
+            name: 'Recover',
+            query: { secQ: secQ, account: value }
+          });
+        }
+        else {
+          if (response.data.value == "WrongAccount") {
+            ElMessage({
+              message: '账号不存在',
+              grouping: false,
+              type: 'error',
+            })
+          }
+          else if (response.data.value == "UNKNOWN") {
+            ElMessage({
+              message: '未知错误',
+              grouping: false,
+              type: 'error',
+            })
+          }
+        }
+      })
+        .catch(() => {
+          if (!confirmed) {
+            ElMessage({
+              type: 'info',
+              message: '取消找回',
+            })
+          }
+
+        })
     },
     async LoginConfirm() {
       if (!this.account) {
@@ -98,9 +172,10 @@ export default {
       this.LoginConfirm();
       let response
       try {
-        response = await axios.post('/api/Login/LoginConcroller', {
-          Account: String(this.account),
-          Password: String(await this.sha256(this.password)),
+        response = await axios.post('/api/Login/LoginPassword', {
+          account: String(this.account),
+          // password: String(this.password),
+          password: String(await this.sha256(this.password)),
         })
       } catch (err) {
         if (err.response.data.result == 'fail') {
@@ -115,6 +190,11 @@ export default {
             grouping: false,
             type: 'error',
           })
+          // 延迟刷新页面
+          setTimeout(() => {
+            window.location.reload(); // 刷新当前页面
+          }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
+          return
         }
         return
       }
@@ -125,6 +205,11 @@ export default {
           grouping: false,
           type: 'error',
         })
+        // 延迟刷新页面
+        setTimeout(() => {
+          window.location.reload(); // 刷新当前页面
+        }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
+        return
       }
       else {
         ElMessage({

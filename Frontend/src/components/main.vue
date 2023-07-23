@@ -1,59 +1,61 @@
 <template>
-  <my-nav></my-nav>
-  <el-main>
-    <div class="main-container">
-      <div class="top-section">
-        <!-- 赛事信息筛选菜单 -->
-        <el-menu class="Games-menu" mode="horizontal" active-text-color="#409eff" @select="handleMenuSelect">
-          <el-menu-item index="1" @click="GamesAll">全部</el-menu-item>
-          <el-menu-item index="2" @click="GamesZC">中超</el-menu-item>
-          <el-menu-item index="3" @click="GamesYC">英超</el-menu-item>
-          <el-menu-item index="4" @click="GamesYJ">意甲</el-menu-item>
-          <el-menu-item index="5" @click="GamesXJ">西甲</el-menu-item>
-          <el-menu-item index="6" @click="GamesDJ"> 德甲</el-menu-item>
-          <el-menu-item index="7" @click="GamesFJ">法甲</el-menu-item>
-          <el-menu-item index="8" @click="redirectToGames">更多赛事信息</el-menu-item>
-        </el-menu>
-        <!-- 赛事信息卡片 -->
-        <el-row class="Game-col-container">
-          <el-card shadow="hover" class="Game-card" v-for="item in getLimitedGames()" :key=item.index>
-            <!-- <template #header>
+  <div>
+    <my-nav></my-nav>
+    <el-main>
+      <div class="main-container">
+        <div class="top-section">
+          <!-- 赛事信息筛选菜单 -->
+          <el-menu class="Games-menu" mode="horizontal" active-text-color="#409eff" @select="handleMenuSelect">
+            <el-menu-item index="1" @click="GamesAll">全部</el-menu-item>
+            <el-menu-item index="2" @click="GamesZC">中超</el-menu-item>
+            <el-menu-item index="3" @click="GamesYC">英超</el-menu-item>
+            <el-menu-item index="4" @click="GamesYJ">意甲</el-menu-item>
+            <el-menu-item index="5" @click="GamesXJ">西甲</el-menu-item>
+            <el-menu-item index="6" @click="GamesDJ"> 德甲</el-menu-item>
+            <el-menu-item index="7" @click="GamesFJ">法甲</el-menu-item>
+            <el-menu-item index="8" @click="redirectToGames">更多赛事信息</el-menu-item>
+          </el-menu>
+          <!-- 赛事信息卡片 -->
+          <el-row class="Game-col-container">
+            <el-card shadow="hover" class="Game-card" v-for="item in getLimitedGames()" :key=item.index>
+              <!-- <template #header>
             <div class="card-header">
             <span>Card name</span>
             <el-button class="button" text>更多</el-button>
             </div>
           </template> -->
-            <div class="Game-content">
-              <div class="column-status">{{ item.status }}</div>
-              <div class="column-team1">{{ item.team1 }} {{ item.score1 }}</div>
-              <div class="column-team1">{{ item.team2 }} {{ item.score2 }}</div>
-              <el-button class="button" text>详细赛事信息</el-button>
-            </div>
-          </el-card>
-        </el-row>
-      </div>
-      <!-- 下半部分 -->
-      <div class="bottom-section">
-        <!-- 左侧新闻板块 -->
-        <div class="news-container">
-          <div v-for="(news, index) in getLimitedNews()" :key="index" class="news-item">
-            <el-row>
-              <el-col :span=6>
-                <img :src="news.image" alt="News Image" class="news-image"></el-col>
-              <el-col :span=18>
-                <div class="news-content">
-                  <h3 class="news-title">{{ news.title }}</h3>
-                  <p class="news-summary">{{ truncateText(news.summary, 50) }}</p>
-                </div>
-              </el-col>
-            </el-row>
-          </div>
+              <div class="Game-content">
+                <div class="column-status">{{ item.status }}</div>
+                <div class="column-team1">{{ item.team1 }} {{ item.score1 }}</div>
+                <div class="column-team1">{{ item.team2 }} {{ item.score2 }}</div>
+                <el-button class="button" text>详细赛事信息</el-button>
+              </div>
+            </el-card>
+          </el-row>
         </div>
-        <!-- 右侧社区板块 -->
-        <div class="forum-container">右侧</div>
+        <!-- 下半部分 -->
+        <div class="bottom-section">
+          <!-- 左侧新闻板块 -->
+          <div class="news-container">
+            <div v-for="(news, index) in getLimitedNews()" :key="index" class="news-item">
+              <el-row>
+                <el-col :span=6>
+                  <img :src="news.image" alt="News Image" class="news-image"></el-col>
+                <el-col :span=18>
+                  <div class="news-content">
+                    <h3 class="news-title">{{ news.title }}</h3>
+                    <p class="news-summary">{{ truncateText(news.summary, 50) }}</p>
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+          </div>
+          <!-- 右侧社区板块 -->
+          <div class="forum-container">右侧</div>
+        </div>
       </div>
-    </div>
-  </el-main>
+    </el-main>
+  </div>
 </template>
   
 <script>

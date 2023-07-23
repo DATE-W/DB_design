@@ -6,6 +6,7 @@ export default {
   data() {
     return {
       account: '',
+      userName: '',
       password: '',
       confirmpassword: '',
       securityQ: '',
@@ -62,32 +63,40 @@ export default {
       try {
         response = await axios.post('/api/Register/normalRegister', {
           account: String(this.account),
-          userName: "111",
+          userName: String(this.userName),
+          // password: String(this.password),
           password: String(await this.sha256(this.password)),
           userSecQue: String(this.securityQ),
+          // userSecAns: String(this.securityAns),
           userSecAns: String(await this.sha256(this.securityAns)),
         })
       } catch (err) {
-        if (err.response.data == 'Fail') {
-          ElMessage({
-            message: "账户已存在！",
-            grouping: false,
-            type: 'error',
-          })
-        } else {
-          ElMessage({
-            message: '未知错误',
-            grouping: false,
-            type: 'error',
-          })
-        }
+        ElMessage({
+          message: '未知错误',
+          grouping: false,
+          type: 'error',
+        })
         return
       }
-      ElMessage({
-        message: '注册成功，请重新登录',
-        grouping: false,
-        type: 'success',
-      })
+      if (response.data.ok == "no") {
+        ElMessage({
+          message: '账号已存在！',
+          grouping: false,
+          type: 'error',
+        })
+        // 延迟刷新页面
+        setTimeout(() => {
+          window.location.reload(); // 刷新当前页面
+        }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
+        return
+      }
+      else {
+        ElMessage({
+          message: '注册成功，请重新登录',
+          grouping: false,
+          type: 'success',
+        })
+      }
       this.$router.push('/signin')
     },
     async sha256(message) {
@@ -123,10 +132,10 @@ export default {
         <!-- 输入内容 -->
         <div class="maininputbox">
           <form @submit.prevent="register">
-             <!-- 输入用户名 -->
-             <div class="subBox">
+            <!-- 输入用户名 -->
+            <div class="subBox">
               <label for="account_name" class="inputText" left=10.3vw;>用户名：</label>
-              <el-input type="text" id="account_name" v-model="account" pattern="[a-zA-Z0-9]+" required maxlength="10"
+              <el-input type="text" id="account_name" v-model="userName" pattern="[a-zA-Z0-9]+" required maxlength="10"
                 class="inputBox" placeholder="用户名长度不超过10个字符" />
             </div>
             <!-- 输入账号 -->
@@ -139,13 +148,13 @@ export default {
             <div class="subBox">
               <label for="password" class="inputText" left=10.3vw;>密码：</label>
               <el-input type="password" id="password" v-model="password" pattern="[a-zA-Z0-9]+" required maxlength="15"
-                class="inputBox  " placeholder="密码只能由数字和字母组成，且长度不超过15个字符" />
+                class="inputBox" show-password placeholder="密码只能由数字和字母组成，且长度不超过15个字符" />
             </div>
             <!-- 再次输入密码 -->
             <div class="subBox">
               <label for="confirmpassword" class="inputText">确认密码：</label>
               <el-input type="password" id="confirmpassword" v-model="confirmpassword" pattern="[a-zA-Z0-9]+" required
-                maxlength="15" class="inputBox  " show-password placeholder="请再次输入密码" />
+                maxlength="15" class="inputBox" show-password placeholder="请再次输入密码" />
             </div>
             <!-- 密保问题 -->
             <div class="subBox">
@@ -157,7 +166,7 @@ export default {
             <div class="subBox">
               <label for="securityAns" class="inputText">密保答案：</label>
               <el-input type="text" id="securityAns" v-model="securityAns" pattern="[\u4e00-\u9fa5\d\s\p{P}]+" required
-                maxlength="10" class="inputBox  " placeholder="密保答案只能包含中文、字母、数字和标点符号，且长度不超过10个字符" />
+                maxlength="10" class="inputBox" placeholder="密保答案只能包含中文、字母、数字和标点符号，且长度不超过10个字符" />
             </div>
             <div>
               <el-text tag="i" class="labeltext">Please remember your password and security！</el-text>

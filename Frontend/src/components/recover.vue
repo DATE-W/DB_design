@@ -21,7 +21,7 @@
             <div>
               <!-- 密保问题 -->
               <label for="securityAns" class="inputtext" style="left: -13vw;">密保问题：&nbsp;&nbsp;&nbsp;</label>
-              <p>{{ securityQ }}</p>
+              <p>{{ $route.query.secQ }}</p>
               <!-- 密保答案 -->
               <label for="securityAns" class="inputtext" style="left: -13vw;">密保答案：&nbsp;&nbsp;&nbsp;</label>
               <el-input type="text" id="securityAns" v-model="securityAns" required class="inputbox" />
@@ -55,36 +55,124 @@
 
 
 <script>
+import axios from 'axios';
 import carousel from './signinCarousel.vue';
+import { ElMessage } from 'element-plus';
 export default {
+  name: 'Recover',
   data() {
     return {
-      securityQ: '密保问题', // 替换为实际的密保问题
       securityAns: '',
       newPword: '',
       confirmPword: '',
-      passwordVisible: false
     };
   },
   components: {
     'my-carousel': carousel
   },
   methods: {
-    ShoworHide() {
-      this.passwordVisible = !this.passwordVisible;
-      console.log(passwordVisible);
+    async sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex;
     },
-    recoverPword() {
+    async recoverPword() {
+      if (!this.securityAns) {
+        ElMessage({
+          message: '请输入密保答案',
+          grouping: false,
+          type: 'error',
+        })
+        return
+      }
+      if (!this.newPword) {
+        ElMessage({
+          message: '请输入新密码',
+          grouping: false,
+          type: 'error',
+        })
+        return
+      }
+      if (!this.confirmPword) {
+        ElMessage({
+          message: '请再次输入密码',
+          grouping: false,
+          type: 'error',
+        })
+        return
+      }
       if (this.newPword !== this.confirmPword) {
-        alert('确认密码与新密码不一致');
+        ElMessage({
+          message: '两次密码不一致!',
+          grouping: false,
+          type: 'error',
+        })
         return;
       }
-      // 在这里编写找回密码的逻辑，可以发送请求将密保答案和新密码提交到服务器进行验证和修改
-      console.log('密保答案:', this.securityAns);
-      console.log('新密码:', this.newPword);
-      console.log('确认密码:', this.confirmPword);
+      let response
+      try {
+        response = await axios.post('/api/ForgetPassword/UpdatePassword', {
+          userAccount: String(this.$route.query.account),
+          userSecAns: String(await this.sha256(this.securityAns)),
+          NewPassword: String(await this.sha256(this.newPword))
+        })
+      } catch (err) {
+        console.log(err)
+        ElMessage({
+          message: '未知错误',
+          grouping: false,
+          type: 'error',
+        })
+        return
+      }
+      if (response.data.ok = "yes") {
+        ElMessage({
+          message: '修改密码成功，请重新登录!',
+          grouping: false,
+          type: 'success',
+        })
+        this.$router.push('/signin')
+      }
+      else {
+        if (response.data.value == "WrongAns") {
+          ElMessage({
+            message: '密保答案错误!',
+            grouping: false,
+            type: 'error',
+          })
+        }
+        else if (response.data.value == "updateFailed") {
+          ElMessage({
+            message: '修改失败!',
+            grouping: false,
+            type: 'error',
+          })
+        }
+        else if (response.data.value == "WrongAccount") {
+          ElMessage({
+            message: '账号不存在！',
+            grouping: false,
+            type: 'error',
+          })
+        }
+        else {
+          ElMessage({
+            message: '未知错误',
+            grouping: false,
+            type: 'error',
+          })
+        }
+      }
+      // 延迟刷新页面
+      setTimeout(() => {
+        window.location.reload(); // 刷新当前页面
+      }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
+      return
     }
-  }
+  },
+
 };
 </script>
 
