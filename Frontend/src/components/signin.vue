@@ -150,7 +150,7 @@ export default {
 
         })
     },
-    async LoginConfirm() {
+    async Login() {
       if (!this.account) {
         ElMessage({
           message: '请输入用户名',
@@ -167,9 +167,6 @@ export default {
         })
         return
       }
-    },
-    async Login() {
-      this.LoginConfirm();
       let response
       try {
         response = await axios.post('/api/Login/LoginPassword', {
@@ -199,7 +196,7 @@ export default {
         return
       }
       console.log(await this.sha256(this.password))
-      if (response.data == 'Fail') {
+      if (response.data.value == 'Fail') {
         ElMessage({
           message: '账号或密码错误，请重试!',
           grouping: false,
@@ -211,7 +208,7 @@ export default {
         }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
         return
       }
-      else {
+      else if (response.data.ok == "yes" && response.data.value == "Success") {
         ElMessage({
           message: '登录成功',
           grouping: false,

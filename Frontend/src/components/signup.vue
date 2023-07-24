@@ -17,7 +17,7 @@ export default {
     'my-carousel': carousel
   },
   methods: {
-    registerConfirm() {
+    async register() {
       if (!this.account) {
         ElMessage({
           message: '请输入用户名',
@@ -50,15 +50,6 @@ export default {
         })
         return
       }
-      // 在这里编写注册逻辑，可以发送请求将账号、密码、密保问题和密保答案提交到服务器
-      console.log('账号:', this.account);
-      console.log('密码:', this.password);
-      console.log('密保问题:', this.securityQ);
-      console.log('密保答案:', this.securityAns);
-
-    },
-    async register() {
-      this.registerConfirm();
       let response
       try {
         response = await axios.post('/api/Register/normalRegister', {
