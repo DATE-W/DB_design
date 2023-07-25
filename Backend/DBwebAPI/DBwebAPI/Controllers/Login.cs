@@ -43,7 +43,7 @@ namespace DBwebAPI.Controllers
                     SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                     //进行用户查询
                     List<Usr> tempUsr = new List<Usr>();
-                    tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userName == account
+                    tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account
                     && it.userPassword == passwordHash)
                         .ToListAsync();
                     //判断用户是否存在
@@ -55,7 +55,11 @@ namespace DBwebAPI.Controllers
                     else
                     {
                         Console.WriteLine("登录成功");
-                        return Ok(new CustomResponse { ok = "yes", value = "Success" });
+                        // 生成JWT令牌
+                        string token = new createToken().createTokenFun(account, passwordHash);
+                        Console.WriteLine(token);
+                        // 返回登录成功及JWT令牌
+                        return Ok(new CustomResponse { ok = "yes", value = token });
                     }
                 }
                 catch (Exception)
