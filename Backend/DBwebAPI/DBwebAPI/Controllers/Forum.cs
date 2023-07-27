@@ -38,10 +38,13 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
+                string shit = tokenS.SignatureAlgorithm;
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
-                string password = tokenS.Claims.FirstOrDefault(claim => claim.Type == "password").Value;
+                // string password = tokenS.Claims.FirstOrDefault(claim => claim.Type == "password").Value;
+                string authority = tokenS.Claims?.FirstOrDefault(claim => claim.Type == "authority").Value;
                 // 返回从令牌获取的账户和密码。
-                Console.WriteLine("account= " + account + "   Password=" + password);
+                // Console.WriteLine("account= " + account + "   Password=" + password);
+                Console.WriteLine("account= " + account + "   Password=" + authority);
                 return Ok(new { ok = "yes" });
             }
             catch (Exception ex)

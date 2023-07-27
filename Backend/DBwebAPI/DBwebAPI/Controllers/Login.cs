@@ -31,6 +31,7 @@ namespace DBwebAPI.Controllers
 
             string account = json.Account;
             string passwordHash = json.Password;
+            string authority = "Normal";
             Console.WriteLine("account=" + account);
             Console.WriteLine("passwordHash= " + passwordHash);
             //string securityQ = jsonParams["securityQ"];
@@ -56,10 +57,20 @@ namespace DBwebAPI.Controllers
                     {
                         Console.WriteLine("登录成功");
                         // 生成JWT令牌
-                        string token = new createToken().createTokenFun(account, passwordHash);
-                        Console.WriteLine(token);
-                        // 返回登录成功及JWT令牌
-                        return Ok(new CustomResponse { ok = "yes", value = token });
+                        // string token = new createToken().createTokenFun(account, passwordHash, authority);
+                        string token;
+                        try
+                        {
+                            token = new CreateToken().createTokenFun(account, authority);
+                            Console.WriteLine(token);
+                            // 返回登录成功及JWT令牌
+                            return Ok(new CustomResponse { ok = "yes", value = token });
+                        }
+                        catch(Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" });
+                        }
                     }
                 }
                 catch (Exception)
