@@ -48,6 +48,11 @@ namespace DBwebAPI
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secretKey);
+            bool valid = tokenHandler.CanReadToken(token);
+            if(!valid)
+            {
+                throw (new Exception("错误的token格式"));
+            }
             var tokenS = tokenHandler.ReadJwtToken(token);
             string alg = tokenS.Header.Alg;//读取出算法
             IList<string> aud = tokenS.Payload.Aud;
@@ -60,6 +65,7 @@ namespace DBwebAPI
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = true, // 验证签发者
                 ValidateAudience = true, // 验证受众
+                ValidateLifetime = true,
                 ValidAlgorithms = new[] {alg},
                 ValidAudiences = aud,
                 ValidIssuer = iss,

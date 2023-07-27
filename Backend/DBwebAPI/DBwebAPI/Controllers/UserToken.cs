@@ -60,13 +60,22 @@ namespace DBwebAPI.Controllers
             //string alg = tokenS.Header.Alg;//∂¡»°≥ˆÀ„∑®
             //Console.WriteLine(alg);
             var valid = new ValidateToken();
-            if (valid.ValidateJwtToken(token))
+            try
             {
-                return Ok(new { ok = "yes" });
+                bool pass = valid.ValidateJwtToken(token);
+                if(pass)
+                {
+                    return Ok(new { ok = "yes" });
+                }
+                else
+                {
+                    return Ok(new { ok = "no" });
+                }
             }
-            else
+            catch(Exception ex)
             {
-                return Ok(new { ok = "no" });
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
     }
