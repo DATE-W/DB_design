@@ -24,6 +24,7 @@ namespace DBwebAPI.Models
     }
     public class Posts
     {
+        [SugarColumn(IsPrimaryKey = true)]
         public int post_id { get; set; }
         public DateTime publishDateTime { get; set; }
         public string contains { get; set; }
@@ -35,11 +36,13 @@ namespace DBwebAPI.Models
     }
     public class PublishPost
     {
+        [SugarColumn(IsPrimaryKey = true)]
         public int post_id { get; set; }
         public int user_id { get; set; }
     }
     public class Tag
     {
+        [SugarColumn(IsPrimaryKey = true)]
         public int post_id { get; set; }
         public string tagName { get; set; }
     }

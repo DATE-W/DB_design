@@ -11,6 +11,7 @@ using static DBwebAPI.Controllers.LoginController;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
+using static DBwebAPI.Controllers.ForumController;
 
 namespace DBwebAPI.Controllers
 {
@@ -23,6 +24,27 @@ namespace DBwebAPI.Controllers
             public string title { get; set; }
             public string contains { get; set; }
             public string[] tags { get; set; }
+        }
+        public class GetPostInfo
+        {
+            public int page { get; set; }
+            public int count { get; set; }
+            public string tag { get; set; }
+        }
+        public class PostInfoJson
+        {
+            public int post_id { get; set; }
+            public string title { get; set; }
+        }
+        public class PostsJson
+        {
+            public string ok { get; set; }
+            public PostInfoJson[] postInfoJsons { get; set; }
+        }
+        public class PagesJson
+        {
+            public int page { get; set; }
+            public int count { get; set; }
         }
         [HttpPost]
         public async Task<IActionResult> NewPost([FromBody] NewPostJson json)
@@ -61,12 +83,12 @@ namespace DBwebAPI.Controllers
                 }
                 Console.WriteLine("用户信息正确");
                 //获取新的Post_id
-                int post_id = sqlORM.Queryable<Posts>().Max(it => it.post_id) + 1; 
+                int post_id = sqlORM.Queryable<Posts>().Max(it => it.post_id) + 1;
                 //解析json文件
                 String title = json.title;
                 String contains = json.contains;
                 string[] tags = json.tags;
-                
+
                 //新建post
                 Posts post = new Posts
                 {
@@ -93,11 +115,11 @@ namespace DBwebAPI.Controllers
                         post_id = post_id,
                         tagName = tagstr
                     };
+                    await sqlORM.Insertable(tag).ExecuteCommandAsync();
                 }
                 int count1 = await sqlORM.Insertable(post).ExecuteCommandAsync();
                 int count2 = await sqlORM.Insertable(publishPost).ExecuteCommandAsync();
-                //int count3 = await sqlORM.Insertable(publishPost).ExecuteCommandAsync();
-                if (count1 == 1 && count2==1)
+                if (count1 == 1 && count2 == 1)
                 {
                     Console.WriteLine("帖子发布成功");
                     Console.WriteLine("post_id= " + post.post_id);
@@ -111,9 +133,9 @@ namespace DBwebAPI.Controllers
                 }
                 else
                 {
-                    if(count1==0)
+                    if (count1 == 0)
                         Console.WriteLine("帖子发布失败");
-                    else if(count2==0)
+                    else if (count2 == 0)
                         Console.WriteLine("publishPost发布失败");
                     //else if (count3 == 0)
                     //    Console.WriteLine("Tag发布失败");
@@ -146,6 +168,76 @@ namespace DBwebAPI.Controllers
             {
                 Console.WriteLine("An error occurred while retrieving the total count of posts：" + ex.Message);
                 return BadRequest(new { error = "An error occurred while retrieving the total count of posts." });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPostbyOrder([FromBody] GetPostInfo json)
+        {
+            try
+            {
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                ORACLEConnectTry.getConn();
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                Console.WriteLine("Get GetPostbyPages");
+                int count = json.count;
+                int page = json.page;
+                string tag = json.tag;
+                int startIndex = (page - 1) * count;
+                int endIndex = startIndex + count;
+
+                Console.WriteLine("page: " + page);
+                Console.WriteLine("count: " + count);
+                List<Posts> allPosts = new List<Posts>();
+                List<Posts> filteredPosts = new List<Posts>();
+                List<Posts> posts = new List<Posts>();
+                List<PostInfoJson> postInfoJsons = new List<PostInfoJson>();
+                if (!tag.Equals("ALL"))
+                {
+                    Console.WriteLine("TAG");
+                    List<Tag> allTags = await sqlORM.Queryable<Tag>().Where(it => true).ToListAsync();
+                    foreach(Tag t in allTags) {
+                        Console.WriteLine("Post_id: " + t.post_id + "   Tag: " + t.tagName);
+                    }
+                    List<int> matchingPostIds = allTags.Where(t => t.tagName.Equals(tag)).Select(t => t.post_id).ToList();
+                    filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id))
+                            .OrderByDescending(post => post.publishDateTime).ToListAsync();
+                    IEnumerable<Posts> postsForPage = filteredPosts.Skip(startIndex).Take(count);
+                    postInfoJsons = postsForPage.Select(post => new PostInfoJson
+                    {
+                        post_id = post.post_id,
+                        title = post.contains
+                    }).ToList();
+                }
+                else
+                {
+                    allPosts = await sqlORM.Queryable<Posts>().Where(it => true).OrderByDescending(post => post.publishDateTime).ToListAsync();
+                    // Retrieve the posts for the current page
+                    IEnumerable<Posts> postsForPage = allPosts.Skip(startIndex).Take(count);
+                    // Map the posts to the desired PostInfoJson format
+                    postInfoJsons = postsForPage.Select(post => new PostInfoJson
+                    {
+                        post_id = post.post_id,
+                        title = post.contains
+                    }).ToList();
+                }
+                PostsJson response = new PostsJson
+                {
+                    ok = "yes",
+                    postInfoJsons = postInfoJsons.ToArray()
+                };
+                Console.WriteLine("success");
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("errorResponse: " + ex.Message);
+                PostsJson errorResponse = new PostsJson
+                {
+                    ok = "no",
+                    postInfoJsons = new PostInfoJson[0]
+                };
+                return Ok(errorResponse);
             }
         }
     }
