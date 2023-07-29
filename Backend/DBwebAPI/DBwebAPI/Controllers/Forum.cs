@@ -22,7 +22,7 @@ namespace DBwebAPI.Controllers
         {
             public string title { get; set; }
             public string contains { get; set; }
-            //public string[] tags { get; set; }
+            public string[] tags { get; set; }
         }
         [HttpPost]
         public async Task<IActionResult> NewPost([FromBody] NewPostJson json)
@@ -35,14 +35,12 @@ namespace DBwebAPI.Controllers
                 Console.WriteLine("Get NewPost");
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                Console.WriteLine("0");
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
                     Console.WriteLine("未提供有效的JWT");
                     return BadRequest(new { ok = "未提供有效的JWT" });
                 }
-                Console.WriteLine("1");
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
                 // 验证并解析JWT令牌
@@ -51,12 +49,10 @@ namespace DBwebAPI.Controllers
                 // 获取JWT令牌中的claims信息
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 string password = tokenS.Claims.FirstOrDefault(claim => claim.Type == "password").Value;
-                Console.WriteLine("2");
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account
                 && it.userPassword == password)
                     .ToListAsync();
-                Console.WriteLine("3");
                 //判断用户是否存在
                 if (tempUsr.Count() == 0)
                 {
@@ -69,9 +65,8 @@ namespace DBwebAPI.Controllers
                 //解析json文件
                 String title = json.title;
                 String contains = json.contains;
-
-                Console.WriteLine("4");
-                //List<string> ListTags = new List<string>(json.tags);
+                string[] tags = json.tags;
+                
                 //新建post
                 Posts post = new Posts
                 {
@@ -83,7 +78,6 @@ namespace DBwebAPI.Controllers
                     disapprovalNum = 0,
                     favouriteNum = 0
                 };
-                Console.WriteLine("5");
                 //新建PublishPost
                 PublishPost publishPost = new PublishPost
                 {
@@ -91,24 +85,15 @@ namespace DBwebAPI.Controllers
                     post_id = post.post_id
                 };
                 //新建tag
-                /*
-                foreach (string tagstr in ListTags)
+                foreach (string tagstr in tags)
                 {
-                    Console.WriteLine("tag:" + tagstr);
-                    //Tag tag = new Tag
-                    //{
-                    //    post_id = post_id,
-                    //    tagName = tagstr
-                    //};
-                }*/
-                Console.WriteLine("post_id= " + post.post_id);
-                Console.WriteLine("publishDateTime= " + post.publishDateTime);
-                Console.WriteLine("contains= " + post.contains);
-                Console.WriteLine("isBanned= " + post.isBanned);
-                Console.WriteLine("approvalNum= " + post.approvalNum);
-                Console.WriteLine("disapprovalNum= " + post.disapprovalNum);
-                Console.WriteLine("favouriteNum= " + post.favouriteNum);
-                Console.WriteLine("6");
+                    Console.WriteLine("tag= " + tagstr);
+                    Tag tag = new Tag
+                    {
+                        post_id = post_id,
+                        tagName = tagstr
+                    };
+                }
                 int count1 = await sqlORM.Insertable(post).ExecuteCommandAsync();
                 int count2 = await sqlORM.Insertable(publishPost).ExecuteCommandAsync();
                 //int count3 = await sqlORM.Insertable(publishPost).ExecuteCommandAsync();
@@ -140,6 +125,27 @@ namespace DBwebAPI.Controllers
                 // 如果在令牌提取过程中出现任何异常，返回一个错误响应。
                 Console.WriteLine("提取令牌时发生错误：" + ex.Message);
                 return BadRequest(new { ok = "提取令牌时发生错误：" + ex.Message });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPostNum()
+        {
+            try
+            {
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                ORACLEConnectTry.getConn();
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                Console.WriteLine("Get GetPostNum");
+                // Get the total count of posts from the database using SqlSugar's Queryable.Count method.
+                int totalCount = await sqlORM.Queryable<Posts>().CountAsync();
+                Console.WriteLine("PostsNum：" + totalCount);
+                // Return the total count as a JSON response.
+                return Ok(new { totalPostsCount = totalCount });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred while retrieving the total count of posts：" + ex.Message);
+                return BadRequest(new { error = "An error occurred while retrieving the total count of posts." });
             }
         }
     }

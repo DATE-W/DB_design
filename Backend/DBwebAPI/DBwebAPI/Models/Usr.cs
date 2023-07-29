@@ -5,7 +5,7 @@ using System.Data;
 using System.Security.Policy;
 
 namespace DBwebAPI.Models
-{ 
+{
     public class Usr
     {
         [SugarColumn(IsPrimaryKey = true)]
@@ -24,23 +24,23 @@ namespace DBwebAPI.Models
     }
     public class Posts
     {
-        public int post_id;
-        public DateTime publishDateTime;
-        public string contains;
-        public int isBanned;
+        public int post_id { get; set; }
+        public DateTime publishDateTime { get; set; }
+        public string contains { get; set; }
+        public int isBanned { get; set; }
         //public byte[] pictureBox;
-        public int? approvalNum;
-        public int? disapprovalNum;
-        public int? favouriteNum;
+        public int? approvalNum { get; set; }
+        public int? disapprovalNum { get; set; }
+        public int? favouriteNum { get; set; }
     }
     public class PublishPost
     {
-        public int post_id;
-        public int user_id;
+        public int post_id { get; set; }
+        public int user_id { get; set; }
     }
     public class Tag
     {
-        public int post_id;
-        public string tagName;
+        public int post_id { get; set; }
+        public string tagName { get; set; }
     }
 }
