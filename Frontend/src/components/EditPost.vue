@@ -1,11 +1,11 @@
-<!-- 论坛-上传帖子-v1.1 -->
+<!-- 发帖界面v2.0 -->
 <template>
   <div class="common-layout">
     <my-nav></my-nav>
-    <!-- 导航栏 -->
+
     <el-container>
-      <el-aside width="200px"> </el-aside>
-      <!-- 空出左侧，使更美观 -->
+      <el-aside width="400px"></el-aside>
+
       <el-main>
         <div class="icon-text-container">
           <el-icon class="edit-icon">
@@ -13,49 +13,75 @@
           </el-icon>
           <span class="text-content">发布新帖</span>
         </div>
-        <!-- 此div是发布新贴的图标 -->
+
         <div class="title-tag-container">
           <el-input v-model="postTitle" placeholder="请输入帖子标题" size="large" class="edit-title" clearable>
           </el-input>
-          <el-dropdown @command="handleCommand">
-            <span class="el-dropdown-link">
-              选择标签<el-icon class="el-icon--right"><arrow-down /></el-icon>
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="diy">自定义标签</el-dropdown-item>
-                <el-dropdown-item command="西甲">西甲</el-dropdown-item>
-                <el-dropdown-item command="德甲">德甲</el-dropdown-item>
-                <el-dropdown-item command="意甲">意甲</el-dropdown-item>
-                <el-dropdown-item command="法甲">法甲</el-dropdown-item>
-                <el-dropdown-item command="中超">中超</el-dropdown-item>
-              </el-dropdown-menu>
+          <div class="tag-container">
+            <el-icon>
+              <CollectionTag />
+            </el-icon>
+            <el-dropdown @command="handleCommand">
+              <span class="el-dropdown-link">
+                标签<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="diy">自定义标签</el-dropdown-item>
+                  <el-dropdown-item command="西甲">西甲</el-dropdown-item>
+                  <el-dropdown-item command="德甲">德甲</el-dropdown-item>
+                  <el-dropdown-item command="意甲">意甲</el-dropdown-item>
+                  <el-dropdown-item command="法甲">法甲</el-dropdown-item>
+                  <el-dropdown-item command="中超">中超</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+        </div>
+
+        <!-- Show selected tags -->
+        <div class="selected-tags-container">
+          <div v-for="(tag, index) in selectedTags" :key="index" class="selected-tag">
+            <template v-if="tag === ''">
+              <el-input v-model="selectedTags[index]" placeholder="请输入自定义标签" @blur="handleCustomTagBlur"
+                class="custom-tag-input" clearable />
             </template>
-          </el-dropdown>
+            <template v-else>
+              {{ tag }} <span @click="removeTag(tag)">x</span>
+            </template>
+          </div>
         </div>
-        <!-- 输入标题和标签 -->
+
+
         <div class="text-container">
-          <el-input v-model="postText" :rows="10" type="textarea" placeholder="请填写内容" />
+          <el-input v-model="postText" :rows="15" type="textarea" placeholder="请填写内容" />
         </div>
-        <!-- 输入帖子内容 -->
-        <div class="pic-container">
+
+        <div class="user-container">
           <el-button type="primary" @click="openFilePicker">上传图片</el-button>
+          <el-button type="text" icon="Delete" class="delete-button" @click="deleteDraft">删除草稿</el-button>
+          <div class="pic-wrapper"></div>
           <div class="selected-pics-container">
             <div v-for="pic in selectedPics" :key="pic.name">
               <img :src="pic" alt="Selected Pic" width="100" height="100">
             </div>
           </div>
         </div>
-        <!-- 上传图片 -->
+
+        <div class="post-button">
+          <el-button type="primary" @click="post_to_forum">点击发帖</el-button>
+        </div>
       </el-main>
-      <el-aside width="200px"> </el-aside>
-      <!-- 空出右侧 -->
+
+      <el-aside width="400px"></el-aside>
     </el-container>
   </div>
 </template>
   
 <script>
 import MyNav from './nav.vue';
+import axios from 'axios';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 export default {
   components: {
@@ -65,12 +91,17 @@ export default {
     return {
       postTitle: '',
       postText: '',
-      selectedTags: [], // 存储已选择的标签
-      selectedPics: []  // 存储已选择的图片
+      //postTime: '',
+      selectedTags: [],
+      selectedPics: []
     };
   },
   methods: {
     openFilePicker() {
+      if (this.selectedPics.length >= 3) {
+        alert('最多只能上传3张图片');
+        return;
+      }
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
@@ -80,28 +111,86 @@ export default {
     },
     handleFileSelect(event) {
       const files = event.target.files;
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+      const remainingSlots = 3 - this.selectedPics.length;
+      const filesToUpload = Array.from(files).slice(0, remainingSlots);
+
+      for (let i = 0; i < filesToUpload.length; i++) {
+        const file = filesToUpload[i];
         const reader = new FileReader();
         reader.onload = (e) => {
           this.selectedPics.push(e.target.result);
         };
         reader.readAsDataURL(file);
       }
-      console.log(this.selectedPics); // 调试输出选择的图片
     },
     handleCommand(command) {
       if (command === 'diy') {
-        this.postTitle = '##' + this.postTitle.trim();
-      } 
-      else {
-        if (!this.selectedTags.includes(command)) {
-          this.selectedTags.push(command);
-          this.postTitle = `#${command}#` + this.postTitle.trim();
+        // Custom tag handling
+        this.selectedTags.push(''); // Add an empty tag to show the input box
+      } else {
+        const tag = `${command}`;
+        if (!this.selectedTags.includes(tag)) {
+          this.selectedTags.push(tag);
         }
       }
+    },
+    async post_to_forum() {
+      const token = localStorage.getItem('token');
+      let response
+      try {
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        response = await axios.post('/api/Forum/NewPost',  {
+          title: String(this.postTitle),
+          contains: String(this.postText),
+          tags: this.selectedTags,
+        }, { headers });
+      } catch (err) {
+        if (err.response.data.result == 'fail') {
+          ElMessage({
+            message: err.response.data.msg,
+            grouping: false,
+            type: 'error',
+          })
+        } else {
+          ElMessage({
+            message: '未知错误',
+            grouping: false,
+            type: 'error',
+          })
+          return
+        }
+        return
+      }
+      console.log(response);
+      if (response.data.ok == 'yes') {
+        ElMessageBox.alert('发帖成功', '提示', {
+          confirmButtonText: '确定',
+          callback: () => {
+            this.$router.push('/forum');
+          }
+        });
+      }
+      else {
+        ElMessage({
+          message: '发帖失败',
+          grouping: false,
+          type: 'error',
+        });
+      }
+    },
+    deleteDraft() {
+      this.postText = '';
+      this.selectedPics = [];
+    },
+    removeTag(tag) {
+      const index = this.selectedTags.indexOf(tag);
+      if (index !== -1) {
+        this.selectedTags.splice(index, 1);
+      }
     }
-  }
+  },
 };
 </script>
   
@@ -143,6 +232,10 @@ export default {
 
 /* 标题标签行 */
 
+.tag-container {
+  margin-top: 20px;
+}
+
 .edit-icon {
   font-size: 24px;
 }
@@ -153,21 +246,39 @@ export default {
   margin-left: 8px;
 }
 
-/* 使“发布帖子”和icon有一定距离 */
+/* 使“发布新帖”和icon有一定距离 */
 
 .edit-title {
   margin-top: 20px;
-  width: 70%;
+  width: 85%;
   margin-right: 20px;
 }
 
 /* 标题的输入框 */
 
 .text-container {
-  width: 80%;
+  width: 100%;
 }
 
 /* 内容的输入框 */
+
+.user-container {
+  margin-top: 10px;
+}
+
+/* 上传图片和删除草稿的按钮行 */
+
+.delete-button {
+  float: right;
+}
+
+/* 使删除草稿按钮在最右侧 */
+
+.pic-wrapper {
+  margin-bottom: 20px;
+}
+
+/* 使按钮和上传的图片间有间隔 */
 
 .selected-pics-container {
   display: flex;
@@ -177,5 +288,32 @@ export default {
 .selected-pics-container>div {
   margin-right: 10px;
   margin-bottom: 10px;
-}</style>
-  
+}
+
+.post-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.selected-tags-container {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.selected-tag {
+  background-color: #e0e0e0;
+  border-radius: 3px;
+  padding: 2px 5px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.selected-tag span {
+  cursor: pointer;
+  margin-left: 5px;
+}
+</style>
