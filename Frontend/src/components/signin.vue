@@ -196,25 +196,35 @@ export default {
         return
       }
       console.log(await this.sha256(this.password))
-      if (response.data.value == 'Fail') {
-        ElMessage({
-          message: '账号或密码错误，请重试!',
-          grouping: false,
-          type: 'error',
-        })
+      if (response.data.ok == 'no') {
+        if (response.data.value == 'Fail') {
+          ElMessage({
+            message: '账号或密码错误，请重试!',
+            grouping: false,
+            type: 'error',
+          })
+        }
+        else if (response.data.value == 'UNKNOWN') {
+          ElMessage({
+            message: '未知错误!',
+            grouping: false,
+            type: 'error',
+          })
+        }
         // 延迟刷新页面
         setTimeout(() => {
           window.location.reload(); // 刷新当前页面
         }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
         return
       }
-      else if (response.data.ok == "yes" && response.data.value == "Success") {
+      else if (response.data.ok == "yes") {
         ElMessage({
           message: '登录成功',
           grouping: false,
           type: 'success',
         })
-        localStorage.setItem('token', response.data.token)
+        localStorage.setItem('token', response.data.value)
+        console.log(response.data.value)
         this.$router.push('/')
       }
 
