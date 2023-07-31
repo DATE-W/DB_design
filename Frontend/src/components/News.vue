@@ -20,31 +20,39 @@
                       <el-button icon="Search" @click="search"></el-button>
                     </template>
                   </el-input>
-                  <!-- 搜索结果渲染 -->
-                  <!-- <ul><li v-for="result in searchResults" :key="result.id">{{ result.name }}</li></ul> -->
                   <img src="../assets/img/recover_logo.png" class="img" style="left: 48%;">
                   <img src="../assets/img/football_logo.png" class="img" style="left: 49%;">
                 </div>
               </el-header>
-              <div class="line" style="left:1%; width: 98%;height: 3px;"></div>
+              <div class="line" style="left:1%; width: 102%;height: 3px;"></div>
               <!-- 新闻导航栏 -->
               <el-main>
+                <!-- <li @click="activeTab = 'home'" :class="{ 'active': activeTab === 'home' }">Home</li> -->
                 <el-menu mode="horizontal" active-text-color="#409eff" @select="handleMenuSelect">
-                  <el-menu-item class="menu" index="1" @click="redirectToMain">首页</el-menu-item>
-                  <el-menu-item class="menu" index="2" @click="redirectToCHINA">中超</el-menu-item>
-                  <el-menu-item class="menu" index="3" @click="redirectToENGLAND">英超</el-menu-item>
-                  <el-menu-item class="menu" index="4" @click="redirectToSpain">西甲</el-menu-item>
-                  <el-menu-item class="menu" index="5" @click="redirectToGermany">德甲</el-menu-item>
-                  <el-menu-item class="menu" index="6" @click="redirectToItaly">意甲</el-menu-item>
-                  <el-menu-item class="menu" index="7" @click="redirectToFrance">法甲</el-menu-item>
+                  <el-menu-item @click="activeTab = 'home'" :class="{ 'active': activeTab === 'home' }"
+                    class="menu">首页</el-menu-item>
+                  <el-menu-item @click="activeTab = 'China'" :class="{ 'active': activeTab === 'China' }"
+                    class="menu">中超</el-menu-item>
+                  <el-menu-item @click="activeTab = 'England'" :class="{ 'active': activeTab === 'England' }"
+                    class="menu">英超</el-menu-item>
+                  <el-menu-item @click="activeTab = 'Spain'" :class="{ 'active': activeTab === 'Spain' }"
+                    class="menu">西甲</el-menu-item>
+                  <el-menu-item @click="activeTab = 'Germany'" :class="{ 'active': activeTab === 'Germany' }"
+                    class="menu">德甲</el-menu-item>
+                  <el-menu-item @click="activeTab = 'Italy'" :class="{ 'active': activeTab === 'Italy' }"
+                    class="menu">意甲</el-menu-item>
+                  <el-menu-item @click="activeTab = 'France'" :class="{ 'active': activeTab === 'France' }"
+                    class="menu">法甲</el-menu-item>
                 </el-menu>
               </el-main>
             </el-container>
           </div>
         </el-header>
 
+        <!-- 下面将根据导航栏选择的界面进行展示 (搜索结果也囊括在内)-->
 
-        <el-container style="top:22vh;position: absolute;">
+        <!-- 首页 -->
+        <el-container style="top:22vh;position: absolute;" v-if="activeTab === 'home'">
           <!-- 左侧部分 -->
           <el-aside width="30vw">
             <!-- 走马灯 -->
@@ -106,7 +114,7 @@
             </div>
 
           </el-aside>
-
+          <!-- 中间和右侧部分 -->
           <el-main width="70vw">
             <div class="common-layout">
               <el-container>
@@ -230,7 +238,9 @@
                     </el-row>
                   </div>
                   <div class="line" style="width: 24.5vw;height: 0.2px;top:-4vh;left:-2.5%;"></div>
-                  <el-icon class="logoex"><Cherry /></el-icon>
+                  <el-icon class="logoex">
+                    <Cherry />
+                  </el-icon>
                   <!-- 法甲新闻 -->
                   <div class="RightNews">
                     <p class="CenterTitle">法甲</p>
@@ -250,6 +260,72 @@
           </el-main>
 
         </el-container>
+        <!-- 中超 -->
+        <el-container style="top:22vh;position: absolute;" v-if="activeTab === 'China'">
+          <div class="containerLeague">
+            <!-- 左侧动态 -->
+            <div class="leftLeague">左侧内容</div>
+            <!-- 右侧球队一览+排行榜+最新新闻 -->
+            <div class="rightLeague" :class="{ 'fixedLeague': isFixed }">
+              <div class="floating-block">悬挂内容</div>
+              <div class="remaining-content">剩余内容</div>
+            </div>
+          </div>
+          
+
+          
+
+        </el-container>
+        <!-- 英超 -->
+        <el-container style="top:22vh;position: absolute;" v-if="activeTab === 'England'">英超</el-container>
+        <!-- 西甲 -->
+        <el-container style="top:22vh;position: absolute;" v-if="activeTab === 'Spain'">西甲</el-container>
+        <!-- 德甲 -->
+        <el-container style="top:22vh;position: absolute;" v-if="activeTab === 'Germany'">德甲</el-container>
+        <!-- 意甲 -->
+        <el-container style="top:22vh;position: absolute;" v-if="activeTab === 'Italy'">意甲</el-container>
+        <!-- 法甲 -->
+        <el-container style="top:22vh;position: absolute;" v-if="activeTab === 'France'">法甲</el-container>
+        <!-- 搜索结果 -->
+        <el-container style="top:22vh;position: absolute;" v-if="activeTab === 'Search'">
+          <el-row>
+            <!-- 搜索新闻结果（位于左侧） -->
+            <el-col :span="18">
+              <div v-for="item in searchNewsResults" :key="item.id" class="itemSearch">
+                <div class="imgWrapper">
+                  <img :src="item.image" alt="Image" class="imgSearch">
+                </div>
+                <div class="TextWrapper">
+                  <div class="titleSearch">{{ item.title }}</div>
+                  <div class="descriptionSearch">{{ item.description }}</div>
+                </div>
+              </div>
+              <div class="NoMore">No More ......</div>
+            </el-col>
+            <!-- 搜索视频结果（位于右侧） -->
+            <el-col :span="6">
+              <p class="titleRight" style="font-size: 25px;">相关视频</p>
+              <el-icon class="iconSearch">
+                <VideoPlay />
+              </el-icon>
+              <div class="line" style="width: 22vw;height: 0.2px;top:-10vh;left:-3%;"></div>
+              <div class="imgListSearch">
+                <div v-for="(item, index) in searchVideoResults" :key="index" class="imgItemSearch">
+                  <el-row :gutter="20">
+                    <el-col :span="11">
+                      <img :src="item.image" alt="Image" class="imgVideoSearch">
+                    </el-col>
+                    <el-col :span="8">
+                      <div class="descriptionVideoSearch">{{ item.title }}</div>
+                    </el-col>
+                  </el-row>
+                </div>
+              </div>
+              <div class="NoMore" style="top:-6vh">No More ......</div>
+            </el-col>
+          </el-row>
+        </el-container>
+
       </el-container>
     </div>
   </div>
@@ -274,8 +350,90 @@ export default {
   },
   data() {
     return {
+      activeTab: 'home', // 新闻导航栏默认选中的选项
+
+      isFixed: false,    //用于判断联赛界面的右侧悬浮
+
       searchInput: '',    //搜索框的内容
-      searchResults: [],
+      searchNewsResults: [    //搜索结果
+        {
+          image: carousel1,
+          title: '新闻1的标题 1111',
+          description: '搜索结果1正文可使用按钮触发下拉菜单。\
+                        \设置 split-button 属性来让触发下拉元素呈现为按钮组，左边是功能按钮，右边是触发下拉菜单的按钮，设置为 true 即可。 如果你想要在第三和第四个选项之间添加一个分隔符，你只需要为第四个选项添加一个 divider 的 CSS class。',
+          link: 'https://element-plus.org/'
+        },
+        {
+          image: carousel2,
+          title: '新闻2的标题 1111',
+          description: '搜索结果1正文可使用按钮触发下拉菜单。\
+                        \设置 split-button 属性来让触发下拉元素呈现为按钮组，左边是功能按钮，右边是触发下拉菜单的按钮，设置为 true 即可。 如果你想要在第三和第四个选项之间添加一个分隔符，你只需要为第四个选项添加一个 divider 的 CSS class。',
+          link: 'https://element-plus.org/'
+        },
+        {
+          image: carousel3,
+          title: '新闻3的标题 1111',
+          description: '搜索结果1正文可使用按钮触发下拉菜单。\
+                        \设置 split-button 属性来让触发下拉元素呈现为按钮组，左边是功能按钮，右边是触发下拉菜单的按钮，设置为 true 即可。 如果你想要在第三和第四个选项之间添加一个分隔符，你只需要为第四个选项添加一个 divider 的 CSS class。',
+          link: 'https://element-plus.org/'
+        },
+        {
+          image: carousel4,
+          title: '新闻4的标题 1111',
+          description: '搜索结果1正文可使用按钮触发下拉菜单。\
+                        \设置 split-button 属性来让触发下拉元素呈现为按钮组，左边是功能按钮，右边是触发下拉菜单的按钮，设置为 true 即可。 如果你想要在第三和第四个选项之间添加一个分隔符，你只需要为第四个选项添加一个 divider 的 CSS class。',
+          link: 'https://element-plus.org/'
+        },
+      ],
+      searchVideoResults: [    //搜索结果
+        {
+          image: carousel1,
+          title: '新闻1的标题 1111sffsfsfsffsfasfasf',
+          link: 'https://element-plus.org/'
+        },
+        {
+          image: carousel2,
+          title: '新闻2的标题 1111dgdgsgsgsg',
+          link: 'https://element-plus.org/'
+        },
+        {
+          image: carousel3,
+          title: '新闻3的标题 1111bbdsgsgsgsgsg',
+          link: 'https://element-plus.org/'
+        },
+        {
+          image: carousel1,
+          title: '新闻4的标题 1111sgszgsgszg',
+          link: 'https://element-plus.org/'
+        },
+        {
+          image: carousel2,
+          title: '新闻5的标题 1111sgzsgg',
+          link: 'https://element-plus.org/'
+        },
+        {
+          image: carousel3,
+          title: '新闻6的标题 1111dxhdfhdfhdhdhd',
+          link: 'https://element-plus.org/'
+        },
+      ],
+
+      // // 以下为选中联赛后显示页面所需数据
+      // carouselLeagueItems:[   //联赛页面走马灯
+      //   { image: carousel1, description: '图片1的描述', link: 'https://element-plus.org/' },
+      //   { image: carousel2, description: '图片2的描述', link: 'https://element-plus.org/' },
+      //   { image: carousel3, description: '图片3的描述', link: 'https://element-plus.org/' }
+      // ],
+      // videoLeagueItems:[
+      //   { image: carousel1, description: '图片1的描述', link: 'https://element-plus.org/' },
+      //   { image: carousel2, description: '图片2的描述', link: 'https://element-plus.org/' },
+      //   { image: carousel3, description: '图片3的描述', link: 'https://element-plus.org/' },
+      //   { image: carousel4, description: '图片4的描述', link: 'https://element-plus.org/' },
+      //   { image: carousel2, description: '图片5的描述', link: 'https://element-plus.org/' },
+      //   { image: carousel3, description: '图片6的描述', link: 'https://element-plus.org/' }
+      // ],
+
+      //以下为主页面所需数据
       carouselRecommendItems: [    //推荐模块走马灯显示图片及内容
         { image: carousel1, description: '图片1的描述', link: 'https://element-plus.org/' },
         { image: carousel2, description: '图片2的描述', link: 'https://element-plus.org/' },
@@ -323,9 +481,9 @@ export default {
         { image: carousel4, description: 'wyh线虫记——晖神carrry带你飞', link: 'https://element-plus.org/' },
       ],
       ChinaItems: [   //中超模块展示内容
-        { image: carousel1, description: '中超新闻111111111111111', link: 'https://element-plus.org/' },
+        { image: carousel1, description: '为何wh的小丑属性愈发变强', link: 'https://element-plus.org/' },
         { image: carousel2, description: 'wh是否能在yh的阴影下认识新的女生', link: 'https://element-plus.org/' },
-        { image: carousel3, description: '中超新闻333333333', link: 'https://element-plus.org/' },
+        { image: carousel3, description: '论wh的腹肌什么时候会变为八块', link: 'https://element-plus.org/' },
         { image: carousel4, description: 'wh这么喜欢科比是因为没有螺旋桨吗', link: 'https://element-plus.org/' },
       ],
       ENGLANDItems: [   //英超模块展示内容
@@ -360,45 +518,34 @@ export default {
       ],
     }
   },
+  mounted() {
+    window.addEventListener('scroll', this.handleScroll); // 监听滚动事件
+  },
+  beforeUnmount() {
+    window.removeEventListener('scroll', this.handleScroll); // 取消监听滚动事件
+  },
   methods: {
     search() {
+      this.activeTab = 'Search';
       // 执行搜索逻辑，这里假设是一个简单的前端搜索
       // 可以根据需求修改为发送异步请求到服务器进行搜索
       this.searchResults = this.performSearch(this.searchInput);
+
     },
     performSearch(keyword) {
       // 在这里执行实际的搜索逻辑，返回搜索结果的数组
       // 这里只是一个示例，实际应用中可以根据需求调用接口或者处理数据
-      const results = [
-        { id: 1, name: '结果1' },
-        { id: 2, name: '结果2' },
-        { id: 3, name: '结果3' }
-      ];
+      const results = this.searchResults;
       // 这里假设搜索结果是根据关键字匹配过滤的
-      return results.filter(result => result.name.includes(keyword));
+      return results.filter(result => result.title.includes(keyword));
     },
-    redirectToMain() {
-      ;
+    handleScroll() {
+      const scrollThreshold = 200;
+      const scrollTop = window.scrollY;
+
+      this.isFixed = scrollTop > scrollThreshold;
     },
-    redirectToCHINA() {
-      ;
-    },
-    redirectToENGLAND() {
-      ;
-    },
-    redirectToFrance() {
-      ;
-    },
-    redirectToItaly() {
-      ;
-    },
-    redirectToGermany() {
-      ;
-    },
-    redirectToSpain() {
-      ;
-    },
-    //新建页面 打开传入的链接
+    //打开链接的页面
     openLink(url) {
       window.open(url, '_blank');
     },
@@ -420,6 +567,7 @@ export default {
   width: 85%;
   height: auto;
   left: 5%;
+  /* background-color: rgb(239, 239, 239); */
 }
 
 .line {
@@ -489,13 +637,6 @@ export default {
   position: relative;
 }
 
-.imgTEST {
-  left: 8%;
-  width: 80%;
-  height: 60%;
-  position: relative;
-}
-
 .imgANO {
   left: 0%;
   width: 100%;
@@ -503,6 +644,7 @@ export default {
   position: relative;
 }
 
+/* <--以下是首页样式--> */
 /* 左上走马灯 */
 .Carousel {
   left: 8%;
@@ -770,10 +912,181 @@ export default {
   top: 3vh;
 }
 
-.logoex{
+.logoex {
   position: relative;
   top: -2.5vh;
-  left:40%;
+  left: 40%;
   font-size: 33px;
 }
+
+/* <--首页样式结束--> */
+
+
+/* <--<--以下是搜索结果样式-->--> */
+/* <--新闻搜索结果--> */
+.itemSearch {
+  display: flex;
+  /* align-items: center; */
+  margin-bottom: 10px;
+  position: relative;
+  left: 10%;
+  top: -5vh;
+  margin-top: 5%;
+}
+
+.imgWrapper {
+  margin-right: 10px;
+  width: 60%;
+}
+
+.TextWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 图片样式 */
+.imgSearch {
+  top: 0vh;
+  left: 0%;
+  width: 120%;
+  height: 120%;
+  position: relative;
+}
+
+/* 标题样式 */
+.titleSearch {
+  font-weight: bold;
+  width: 50%;
+  /* 设置容器的宽度 */
+  overflow: hidden;
+  /* 隐藏超出容器宽度的文本 */
+  text-overflow: ellipsis;
+  /* 使用省略号表示超出的文本 */
+  white-space: nowrap;
+  /* white-space: nowrap;  不换行 */
+  margin-top: 5px;
+  position: relative;
+  left: 8%;
+}
+
+/* 描述样式 */
+.descriptionSearch {
+  width: 60%;
+  /* 设置容器的宽度 */
+  max-height: 120px;
+  /* 设置最大高度 */
+  overflow: hidden;
+  /* 隐藏超出容器宽度的文本 */
+  text-overflow: ellipsis;
+  /* 使用省略号表示超出的文本 */
+  margin-top: 5px;
+  position: relative;
+  left: 8%;
+}
+
+/* <--新闻搜索结果结束--> */
+
+/* <--视频搜索结果--> */
+.iconSearch {
+  font-size: 23px;
+  position: relative;
+  top: -10vh;
+  left: 90%;
+}
+
+.imgVideoSearch {
+  top: 0vh;
+  left: -2%;
+  width: 90%;
+  height: 90%;
+  position: relative;
+}
+
+.descriptionVideoSearch {
+  flex-shrink: 0;
+  color: #000;
+  font-family: Mogra;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  position: relative;
+  left: -20%;
+  top: 0vh;
+  width: 180%;
+  /* 设置容器的宽度 */
+  max-height: 80%;
+  /* 设置最大高度 */
+  overflow: hidden;
+  /* 隐藏超出容器宽度的文本 */
+  text-overflow: ellipsis;
+  /* 使用省略号表示超出的文本 */
+}
+
+/* <--视频搜索结果结束--> */
+.NoMore {
+  color: #000;
+  text-align: center;
+  font-family: STSong;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  position: relative;
+  top: 5%
+}
+
+.imgListSearch {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: -11vh;
+  left: -0.6vh;
+}
+
+.imgItemSearch {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  position: relative;
+  top: 3vh;
+}
+
+/* <--<--搜索结果样式结束-->--> */
+/* <--<--以下是联赛样式-->--> */
+.containerLeague {
+  display: flex;
+}
+
+.leftLeague {
+  flex: 1;
+  background-color: lightblue;
+  height:100vh;
+}
+
+.rightLeague {
+  flex: 1;
+  background-color: lightyellow;
+  position: relative; /* 设置为相对定位，以便内部元素使用绝对定位 */
+  height:30vh;
+}
+
+.fixedLeague {
+  position: fixed; /* 设置为固定定位 */
+  top: 0; /* 固定在页面顶部 */
+  right: 0; /* 固定在页面右侧 */
+}
+
+.floating-block {
+  position: absolute; /* 设置为绝对定位 */
+  top: 50px; /* 设置悬浮块的初始位置 */
+  right: 10px; /* 设置悬浮块的初始位置 */
+  background-color: lightgreen;
+}
+
+.remaining-content {
+  margin-top: 100px; /* 为了避免悬浮块覆盖内容，设置内容的上边距 */
+  height:20vh;
+}
+/* <--<--联赛样式结束-->--> */
 </style>
