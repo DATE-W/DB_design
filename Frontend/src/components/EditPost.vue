@@ -1,4 +1,4 @@
-<!-- 发帖界面v2.0 -->
+<!-- 发帖界面v2.1 -->
 <template>
   <div class="common-layout">
     <my-nav></my-nav>
@@ -43,16 +43,14 @@
         <div class="selected-tags-container">
           <div v-for="(tag, index) in selectedTags" :key="index" class="selected-tag">
             <template v-if="tag === ''">
-              <el-input v-model="selectedTags[index]" placeholder="请输入自定义标签" @blur="handleCustomTagBlur"
-                class="custom-tag-input" clearable />
+              <el-input v-model="diyTagInput" placeholder="请输入自定义标签" @keyup.enter="addDIYTag(index)" clearable>
+              </el-input>
             </template>
             <template v-else>
               {{ tag }} <span @click="removeTag(tag)">x</span>
             </template>
           </div>
         </div>
-
-
         <div class="text-container">
           <el-input v-model="postText" :rows="15" type="textarea" placeholder="请填写内容" />
         </div>
@@ -93,7 +91,8 @@ export default {
       postText: '',
       //postTime: '',
       selectedTags: [],
-      selectedPics: []
+      selectedPics: [],
+      diyTagInput: '', //用于存储自定义标签的输入内容
     };
   },
   methods: {
@@ -123,6 +122,15 @@ export default {
         reader.readAsDataURL(file);
       }
     },
+    //以上为选择图片
+    addDIYTag(index) {
+      const tag = this.diyTagInput.trim(); // 去除输入内容中的首尾空格
+      // 检查输入内容不为空，并且标签在selectedTags中不存在
+      if (tag !== '' && !this.selectedTags.includes(tag)) {
+        this.selectedTags.splice(index, 1, tag); // 将空标签替换为自定义标签
+        this.diyTagInput = ''; // 添加标签后清空输入框
+      }
+    },
     handleCommand(command) {
       if (command === 'diy') {
         // Custom tag handling
@@ -135,6 +143,7 @@ export default {
       }
     },
     async post_to_forum() {
+      console.log(this.selectedTags);
       const token = localStorage.getItem('token');
       let response
       try {
