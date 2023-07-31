@@ -1,4 +1,4 @@
-<!-- 论坛界面v1.4 -->
+<!-- 论坛界面v2.0 -->
 <template>
     <div class="common-layout">
         <el-container class="bkBox">
@@ -32,7 +32,7 @@
                     </div>
                 </el-aside>
                 <!-- 左侧选择话题 -->
-                <el-main>
+                <el-main class="main-container">
                     <!-- <div class="search-container">
                         <el-icon class="search-icon">
                             <Search />
@@ -40,6 +40,14 @@
                         <el-input class="search-input" v-model="searchKeyword" placeholder="请输入关键词"
                             @keyup.enter.native="handleSearch"></el-input>
                     </div> -->
+                    <div class="post-list">
+                        <template v-for="(title, index) in post_title">
+                            <hr v-if="index == 0" class="separator">
+                            <div :class="['post-title', 'normal-post-title']" @click="goToDetail(post_id[index])">{{
+                                title }}</div>
+                            <hr v-if="index <= post_title.length - 1" :key="`separator-${index}`" class="separator">
+                        </template>
+                    </div>
                     <div class="page-container" v-if="showPage">
                         <el-pagination @current-change="handlePageChange" :current-page="currentPage" :page-size="pageSize"
                             layout="prev, pager, next, jumper" :total="totalPosts"></el-pagination>
@@ -69,6 +77,7 @@ export default {
             searchKeyword: '', // 保存搜索关键词
             isButtonClicked: false,
             buttons: [
+                { type: 'ALL', text: '全部', color: 'ALL', description: '浏览所有联赛相关' },
                 { type: 'LL', text: '西甲', color: 'LL', description: '西甲联赛是西班牙的顶级足球联赛' },
                 { type: 'PL', text: '英超', color: 'PL', description: '英超联赛是英格兰的顶级足球联赛' },
                 { type: 'BL', text: '德甲', color: 'BL', description: '德甲联赛是德国的顶级足球联赛' },
@@ -80,6 +89,9 @@ export default {
             pageSize: 4,  //每页4项
             totalPosts: 0,
             showPage: false, //初始为false 向后端请求完数据后变为true 更换tag页面暂时变为false
+            post_id: [],  //存储返回的帖子id
+            post_title: [],  //存储返回的帖子标题
+            currentTag: 'ALL',  //向后端传递当前页面的帖子类型 初始为全部 不受tag影响
         };
     },
     computed: {
@@ -95,7 +107,8 @@ export default {
     },
     mounted() {
         this.JudgeAccount();
-        this.getTotalPosts();
+        this.getPosts(1, this.pageSize, this.currentTag);
+        this.getPostNum();
     },
     methods: {
         selectTopic(button) {
@@ -103,6 +116,8 @@ export default {
             this.selectedTopic = button.text;
             this.selectedColor = button.color;
             this.selectedDescription = button.description;
+            this.currentTag = button.text;
+            this.getPosts(1, this.pageSize, this.currentTag);
         },
         //选择对应的标签 同时修改论坛上方的展示内容
         redirectToEditPost() {
@@ -114,11 +129,14 @@ export default {
         },
         handlePageChange(currentPage) {
             this.currentPage = currentPage;
-            this.loadData();
+            this.getPosts(this.currentPage, this.pageSize, this.currentTag);
         },
-        loadData() {
-            // 根据当前页码加载对应页的数据
-            // 实现加载数据的逻辑
+        goToDetail(postId) {
+            console.log(postId);
+            this.$router.push({
+                path: '/detail',
+                query: { clickedPostID: postId }
+            });
         },
         /* handleSearch() {
             // 处理搜索逻辑，可以根据searchKeyword进行搜索操作
@@ -159,7 +177,7 @@ export default {
                 //有账号且合法  把按钮调成按此发帖
             }
         },
-        async getTotalPosts() {
+        async getPostNum() {
             let response
             try {
                 response = await axios({
@@ -173,7 +191,7 @@ export default {
                     type: 'error',
                 })
             }
-            console.log(response.data.totalPostsCount);
+            //console.log(response.data.totalPostsCount);
             if (response.data.totalPostsCount) {
                 this.totalPosts = response.data.totalPostsCount; // 将帖子的总数保存到data中的totalItems中
                 this.showPage = true;
@@ -185,6 +203,40 @@ export default {
                 });
             }
         },
+        async getPosts(pageNumber, pageSize, currentTag) {
+            let response
+            try {
+                response = await axios.post('/api/Forum/GetPostbyOrder', {
+                    page: pageNumber,
+                    count: pageSize,
+                    tag: String(currentTag),
+                }, {})
+            } catch (err) {
+                ElMessage({
+                    message: '获取帖子失败',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+            //console.log('response:', response);
+            this.post_id = [];
+            this.post_title = [];
+            if (response.data.postInfoJsons && Array.isArray(response.data.postInfoJsons)) {
+                response.data.postInfoJsons.forEach((postInfo) => {
+                    this.post_id.push(postInfo.post_id);
+                    this.post_title.push(postInfo.title);
+                });
+            }
+            else {
+                ElMessage({
+                    message: '后端返回的帖子数据格式错误',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+            //console.log('得到的帖子id为:', this.post_id);
+            //console.log('得到的帖子title为:', this.post_title);
+        }
     },
 };
 </script>
@@ -313,8 +365,46 @@ export default {
 
 /* 将换页放在最底部的中央 */
 
+.main-container {
+    display: flex;
+    flex-direction: column;
+}
 
-/*每个联赛的横幅颜色*/
+.post-list {
+    margin-top: 20px;
+    margin-bottom: 25px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.post-title {
+    font-size: 1.3rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    height: 25%;
+    align-items: left;
+    transition: background-color 0.2s ease;
+}
+
+.normal-post-title {
+    background-color: #fff;
+    /* 默认状态的背景颜色 */
+}
+
+.post-title:hover {
+    background-color: #F5F7FA;
+    /* 鼠标悬浮状态的背景颜色 */
+}
+
+.separator {
+    width: 100%;
+    border: 0.5px solid #ccc;
+    margin: 10px auto;
+}
+
+/*每个联赛的按钮颜色*/
 .LL {
     background: #a1c4fd 0%;
 }
@@ -337,5 +427,9 @@ export default {
 
 .CSL {
     background: #f78ca0 0%;
+}
+
+.ALL {
+    background: #a1c4fd 100%;
 }
 </style>
