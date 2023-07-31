@@ -1,52 +1,21 @@
 <!-- 2154314_郑楷_赛事界面 2023.07.23 21:00 v1.0.0
  v1.0.0 页面画了一半 
- v1.1.0 画出了左侧的联赛选择器（未添加逻辑），布局了中部的比赛列表（已添加跳转逻辑），增加了各大联赛LOGO素材图，日期选择器和广告区待实现-->
-
+ v1.1.0 画出了左侧的联赛选择器（未添加逻辑），布局了中部的比赛列表（已添加跳转逻辑），增加了各大联赛LOGO素材图，日期选择器和广告区待实现
+ v1.2.0 优化了联赛选择器组件的代码、视觉效果、功能、数据通路-->
  <template>
   <my-nav></my-nav>
 
   <!-- 左侧联赛选择器 -->
-  <border-box class="borderBoxLeft" style="left:5rem" >
-
-    <border-box class="borderBoxLeague" style="top:1rem" @click="leagueChoice(0)" @dblclick="leagueChoice(10)">
-      <p class="textTypoLeague" style="left:2.5rem">全部赛事</p>
-    </border-box>
-
-    <border-box class="borderBoxLeague" style="top:5.8rem" @click="leagueChoice(1)">
-      <img src="../assets/img/pmlogo.png" class="imgLogo" >
-      <p class="textTypoLeague">英超</p>
-    </border-box>
-
-    <border-box class="borderBoxLeague" style="top:10.6rem" @click="leagueChoice(2)">
-      <img src="../assets/img/lllogo.png" class="imgLogo" >
-      <p class="textTypoLeague">西甲</p>
-    </border-box>
-
-    <border-box class="borderBoxLeague" style="top:15.4rem" @click="leagueChoice(3)">
-      <img src="../assets/img/salogo.png" class="imgLogo" >
-      <p class="textTypoLeague">意甲</p>
-    </border-box>
-
-    <border-box class="borderBoxLeague" style="top:20.2rem;" @click="leagueChoice(4)">
-      <img src="../assets/img/bllogo.png" class="imgLogo" style="border-radius: 0rem; " >
-      <p class="textTypoLeague">德甲</p>
-    </border-box>
-
-    <border-box class="borderBoxLeague" style="top:25rem" @click="leagueChoice(5)">
-      <img src="../assets/img/le1logo.png" class="imgLogo" >
-      <p class="textTypoLeague">法甲</p>
-    </border-box>
-
-    <border-box class="borderBoxLeague" style="top:30rem" @click="leagueChoice(6)">
-      <img src="../assets/img/cslogo.png" class="imgLogo" style="left:1.5rem;top:0.2rem">
-      <p class="textTypoLeague">中超</p>
-    </border-box>
-
-    <border-box class="borderBoxLeague" style="top:35rem" @click="leagueChoice(7)">
-      <p class="textTypoLeague" style="left:2.5rem">其他赛事</p>
-    </border-box>
+<border-box class="borderBoxLeft" style="left:5rem;">
+  <!-- 使用v-for指令循环生成联赛选择器内容 -->
+  <border-box class="borderBoxLeague" v-for="(league, index) in leagues" :key="index"
+    :style="{ top: `${index * 5 + 0.4}rem`,background:((index===league11)?'aqua':'')}" @click="leagueChoice(index)">
+    <!-- 插入联赛LOGO图片 -->
+    <img v-if="league.logo" :src="league.logo" class="imgLogo"> 
+    <!-- 将top值调整为合适的位置，同时调整“全部赛事”和“其他赛事”的位置 -->
+    <p class="textTypoLeague" :style="{top:'-1.5rem',left:((0 == index || 7==index)?'2.5rem':'6rem')}">{{ league.name }}</p>
   </border-box>
-
+</border-box>
 
   <!-- 中间列时间与赛事列表 -->
   <border-box class="borderBoxMid" style="left:27rem">
@@ -91,7 +60,7 @@
 </template>
 
 <script>
-import { nextTick } from 'vue';
+import { requiredNumber } from 'element-plus/es/components/table-v2/src/common';
 import MyNav from './nav.vue';
 export default{
   components: {
@@ -102,18 +71,33 @@ export default{
       this.$router.push('/GamesDetail');
     },
     leagueChoice(choice){
-      if(this.league!=choice){
-        this.league=choice;
+      if(this.league11!=choice){
+        this.league11=choice;
       }
       else{
-        this.league=0;
+        this.league11=0;
       }
     },
+  },
+  setup()
+  {
+    const getAssetsImages =(name)=> {
+		      return new URL(league.logo, import.meta.url).href; //本地文件路径
+      }
   },
   data()
   {
     return{
-      league:0,
+      league11:0,
+      leagues: [
+      { name: "全部赛事", logo: "" },
+      { name: "英超", logo: "/src/assets/img/pmlogo.png" },
+      { name: "西甲", logo: "/src/assets/img/lllogo.png" },
+      { name: "意甲", logo: "/src/assets/img/salogo.png" },
+      { name: "德甲", logo: "/src/assets/img/bllogo.png" },
+      { name: "法甲", logo: "/src/assets/img/le1logo.png" },
+      { name: "中超", logo: "/src/assets/img/cslogo.png" },
+      { name: "其他赛事", logo: "" },]
     }
   }
 }
