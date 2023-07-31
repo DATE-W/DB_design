@@ -6,12 +6,27 @@ using DBwebAPI.Controllers;
 namespace DBwebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]/[action]")]
     public class Register : ControllerBase  
     {
-        [HttpPost]
-        public async Task<string> normalRegisterAsync(string account, string password, string userName)
+        public class RegisterRequest
         {
+            public string Account { get; set; }
+            public string Password { get; set; }
+            public string UserName { get; set; }
+            public string UserSecQue { get; set; }
+            public string UserSecAns { get; set; }
+        }
+        public class CustomResponse
+        {
+            public string ok { get; set; }
+            public object value { get; set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> normalRegisterAsync([FromBody] RegisterRequest registerRequest)
+        {
+            int count = -1;
+            Console.WriteLine("GET Register!");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             if (ORACLEConnectTry.getConn() == true)
             {
@@ -23,29 +38,47 @@ namespace DBwebAPI.Controllers
                     int user_id = sqlOrm.Queryable<Usr>().Max(it => it.user_id) + 1;
                     Usr usr = new Usr();
                     usr.user_id = user_id;
-                    usr.userName = userName;
-                    usr.userPassword = password;
-                    usr.account = account;
-                    usr.createDateTime = DateTime.Now.ToString();
-                    int count = await sqlOrm.Insertable(usr).ExecuteCommandAsync();
-                    if (count == 1)
+                    usr.userName = registerRequest.UserName;
+                    usr.userPassword = registerRequest.Password;
+                    usr.userAccount = registerRequest.Account;
+                    usr.userSecQue = registerRequest.UserSecQue;
+                    usr.userSecAns = registerRequest.UserSecAns;
+                    usr.createDateTime = DateTime.Now;
+                    Console.WriteLine("user_id= " + user_id);
+                    Console.WriteLine("userName= " + usr.userName);
+                    Console.WriteLine("userPassword= " + usr.userPassword);
+                    Console.WriteLine("userAccount= " + usr.userAccount);
+                    Console.WriteLine("userSecQue= " + usr.userSecQue);
+                    Console.WriteLine("userSecAns= " + usr.userSecAns);
+                    Console.WriteLine("createDateTime= " + usr.createDateTime);
+                    bool accountExists = sqlOrm.Queryable<Usr>().Any(u => u.userAccount == registerRequest.Account);
+                    if (accountExists)
                     {
-                        return "Success";
+                        Console.WriteLine("账号已存在");
+                        return Ok(new CustomResponse { ok = "no", value = "账户已存在" });
                     }
                     else
                     {
-                        return "error code=2";//用户注册的账户已存在
+                        count = await sqlOrm.Insertable(usr).ExecuteCommandAsync();
+                        if (count == 1)
+                        {
+                            Console.WriteLine("注册成功");
+                            return Ok(new CustomResponse { ok = "yes", value = "Success" });
+                        }
+                        else
+                        {
+                            Console.WriteLine("注册失败");
+                            return Ok(new CustomResponse { ok = "no", value = "Fail" });
+                        }
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    return "error code=114514";//未知错误
+                    Console.WriteLine("未知错误");
+                    System.Console.WriteLine(ex.Message);
                 }
             }
-            else
-            {
-                return "error code=0";//连接数据库失败
-            }
+            return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" });//未知错误
         }
     }
 }

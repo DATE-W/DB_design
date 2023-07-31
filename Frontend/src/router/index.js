@@ -19,11 +19,16 @@ const router = createRouter({
     },
     {
       path: '/recover',
+      name: 'Recover',
       component: () => import('../components/recover.vue')
     },
     {
       path: '/forum',
       component: () => import('../components/forum.vue')
+    },
+    {
+      path: '/Detail',
+      component: () => import('../components/detail.vue')
     },
     {
       path: '/EditPost',
@@ -48,4 +53,4 @@ const router = createRouter({
   ]
 })
 
-export default router
+export default router;

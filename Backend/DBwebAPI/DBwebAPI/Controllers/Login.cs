@@ -2,46 +2,68 @@
 using SqlSugar;
 using DBwebAPI.Models;
 using DBwebAPI.Controllers;
+using Newtonsoft.Json.Linq;
+using System.Security.Principal;
+using Newtonsoft.Json;
 
 namespace DBwebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class Login : ControllerBase
+    [Route("api/[controller]/[action]")]
+    public class LoginController : ControllerBase
     {
-        [HttpGet] 
-        public async Task<string> LoginConcrollerAsync(string account, string password)
+        public class LoginRequest
         {
-            ORACLEconn  ORACLEConnectTry=new ORACLEconn();
-            if (ORACLEConnectTry.getConn() == true) {
+            public string Account { get; set; }
+            public string Password { get; set; }
+        }
+        public class CustomResponse
+        {
+            public string ok { get; set; }
+            public object value { get; set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> LoginPassword([FromBody] LoginRequest json)
+        {
+            Console.WriteLine("GET Login!");
+            ORACLEconn ORACLEConnectTry = new ORACLEconn();
+            //提取参数
+
+            string account = json.Account;
+            string passwordHash = json.Password;
+            Console.WriteLine("account=" + account);
+            Console.WriteLine("passwordHash= " + passwordHash);
+            //string securityQ = jsonParams["securityQ"];
+            //string securityAnsHash = jsonParams["securityAnsHash"];
+
+            if (ORACLEConnectTry.getConn() == true)
+            {
                 try
                 {
                     SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                     //进行用户查询
                     List<Usr> tempUsr = new List<Usr>();
-                    tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.account == account && it.userPassword == password).ToListAsync();
-                    //int shit = sqlORM.Queryable<Usr>().Max(it => it.user_id);
-                    //return $"{shit}";
+                    tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userName == account
+                    && it.userPassword == passwordHash)
+                        .ToListAsync();
                     //判断用户是否存在
-                    if (tempUsr.Count() == 0) return "error code=1";//用户账户或密码错误
+                    if (tempUsr.Count() == 0)
+                    {
+                        Console.WriteLine("登录失败");
+                        return Ok(new CustomResponse { ok = "no", value = "Fail" });//用户账户或密码错误
+                    }
                     else
                     {
-                        createToken tempToken= new createToken();
-                        string token = tempToken.createTokenFun(account, password);
-                        return token;
+                        Console.WriteLine("登录成功");
+                        return Ok(new CustomResponse { ok = "yes", value = "Success" });
                     }
-
                 }
                 catch (Exception)
                 {
-                    return "error code=114514";//位置错误
+                    return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" }); // Internal server error
                 }
             }
-            else
-            {
-                return "error code=0";//连接数据库失败
-            }
-
+            else { return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" }); };
         }
     }
 }
