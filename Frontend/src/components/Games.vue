@@ -1,7 +1,8 @@
 <!-- 2154314_郑楷_赛事界面 2023.07.23 21:00 v1.0.0
  v1.0.0 页面画了一半 
  v1.1.0 画出了左侧的联赛选择器（未添加逻辑），布局了中部的比赛列表（已添加跳转逻辑），增加了各大联赛LOGO素材图，日期选择器和广告区待实现
- v1.2.0 优化了联赛选择器组件的代码、视觉效果、功能、数据通路-->
+ v1.2.0 优化了联赛选择器组件的代码、视觉效果、功能、数据通路
+ v1.3.0 中间一列赛事缩略图的代码简化与传值-->
  <template>
   <my-nav></my-nav>
 
@@ -19,27 +20,16 @@
 
   <!-- 中间列时间与赛事列表 -->
   <border-box class="borderBoxMid" style="left:27rem">
-    <p class="textDate">2023.08.12</p>
-
+    
     <!-- test -->
-    <p class="textTypoLeague" style="left:10rem">test:leaguechoice:{{league}}</p>
+    <p class="textDate">2023.08.12</p>
+    <p class="textTypoLeague" style="left:10rem">test:leaCho:{{league11}} </p>
+    <p class="textTypoLeague" style="left:28rem">matCho:{{match11}} </p>
 
-    <border-box class="borderBoxMatch" style="top:5rem" @click="toMatchDetail">
-    </border-box>
-
-    <border-box class="borderBoxMatch" style="top:11rem" @click="toMatchDetail">
-    </border-box>
-
-    <border-box class="borderBoxMatch" style="top:17rem" @click="toMatchDetail">
-    </border-box>
-
-    <border-box class="borderBoxMatch" style="top:23rem" @click="toMatchDetail">
-    </border-box>
-
-    <border-box class="borderBoxMatch" style="top:29rem" @click="toMatchDetail">
-    </border-box>
-
-    <border-box class="borderBoxMatch" style="top:35rem" @click="toMatchDetail">
+    <!-- 使用v-for循环生成赛事列表 -->
+    <border-box class="borderBoxMatch" v-for="(match,index) in matches" :key="match.id" 
+    :style="{ top: `${index * 6+5}rem` }" @click="toMatchDetail(index)">
+      <!-- 可根据match数据渲染赛事列表的内容 -->
     </border-box>
 
   </border-box>
@@ -52,11 +42,6 @@
     <p>广告</p>
   </border-box>
 
-
-
-
-
-
 </template>
 
 <script>
@@ -67,7 +52,9 @@ export default{
     'my-nav': MyNav
   },
   methods:{
-    toMatchDetail(){
+    toMatchDetail(choice){
+      this.match11=choice;
+      etTimeout(function(){ getSignature() },5000);//Test
       this.$router.push('/GamesDetail');
     },
     leagueChoice(choice){
@@ -79,6 +66,7 @@ export default{
       }
     },
   },
+
   setup()
   {
     const getAssetsImages =(name)=> {
@@ -89,6 +77,8 @@ export default{
   {
     return{
       league11:0,
+      match11:0,
+
       leagues: [
       { name: "全部赛事", logo: "" },
       { name: "英超", logo: "/src/assets/img/pmlogo.png" },
@@ -97,7 +87,16 @@ export default{
       { name: "德甲", logo: "/src/assets/img/bllogo.png" },
       { name: "法甲", logo: "/src/assets/img/le1logo.png" },
       { name: "中超", logo: "/src/assets/img/cslogo.png" },
-      { name: "其他赛事", logo: "" },]
+      { name: "其他赛事", logo: "" },],
+
+      matches:[
+        { },
+        { },
+        { },
+        { },
+        { },
+        { },
+      ],
     }
   }
 }
