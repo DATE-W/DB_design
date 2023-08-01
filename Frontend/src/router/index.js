@@ -36,7 +36,27 @@ const router = createRouter({
     },
     {
       path: '/personal',
-      component: () => import('../components/personal.vue')
+      component: () => import('../components/personal.vue'),
+    },
+    {
+      path: '/personalDetail',
+      component: () => import('../components/personalDetail.vue')
+    },
+    {
+      path: '/personalFavorite',
+      component:() => import('../components/personalFavorite.vue')
+    },
+    {
+      path: '/personalNotification',
+      component:() => import('../components/personalNotification.vue')
+    },
+    {
+      path: '/personalCredits',
+      component:() => import('../components/personalCredits.vue')
+    },
+    {
+      path: '/personalEdit',
+      component: () => import('../components/personalEdit.vue')
     },
     {
       path: '/Games',
