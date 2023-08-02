@@ -45,7 +45,7 @@ namespace DBwebAPI.Controllers
                 if (userSecQues.Count != 0)
                 {
                     Console.WriteLine(userSecQues.FirstOrDefault());
-                    return Ok(new CustomResponse { ok = "yes", value = "userSecQues.FirstOrDefault()" });
+                    return Ok(new CustomResponse { ok = "yes", value = userSecQues.FirstOrDefault() });
                 }
                 else
                 {

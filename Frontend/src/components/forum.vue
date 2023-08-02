@@ -1,4 +1,4 @@
-<!-- 论坛界面优化v1.3 -->
+<!-- 论坛界面v2.0 -->
 <template>
     <div class="common-layout">
         <el-container class="bkBox">
@@ -20,7 +20,7 @@
                 <el-aside width="20vw">
                     <div class="button-container">
                         <el-button class="postButton" @click="redirectToEditPost" round>
-                            <text class="postButtonText">点此发帖</text>
+                            <text class="postButtonText">{{ isAccount ? '点此发帖' : '点此登录' }}</text>
                         </el-button>
                         <div v-for="row in buttonRows" :key="row">
                             <el-button v-for="button in row" :key="button.type" @click="selectTopic(button)"
@@ -32,17 +32,25 @@
                     </div>
                 </el-aside>
                 <!-- 左侧选择话题 -->
-                <el-main>
-                    <div class="search-container">
+                <el-main class="main-container">
+                    <!-- <div class="search-container">
                         <el-icon class="search-icon">
                             <Search />
                         </el-icon>
                         <el-input class="search-input" v-model="searchKeyword" placeholder="请输入关键词"
                             @keyup.enter.native="handleSearch"></el-input>
+                    </div> -->
+                    <div class="post-list">
+                        <template v-for="(title, index) in post_title">
+                            <hr v-if="index == 0" class="separator">
+                            <div :class="['post-title', 'normal-post-title']" @click="goToDetail(post_id[index])">{{
+                                title }}</div>
+                            <hr v-if="index <= post_title.length - 1" :key="`separator-${index}`" class="separator">
+                        </template>
                     </div>
-                    <div class="page-container">
+                    <div class="page-container" v-if="showPage">
                         <el-pagination @current-change="handlePageChange" :current-page="currentPage" :page-size="pageSize"
-                            layout="prev, pager, next, jumper" :total="totalItems"></el-pagination>
+                            layout="prev, pager, next, jumper" :total="totalPosts"></el-pagination>
                     </div>
                     <!-- 换页(含跳转功能) -->
                 </el-main>
@@ -51,6 +59,187 @@
         </el-container>
     </div>
 </template>
+  
+<script>
+import MyNav from './nav.vue';
+import axios from 'axios';
+import { ElMessage, ElMessageBox } from 'element-plus';
+export default {
+    components: {
+        'my-nav': MyNav
+    },
+    data() {
+        return {
+            isAccount: false,
+            selectedTopic: '论坛',
+            selectedColor: '',  //随着选择的主题改变颜色
+            selectedDescription: '',  //随着选择的主题改变描述
+            searchKeyword: '', // 保存搜索关键词
+            isButtonClicked: false,
+            buttons: [
+                { type: 'ALL', text: '全部', color: 'ALL', description: '浏览所有联赛相关' },
+                { type: 'LL', text: '西甲', color: 'LL', description: '西甲联赛是西班牙的顶级足球联赛' },
+                { type: 'PL', text: '英超', color: 'PL', description: '英超联赛是英格兰的顶级足球联赛' },
+                { type: 'BL', text: '德甲', color: 'BL', description: '德甲联赛是德国的顶级足球联赛' },
+                { type: 'SA', text: '意甲', color: 'SA', description: '意甲联赛是意大利的顶级足球联赛' },
+                { type: 'L1', text: '法甲', color: 'L1', description: '法甲联赛是法国的顶级足球联赛' },
+                { type: 'CSL', text: '中超', color: 'CSL', description: '中超联赛是中国建立的足球联赛，拥有武磊等顶级球员' },
+            ],
+            currentPage: 1,
+            pageSize: 4,  //每页4项
+            totalPosts: 0,
+            showPage: false, //初始为false 向后端请求完数据后变为true 更换tag页面暂时变为false
+            post_id: [],  //存储返回的帖子id
+            post_title: [],  //存储返回的帖子标题
+            currentTag: 'ALL',  //向后端传递当前页面的帖子类型 初始为全部 不受tag影响
+        };
+    },
+    computed: {
+        buttonRows() {
+            const rows = [];
+            const buttonsPerRow = 1;
+            for (let i = 0; i < this.buttons.length; i += buttonsPerRow) {
+                const row = this.buttons.slice(i, i + buttonsPerRow);
+                rows.push(row);
+            }
+            return rows;
+        },
+    },
+    mounted() {
+        this.JudgeAccount();
+        this.getPosts(1, this.pageSize, this.currentTag);
+        this.getPostNum();
+    },
+    methods: {
+        selectTopic(button) {
+            this.isButtonClicked = true;
+            this.selectedTopic = button.text;
+            this.selectedColor = button.color;
+            this.selectedDescription = button.description;
+            this.currentTag = button.text;
+            this.getPosts(1, this.pageSize, this.currentTag);
+        },
+        //选择对应的标签 同时修改论坛上方的展示内容
+        redirectToEditPost() {
+            if (this.isAccount)
+                this.$router.push('/EditPost');
+            else {
+                this.$router.push('/signin');
+            }
+        },
+        handlePageChange(currentPage) {
+            this.currentPage = currentPage;
+            this.getPosts(this.currentPage, this.pageSize, this.currentTag);
+        },
+        goToDetail(postId) {
+            console.log(postId);
+            this.$router.push({
+                path: '/detail',
+                query: { clickedPostID: postId }
+            });
+        },
+        /* handleSearch() {
+            // 处理搜索逻辑，可以根据searchKeyword进行搜索操作
+            // 示例：输出搜索关键词
+            console.log('搜索关键词:', this.searchKeyword);
+        }, */
+        async JudgeAccount() {
+            const token = localStorage.getItem('token');
+            let response
+            try {
+                const headers = {
+                    Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/UserToken', {}, { headers })
+            } catch (err) {
+                if (err.response.data.result == 'fail') {
+                    ElMessage({
+                        message: err.response.data.msg,
+                        grouping: false,
+                        type: 'error',
+                    })
+                } else {
+                    ElMessage({
+                        message: '未知错误',
+                        grouping: false,
+                        type: 'error',
+                    })
+                    return
+                }
+                return
+            }
+            if (response.data.ok == 'yes') {
+                this.isAccount = true;
+                //没账号  把按钮调成登录
+            }
+            else {
+                this.isAccount = false;
+                //有账号且合法  把按钮调成按此发帖
+            }
+        },
+        async getPostNum() {
+            let response
+            try {
+                response = await axios({
+                    method: 'GET',
+                    url: '/api/Forum/GetPostNum',
+                })
+            } catch (err) {
+                ElMessage({
+                    message: '获取帖子总数失败',
+                    grouping: false,
+                    type: 'error',
+                })
+            }
+            //console.log(response.data.totalPostsCount);
+            if (response.data.totalPostsCount) {
+                this.totalPosts = response.data.totalPostsCount; // 将帖子的总数保存到data中的totalItems中
+                this.showPage = true;
+            } else {
+                ElMessage({
+                    message: '后端返回的帖子总数格式错误',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+        },
+        async getPosts(pageNumber, pageSize, currentTag) {
+            let response
+            try {
+                response = await axios.post('/api/Forum/GetPostbyOrder', {
+                    page: pageNumber,
+                    count: pageSize,
+                    tag: String(currentTag),
+                }, {})
+            } catch (err) {
+                ElMessage({
+                    message: '获取帖子失败',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+            //console.log('response:', response);
+            this.post_id = [];
+            this.post_title = [];
+            if (response.data.postInfoJsons && Array.isArray(response.data.postInfoJsons)) {
+                response.data.postInfoJsons.forEach((postInfo) => {
+                    this.post_id.push(postInfo.post_id);
+                    this.post_title.push(postInfo.title);
+                });
+            }
+            else {
+                ElMessage({
+                    message: '后端返回的帖子数据格式错误',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+            //console.log('得到的帖子id为:', this.post_id);
+            //console.log('得到的帖子title为:', this.post_title);
+        }
+    },
+};
+</script>
 
 <style scoped>
 .bkBox {
@@ -167,31 +356,6 @@
 
 /* icon大小 */
 
-/*每个联赛的横幅颜色*/
-.LL {
-    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
-}
-
-.PL {
-    background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
-}
-
-.BL {
-    background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
-}
-
-.SA {
-    background-image: linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%);
-}
-
-.L1 {
-    background-image: linear-gradient(to top, #accbee 0%, #e7f0fd 100%);
-}
-
-.CSL {
-    background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
-}
-
 .page-container {
     position: absolute;
     bottom: 0px;
@@ -200,70 +364,72 @@
 }
 
 /* 将换页放在最底部的中央 */
-</style>
-  
-<script>
-import MyNav from './nav.vue';
 
-export default {
-    components: {
-        'my-nav': MyNav
-    },
-    data() {
-        return {
-            selectedTopic: '论坛',
-            selectedColor: '',  //随着选择的主题改变颜色
-            selectedDescription: '',  //随着选择的主题改变描述
-            searchKeyword: '', // 保存搜索关键词
-            isButtonClicked: false,
-            buttons: [
-                { type: 'LL', text: '西甲', color: 'LL', description: '西甲联赛是西班牙的顶级足球联赛' },
-                { type: 'PL', text: '英超', color: 'PL', description: '英超联赛是英格兰的顶级足球联赛' },
-                { type: 'BL', text: '德甲', color: 'BL', description: '德甲联赛是德国的顶级足球联赛' },
-                { type: 'SA', text: '意甲', color: 'SA', description: '意甲联赛是意大利的顶级足球联赛' },
-                { type: 'L1', text: '法甲', color: 'L1', description: '法甲联赛是法国的顶级足球联赛' },
-                { type: 'CSL', text: '中超', color: 'CSL', description: '中超联赛是中国建立的足球联赛，拥有武磊等顶级球员' },
-            ],
-            currentPage: 1,
-            pageSize: 10,  //每页10项
-            totalItems: 300, // 假设总共有300项 共30页
-        };
-    },
-    computed: {
-        buttonRows() {
-            const rows = [];
-            const buttonsPerRow = 1;
-            for (let i = 0; i < this.buttons.length; i += buttonsPerRow) {
-                const row = this.buttons.slice(i, i + buttonsPerRow);
-                rows.push(row);
-            }
-            return rows;
-        },
-    },
-    methods: {
-        selectTopic(button) {
-            this.isButtonClicked = true;
-            this.selectedTopic = button.text;
-            this.selectedColor = button.color;
-            this.selectedDescription = button.description;
-        },
-        redirectToEditPost() {
-            this.$router.push('/EditPost')
-        },
-        handlePageChange(currentPage) {
-            this.currentPage = currentPage;
-            // 根据currentPage加载对应页的数据
-            this.loadData(); // 替换为实际的加载数据函数
-        },
-        loadData() {
-            // 根据当前页码加载对应页的数据
-            // 实现加载数据的逻辑
-        },
-        handleSearch() {
-            // 处理搜索逻辑，可以根据searchKeyword进行搜索操作
-            // 示例：输出搜索关键词
-            console.log('搜索关键词:', this.searchKeyword);
-        },
-    },
-};
-</script>
+.main-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.post-list {
+    margin-top: 20px;
+    margin-bottom: 25px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.post-title {
+    font-size: 1.3rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    height: 25%;
+    align-items: left;
+    transition: background-color 0.2s ease;
+}
+
+.normal-post-title {
+    background-color: #fff;
+    /* 默认状态的背景颜色 */
+}
+
+.post-title:hover {
+    background-color: #F5F7FA;
+    /* 鼠标悬浮状态的背景颜色 */
+}
+
+.separator {
+    width: 100%;
+    border: 0.5px solid #ccc;
+    margin: 10px auto;
+}
+
+/*每个联赛的按钮颜色*/
+.LL {
+    background: #a1c4fd 0%;
+}
+
+.PL {
+    background: #fed6e3 100%;
+}
+
+.BL {
+    background: #fff1eb 0%;
+}
+
+.SA {
+    background: #d4fc79 0%;
+}
+
+.L1 {
+    background: #accbee 0%;
+}
+
+.CSL {
+    background: #f78ca0 0%;
+}
+
+.ALL {
+    background: #a1c4fd 100%;
+}
+</style>
