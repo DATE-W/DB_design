@@ -62,12 +62,12 @@ namespace DBwebAPI.Controllers
                         return Ok(new CustomResponse { ok = "yes", value = token });
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" }); // Internal server error
+                    return Ok(new CustomResponse { ok = "no", value = ex }); // Internal server error
                 }
             }
-            else { return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" }); };
+            else { return Ok(new CustomResponse { ok = "no", value = "数据库连接失败" }); };
         }
     }
 }
