@@ -26,6 +26,7 @@ namespace DBwebAPI.Models
     {
         [SugarColumn(IsPrimaryKey = true)]
         public int post_id { get; set; }
+        public string title { get;set; }
         public DateTime publishDateTime { get; set; }
         public string contains { get; set; }
         public int isBanned { get; set; }
@@ -45,5 +46,15 @@ namespace DBwebAPI.Models
         [SugarColumn(IsPrimaryKey = true)]
         public int post_id { get; set; }
         public string tagName { get; set; }
+    }
+    public class Comments
+    {
+        [SugarColumn(IsPrimaryKey = true)]
+        public int comment_id{ get; set; }
+        public DateTime publishDateTime { get;set; }
+        public string contains { get; set; }
+        public int user_id { get;set; }
+        public int post_id { get; set; }
+
     }
 }

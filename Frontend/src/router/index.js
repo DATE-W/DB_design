@@ -36,7 +36,11 @@ const router = createRouter({
     },
     {
       path: '/personal',
-      component: () => import('../components/personal.vue')
+      component: () => import('../components/personal.vue'),
+    },
+    {
+      path: '/personalEdit',
+      component: () => import('../components/personalEdit.vue')
     },
     {
       path: '/Games',
