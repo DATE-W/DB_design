@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
 using static DBwebAPI.Controllers.ForumController;
 using System.ComponentModel;
+using System.Xml.Linq;
 
 namespace DBwebAPI.Controllers
 {
@@ -197,7 +198,8 @@ namespace DBwebAPI.Controllers
                 if (!tag.Equals("ALL"))
                 {
                     List<Tag> allTags = await sqlORM.Queryable<Tag>().Where(it => true).ToListAsync();
-                    foreach(Tag t in allTags) {
+                    foreach (Tag t in allTags)
+                    {
                         Console.WriteLine("Post_id: " + t.post_id + "   Tag: " + t.tagName);
                     }
                     List<int> matchingPostIds = allTags.Where(t => t.tagName.Equals(tag)).Select(t => t.post_id).ToList();
@@ -277,7 +279,7 @@ namespace DBwebAPI.Controllers
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
                     Console.WriteLine("未提供有效的JWT");
-                    return BadRequest(new { ok = "no" ,value = "未提供有效的JWT" });
+                    return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
@@ -325,11 +327,12 @@ namespace DBwebAPI.Controllers
                 Sentpostinfo sentpostinfo = new Sentpostinfo();
                 sentpostinfo.ok = "yes";
                 sentpostinfo.name = PostUsr.FirstOrDefault().userName;//string
-                sentpostinfo.title= tempPosts.FirstOrDefault().title;//string
+                sentpostinfo.title = tempPosts.FirstOrDefault().title;//string
                 sentpostinfo.contains = tempPosts.FirstOrDefault().contains;//string
                 sentpostinfo.publishDateTime = tempPosts.FirstOrDefault().publishDateTime;//DataTime
                 sentpostinfo.approvalNum = (int)tempPosts.FirstOrDefault().approvalNum;//int
-                int count = 0;
+                sentpostinfo.comments = new Comment[0];
+                List<Comment> commentsList = new List<Comment>();
                 foreach (var comment in PostComments)
                 {
                     //找到评论人username
@@ -337,22 +340,105 @@ namespace DBwebAPI.Controllers
                     ComUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == comment.user_id)
                         .ToListAsync();
                     Comment tmpComment = new Comment();
-                    Console.WriteLine("Comment: " + count);
                     tmpComment.userName = ComUsr.First().userName;
                     tmpComment.contains = comment.contains;
                     tmpComment.publishDateTime = comment.publishDateTime;
+                    Console.WriteLine();
                     Console.WriteLine("userName: " + tmpComment.userName);
                     Console.WriteLine("contains: " + tmpComment.contains);
                     Console.WriteLine("publishDateTime: " + tmpComment.publishDateTime);
-                    sentpostinfo.comments[count]=tmpComment;
-                    count++;
+                    commentsList.Add(tmpComment);
                 }
+                sentpostinfo.comments = commentsList.ToArray();
+
                 Console.WriteLine("name: " + sentpostinfo.name);
                 Console.WriteLine("title: " + sentpostinfo.title);
                 Console.WriteLine("contains: " + sentpostinfo.contains);
                 Console.WriteLine("publishDateTime: " + sentpostinfo.publishDateTime);
                 Console.WriteLine("approvalNum: " + sentpostinfo.approvalNum);
                 return Ok(sentpostinfo);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("errorResponse: " + ex.Message);
+                return Ok(new CustomResponse { ok = "no", value = "数据库连接错误" });//用户账户或密码错误
+            }
+        }
+        public class newComment
+        {
+            public int post_id { get; set; }
+            public string contains { get; set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> NewComment([FromBody] newComment json)
+        {
+            try
+            {
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                ORACLEConnectTry.getConn();
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                Console.WriteLine("Get NewComment");
+                int post_id = json.post_id;
+                string contains = json.contains;
+                // 从请求头中获取传递的JWT令牌
+                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                //验证 Authorization 请求头是否包含 JWT 令牌
+                if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
+                {
+                    Console.WriteLine("未提供有效的JWT");
+                    return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
+                }
+                //
+                string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
+                // 验证并解析JWT令牌
+                var handler = new JwtSecurityTokenHandler();
+                var tokenS = handler.ReadJwtToken(jwtToken);
+                // 获取JWT令牌中的claims信息
+                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
+                    .ToListAsync();
+                //判断用户是否存在
+                if (tempUsr.Count() == 0)
+                {
+                    Console.WriteLine("用户不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
+                }
+                Console.WriteLine("用户信息正确");
+
+                Console.WriteLine("post_id: " + post_id);
+                Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
+                Console.WriteLine("contains: " + contains);
+                //找到post
+                List<Posts> tempPosts = new List<Posts>();
+                tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
+                    .ToListAsync();
+                //判断帖子是否存在
+                if (tempPosts.Count() == 0)
+                {
+                    Console.WriteLine("帖子不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "帖子不存在" });
+                }
+                //找到评论人ID
+                List<PublishPost> tempPublicshPosts = new List<PublishPost>();
+                tempPublicshPosts = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == post_id)
+                    .ToListAsync();
+                //获取新的comment_id
+                int comment_id = sqlORM.Queryable<Comments>().Max(it => it.comment_id) + 1;
+                //解析json文件
+                //新建post
+                Comments comment = new Comments
+                {
+                    comment_id = comment_id,
+                    publishDateTime = DateTime.Now,
+                    contains = contains,
+                    user_id = tempUsr.FirstOrDefault().user_id,
+                    post_id = post_id
+                };
+               
+                int count = await sqlORM.Insertable(comment).ExecuteCommandAsync();
+                if(count > 0) { return Ok(new CustomResponse { ok = "yes", value = "发布成功" }); }
+                else {  return Ok(new CustomResponse { ok="no", value = "发布失败" }); }
             }
             catch (Exception ex)
             {

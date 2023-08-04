@@ -55,6 +55,6 @@ namespace DBwebAPI.Models
         public string contains { get; set; }
         public int user_id { get;set; }
         public int post_id { get; set; }
-
     }
+
 }
