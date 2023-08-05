@@ -56,5 +56,18 @@ namespace DBwebAPI.Models
         public int user_id { get;set; }
         public int post_id { get; set; }
     }
+    public class UsrLikePost
+    {
 
+        [SugarColumn(IsPrimaryKey = true)]
+        public int post_id { get; set;}
+        public int user_id { get; set;}
+    }
+    public class Collect
+    {
+
+        [SugarColumn(IsPrimaryKey = true)]
+        public int post_id { get; set; }
+        public int user_id { get; set; }
+    }
 }
