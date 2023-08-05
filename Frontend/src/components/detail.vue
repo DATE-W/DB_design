@@ -2,101 +2,48 @@
 import MyNav from './nav.vue';
 import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { ArrowLeft } from '@element-plus/icons-vue';
 export default {
     components:{
         'my-nav': MyNav
     },
     mounted() {
         this.JudgeAccount();
-        //this.GetPostDetail()
-        console.log(this.isAccount);
+        this.GetPostDetail();
+        console.log("post_id = " + this.$route.query.clickedPostID);
     },
     data(){
         return{
 
             isAccount:false,
 
-            uId:112233,
-            postId:0,
             isApproved:false,
-            tittle:"关于水神机制的猜测",
+            isCollected:false,
+            title:"",
             uImg:"这是头像",
-            uName:"仙贝牌辣条",
-            uText:"顺便小庆祝一手猜对了水神的性格，就要乐子人捏。水神作为枫丹的领导人，其必然会影响到自身国家前期角色的机制。类似的例子就比如钟离有强效护盾所以璃月3c都刚需生存辅助；雷神有强力充能所以稻妻或者说2.0时代的角色无论能不能抱雷神的大腿都会有巨大的充能需求，要么绑雷神要么带西风、祭礼等充能道具；还有最重量级的须弥，就差把“不抽草神不配玩须弥”写在脸上了由此，我们将视角转向包括水主在内已经“公布”技能机制的枫丹新角色。只从定性分析，除了菲米尼是物理体系，包括水主在内的三个枫丹角色都体现出了高生命值消耗的特性，如果水神要对他们有明确增幅就需要有提高生存能力的机制。首先排除护盾然后将视角转向奶妈的路数，水神如果要恶心一手需要压血线的老角色的同时又保证枫丹新角色不会因掉血而坑死自己，只需要加一句“损失生命值越多回复生命值越高。”从场外因素来说，这既保证了水神即使脱离枫丹体系也能有自己的作用，又堵上了玩家质疑的声音",
-            date:"2023-07-07",
+            uName:"",
+            uText:"",
+            date:"",
+            approvalNum:0,
 
             judgers:[
-                {jId:1,jName:"草神和伞兵什么时候结婚",jText:"你说得对，但是原神是一款",jDate:"2023-07-08"},
-                {jId:2,jName:"丁真Official",jText:"义！乌！",jDate:"2023-07-09"},
-                {jId:3,jName:"杰子",jText:"同学报一下学号姓名给你加创新学分",jDate:"2023-07-10"},
+                {jName:"草神和伞兵什么时候结婚",jText:"你说得对，但是原神是一款",jDate:"2023-07-08"},
+                {jName:"丁真Official",jText:"义！乌！",jDate:"2023-07-09"},
+                {jName:"杰子",jText:"同学报一下学号姓名给你加创新学分",jDate:"2023-07-10"},
             ],
-            myJudge:"",
+
+            userJudge:"",
         }
     },
     methods:{
         async JudgeAccount() {
             const token = localStorage.getItem('token');
             let response
-            const headers = {
-                Authorization: `Bearer ${token}`,
-            };
-            response = await axios.post('/api/UserToken',{},{ headers })
-            if (response.data.ok == 'yes') {
-                this.isAccount = true;
-                
-            }
-            else{
-                this.isAccount = false;
-            }
-        },
-        async GetPostDetail()
-        {
-            // const token = localStorage.getItem('token');
-            // let response
-            // try {
-            //     const headers = {
-            //         Authorization: `Bearer ${token}`,
-            //     };
-            //     response = await axios.post('/api/',{ PostId:this.postId },{ headers })
-            // } catch (err) {
-            //     if (err.response.data.result == 'fail') {
-            //         ElMessage({
-            //             message: err.response.data.msg,
-            //             grouping: false,
-            //             type: 'error',
-            //         })
-            //     } else {
-            //         ElMessage({
-            //             message: '未知错误',
-            //             grouping: false,
-            //             type: 'error',
-            //         })
-            //         return
-            //     }
-            //     return
-            // }
-            // tittle = response.data.tittle ;
-            // //uImg
-            // uName = response.data.uName;
-            // uText = response.data.uText;
-            // date = response.data.date;
-        },
-
-        async approvePost()
-        {
-            this.isApproved = !this.isApproved;
-            console.log(this.isApproved);
-        },
-
-        async PostJudge()
-        {
-            const token = localStorage.getItem('token');
-            let response
             try {
                 const headers = {
                     Authorization: `Bearer ${token}`,
                 };
-                response = await axios.post('/api/',{ PostId:this.postId },{ headers })
+                response = await axios.post('/api/UserToken', {}, { headers })
             } catch (err) {
                 if (err.response.data.result == 'fail') {
                     ElMessage({
@@ -114,7 +61,178 @@ export default {
                 }
                 return
             }
+            if (response.data.ok == 'yes') {
+                this.isAccount = true;  
+            }
+            console.log("isAccount = " + this.isAccount);
         },
+        async GetPostDetail()
+        {
+            const token = localStorage.getItem('token');
+            let response
+            try {
+                const headers = {
+                     Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/Forum/PostInfo',  {
+                    post_id: this.$route.query.clickedPostID,
+                }, { headers });
+            } catch (err) {
+                if (err.response.data.result == 'fail') {
+                    ElMessage({
+                        message: err.response.data.msg,
+                        grouping: false,
+                        type: 'error',
+                    })
+                } else {
+                    ElMessage({
+                        message: '未知错误',
+                        grouping: false,
+                        type: 'error',
+                    })
+                }
+                return
+            }
+            if(response.data.ok=='no')
+            {
+                ElMessage.error(response.data.value);
+            }else{
+                this.title = response.data.title ;
+                //uImg
+                this.uName = response.data.name;
+                this.uText = response.data.contains;
+                this.date = response.data.publishDateTime;
+                if(response.data.islike == 1)
+                {
+                    this.isApproved = true
+                }
+                if(response.data.iscollect == 1)
+                {
+                    this.isCollected = true
+                }
+                this.approvalNum = response.data.approvalNum;
+            }
+            console.log("response.data.islike = " + response.data.islike);
+            console.log("response.data.iscollect = " + response.data.iscollect);
+            console.log("response.data.approvalNum = " + response.data.approvalNum);
+            console.log("response = " + response);
+            console.log("isApproved1 = " + this.isApproved);
+        },
+        async approvePost()
+        {
+            const token = localStorage.getItem('token');
+            let response
+            try {
+                const headers = {
+                     Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/Forum/Like',  {
+                    post_id: this.$route.query.clickedPostID,
+                }, { headers });
+            } catch (err) {
+                if (err.response.data.result == 'fail') {
+                    ElMessage({
+                        message: err.response.data.msg,
+                        grouping: false,
+                        type: 'error',
+                    })
+                } else {
+                    ElMessage({
+                        message: '未知错误',
+                        grouping: false,
+                        type: 'error',
+                    })
+                }
+                return
+            }
+            if(response.data.ok == 'yes')
+            {
+                ElMessage.success(response.data.value);
+            }else{
+                ElMessage.error(response.data.value);
+            }
+            this.isApproved = !this.isApproved;
+            if(this.isApproved==false){
+                this.approvalNum--;
+            }else{
+                this.approvalNum++;
+            }
+            console.log("isApproved2 = " + this.isApproved);
+        },
+        async PostJudge()
+        {
+            console.log('userJudge = ' + this.userJudge);
+            const token = localStorage.getItem('token');
+            let response
+            try {
+                const headers = {
+                     Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/Forum/NewComment',  {
+                    post_id: this.$route.query.clickedPostID,
+                    contains: String(this.userJudge),
+                }, { headers });
+            } catch (err) {
+                if (err.response.data.result == 'fail') {
+                    ElMessage({
+                        message: err.response.data.msg,
+                        grouping: false,
+                        type: 'error',
+                    })
+                } else {
+                    ElMessage({
+                        message: '未知错误',
+                        grouping: false,
+                        type: 'error',
+                    })
+                }
+                return
+            }
+            console.log("发送评论 " + response.data.value);
+            this.userJudge="";
+            if(response.data.ok=='ok'){
+                location.reload();
+            }
+        },
+        async collectPost()
+        {
+            const token = localStorage.getItem('token');
+            let response
+            try {
+                const headers = {
+                     Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/Forum/collect',  {
+                    post_id: this.$route.query.clickedPostID,
+                }, { headers });
+            } catch (err) {
+                if (err.response.data.result == 'fail') {
+                    ElMessage({
+                        message: err.response.data.msg,
+                        grouping: false,
+                        type: 'error',
+                    })
+                } else {
+                    ElMessage({
+                        message: '未知错误',
+                        grouping: false,
+                        type: 'error',
+                    })
+                }
+                return
+            }
+            if(response.data.ok == 'yes')
+            {
+                ElMessage.success(response.data.value);
+            }else{
+                ElMessage.error(response.data.value);
+            }
+            this.isCollected = !this.isCollected;
+        },
+        goBack()
+        {
+            this.$router.push('/forum');
+        }
     }
 }
 </script>
@@ -124,9 +242,17 @@ export default {
         <my-nav/>
         <el-container class="post-container">
             <el-header>
-                <text class="header-text">{{ tittle }}</text>
-                <el-button class="header-respond-btn" style="right:7vw">收藏</el-button>
-                <el-button :class="isApproved == false?'header-respond-btn':'header-respond-btn-active'" id="approveBtn" @click="approvePost()">点赞</el-button>
+                <el-page-header :icon="ArrowLeft" @back="goBack">
+                    <span class="header-text" >{{ title }}</span>
+                    <el-button class="header-respond-btn" style="right:8.3vw" @click="collectPost()">
+                        <span v-if="isCollected == false">收藏</span>
+                        <span v-if="isCollected == true">已收藏</span>
+                    </el-button>
+                    <el-button :class="isApproved == false?'header-respond-btn':'header-respond-btn-active'" id="approveBtn" @click="approvePost()">
+                    <img style="height:2vh;width: 1vw;margin-right: 0.5vw;" src="../assets/img/approve.png">
+                        点赞 {{ approvalNum }}
+                    </el-button>
+                </el-page-header>
             </el-header>
             <el-container style="border: 1px solid #ccc;">
                 <el-aside>
@@ -146,7 +272,7 @@ export default {
                     </div>
                     <!-- 评论 -->
                     <div class="judger-post">
-                        <div v-for="judger in judgers" :key="judger.jId"> 
+                        <div v-for="judger in judgers"> 
                             <el-divider style="color: black;height:2vw"></el-divider>
                             <p><text style="color: rgb(24, 151, 235);">{{ judger.jName }} ：</text><text>{{ judger.jText }}</text></p>
                             <p style="top:2vw">{{ judger.jDate }}</p>
@@ -158,7 +284,7 @@ export default {
         <div class="input-respond-container">
             <div style="margin: 20px 0">
                 <el-input
-                    v-model="respond"
+                    v-model="userJudge"
                     :rows="5"
                     type="textarea"
                     placeholder="和大家分享你的看法~"
@@ -190,7 +316,7 @@ export default {
     font-weight: 200;
     position: absolute;
     top:1vw;
-    left: 2vw;
+    left: 7vw;
 }
 .header-respond-btn{
     text-align: center;
@@ -202,7 +328,7 @@ export default {
 .header-respond-btn-active
 {
     text-align: center;
-    background-color: rgb(255, 179, 245);
+    background-color: rgb(255, 201, 248);
     position: absolute;
     top:1vw;
     right: 2vw;
@@ -265,5 +391,9 @@ export default {
     position: relative;
     margin-top:1vw;
     right:-60vw;
+}
+
+.el-page-header{
+    top:1vw;
 }
 </style>
