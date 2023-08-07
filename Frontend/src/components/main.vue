@@ -6,7 +6,7 @@
           <!-- Scroll to Top Button -->
           <div @click="scrollToTop" class="scroll-to-top-btn">
             <div class="image-container">
-              <img src="../assets/img/ToTop.png" alt="Scroll to Top">
+              <img src="../assets/img/ToTop.png" alt="Scroll to Top">             
             </div>
             <div class="text-overlay">
               <div class="line">{{ line1 }}</div>
@@ -14,19 +14,21 @@
             </div>
           </div>
           <!-- Carousel -->
-          <el-carousel style="height:80vh;z-index: 1;width:100%;" arrow="never">
+          <div style="display: flex; justify-content: center; align-items: center; height: 76vh; width: 100vw;">
+            <el-carousel style="height: 76vh; z-index: 1; width: 86vw; margin: auto; position: relative;" arrow="never">
             <!-- Images to display above the carousel -->
-            <div style="position: absolute; top: 16%; left: 0; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
-              <img src="../assets/img/home_slogan1.png" style="max-width: 1000px; margin: 10px; z-index: 2;">
+            <div style="position: absolute; top: 5%; left: 0; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
+              <img src="../assets/img/home_slogan1.png" style="max-width: 600px; width: 50%; margin: 10px; z-index: 2;">
             </div> 
-            <div style="position: absolute; top: 67%; left: 0; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
-              <img src="../assets/img/home_slogan2.png" style="max-width: 1000px; margin: 10px; z-index: 2;">
+            <div style="position: absolute; top: 55%; left: 0; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
+              <img src="../assets/img/home_slogan2.png" style="max-width: 600px; width: 50%; margin: 10px; z-index: 2;">
             </div> 
             <!-- Replace the v-for loop with your custom carousel items -->
-            <el-carousel-item v-for="item in 3" :key="item" style="width: 100%;height: 80vh;display: flex; justify-content: center; align-items: center;">
-              <img :src="getImageUrl(item)" alt="Carousel Image" class="carousel-image" style="border: 0width: 100%;object-fit: cover;"/>
+            <el-carousel-item v-for="item in 3" :key="item" style="width: 86vw; height: 76vh; display: flex; justify-content: center; align-items: center;">
+              <img :src="getImageUrl(item)" alt="Carousel Image" class="carousel-image" style="border: 0; width: 100%; height: 90%; object-fit: cover;" />
             </el-carousel-item>
           </el-carousel>
+          </div>
         <div class="top-section">
           <!-- 赛事信息筛选菜单 -->
           <el-menu class="Games-menu" mode="horizontal" @select="handleMenuSelect">
@@ -78,7 +80,7 @@
           <!-- 赛事信息卡片 -->
           <el-row class="Game-col-container">
             <el-card shadow="hover" class="Game-card" v-for="item in getLimitedGames()" :key=item.index
-            style="border-radius: 10px; border: none; margin: 5px;">
+            style="border-radius: 10px; border: none; margin: 5px;background-color: #edebeb;">
               <div class="Game-content">
                 <div class="column-status">{{ item.status }}</div>
                 <div class="column-team1">{{ item.team1 }} {{ item.score1 }}</div>
@@ -93,31 +95,38 @@
           <!-- 左侧新闻板块 -->
           <div class="news-container">
             <div class="hot-news">热点资讯</div>
-            <div v-for="(news, index) in getLimitedNews()" :key="index" class="news-item">
-              <a :href="news.link" target="_blank" class="news-link">
-                <el-row align="middle" class="news-row" @click="goToLink(news.link)">
-                  <el-col :span="24" style="display: flex; align-items: center;">
-                    <!-- Image -->
-                    <div class="news-item-wrapper">
-                      <img :src="news.image" alt="News Image" class="news-image">
-                      <!-- News Content -->
-                      <div class="news-content">
-                        <h4 class="news-title">{{ news.title }}</h4>
-                        <p class="news-summary">{{ truncateText(news.summary, 50) }}</p>
+            <div class="news-row">
+              <div v-for="(news, index) in getLimitedNews()" :key="index" class="news-item">
+                <a :href="news.link" target="_blank" class="news-link">
+                  <el-row align="middle"  @click="goToLink(news.link)">
+                    <el-col :span="24" style="display: flex; align-items: center;">
+                      <!-- Image -->
+                      <div class="news-item-wrapper">
+                        <img :src="news.image" alt="News Image" class="news-image">
+                        <!-- News Content -->
+                        <div class="news-content">
+                          <h4 class="news-title">{{ news.title }}</h4>
+                          <p class="news-summary">{{ truncateText(news.summary, 50) }}</p>
+                        </div>
                       </div>
-                    </div>
-                  </el-col>
-                </el-row>
-              </a>
+                    </el-col>
+                  </el-row>
+                </a>
+            </div>
             </div>
           </div>
 
+           <!-- 添加一个缝隙 -->
+          <div class="spacer" style="width: 30px;"></div>
+
           <!-- 右侧社区板块 -->
           <div class="forum-container">
-            <div v-for="(posts, index) in getLimitedPosts()" :key="index" class="posts-item">
+            <div class="hot-posts">热门帖子</div>
+            <div class="posts-column">
+              <div v-for="(posts, index) in getLimitedPosts()" :key="index" class="posts-item">
               <a :href="posts.link" target="_blank" class="posts-link">
                 <el-row align="middle" class="posts-row" @click="goToLink(posts.link)">
-                  <el-col :span="24" style="display: flex; align-items: center;">
+                  <el-col :span="24" style="display: flex; align-items: center;height: 100px;">
                     <!-- Image -->
                     <div class="posts-item-wrapper">
                       <img :src="posts.image" alt="Posts Image" class="posts-image">
@@ -130,6 +139,7 @@
                   </el-col>
                 </el-row>
               </a>
+            </div>
             </div>
           </div>
         </div>
@@ -146,7 +156,7 @@
 
             <div class="module" @click="redirectToGames" @mouseover="hideContent" @mouseout="showContent">
                 <p class="module-text">一场场足球的视觉盛宴</p>
-                <div class="circle">E</div>
+                <div class="circle">G</div>
                 <div class="overlay-background">
                   <p class="overlay-text">享受足球魅力<br>->赛事</p>
                 </div>
@@ -194,9 +204,45 @@ export default {
           summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
           image: "../src/assets/img/carousel3.png",
           link: "https://sse.tongji.edu.cn/"
+        },
+        {
+          title: "王晗天天拉屎",
+          summary: "有消息人士称301寝室的wh一天能拉三泡屎，请跟随小编一起来看看吧",
+          image: "../src/assets/img/carousel1.png",
+          link: "https://sse.tongji.edu.cn/"
+        },
+        {
+          title: "lll今天又睡过头了",
+          summary: "猪王lll今天无故缺席，斩立决",
+          image: "../src/assets/img/carousel2.png",
+          link: "https://sse.tongji.edu.cn/"
+        },
+        {
+          title: "wyh好帅",
+          summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
+          image: "../src/assets/img/carousel3.png",
+          link: "https://sse.tongji.edu.cn/"
         }
       ],
       postsList: [
+        {
+          title: "王晗天天拉屎",
+          summary: "有消息人士称301寝室的wh一天能拉三泡屎，请跟随小编一起来看看吧",
+          image: "../src/assets/img/carousel1.png",
+          link: "https://sse.tongji.edu.cn/"
+        },
+        {
+          title: "lll今天又睡过头了",
+          summary: "猪王lll今天无故缺席，斩立决",
+          image: "../src/assets/img/carousel2.png",
+          link: "https://sse.tongji.edu.cn/"
+        },
+        {
+          title: "wyh好帅",
+          summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
+          image: "../src/assets/img/carousel3.png",
+          link: "https://sse.tongji.edu.cn/"
+        },
         {
           title: "王晗天天拉屎",
           summary: "有消息人士称301寝室的wh一天能拉三泡屎，请跟随小编一起来看看吧",
@@ -231,8 +277,8 @@ export default {
         { Game: "中超", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 }
       ],
       maxGamesItems: 8,
-      maxNewsItems: 3,
-      maxPostsItems: 3,
+      maxNewsItems: 6,
+      maxPostsItems: 6,
       maxNewsLength: 30,
       GameSelect: "ALL"
     }
@@ -327,19 +373,21 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 .main-container{
-  background-color: #a8e3f3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; /* 垂直方向排列子组件 */
 }
 
 .top-section {
-  background-color: #f0f0f0;
+  width: 86vw;
 }
 /* 赛事种类选择栏 */
 .Games-menu {
-  /* border-radius: 10px;
-  padding: 10px; */
-  background-color: #4dcdf0;
+  padding: 10px;
+  background-color: #78b9fa;
 }
 
 .el-menu-item {
@@ -372,12 +420,11 @@ export default {
 }
 
 .menu-title:hover {
-  color: #4dcdf0;
+  color: #409EFF;
 }
 
 /* 赛事信息卡片 */
 .Game-col-container {
-  background-color: #4dcdf0;
   display: flex;
   flex-wrap: nowrap;
   padding-top: 10px;
@@ -397,6 +444,7 @@ export default {
   flex: 2;
   padding-top: 10px;
   justify-content: space-between;
+  width: 86vw;
 }
 /* 论坛模块 */
 /* Center the forum container and set some spacing */
@@ -411,6 +459,12 @@ export default {
   margin-top: 20px;
 }
 
+.posts-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .posts-item {
   width: 100%;
   background-color: #f9f9f9;
@@ -419,6 +473,7 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.2s ease;
+  height: 150px;
 }
 
 .posts-item:hover {
@@ -473,14 +528,11 @@ export default {
   font-size: 14px;
   color: #666;
 }
-/* 新闻模块 */
-.news-container{
-  width: 60%;
-}
-.hot-news {
+
+.hot-posts {
   font-size: 36px;
   font-weight: bold;
-  color: #ff4500;
+  color: #ffd64f;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   text-align: center;
   display: flex;
@@ -488,71 +540,93 @@ export default {
   align-items: center;
 }
 
-.news-item {
-  margin-bottom: 20px; 
-}
-
-.news-image {
-  width: 150px;
-  height: 100px;
-  object-fit: cover;
-  margin-right: 10px;
-}
-
-.news-item-wrapper {
+/* 新闻模块 */
+.news-container{
+  width: 60%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  width: 100%;
-  margin: 0; 
-  padding: 0; 
+}
+.hot-news {
+  font-size: 36px;
+  font-weight: bold;
+  color: #fc9069;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.news-content {
-  max-width: 400px;
-  flex: 1; 
+.news-row {
+  /* Add styles for the row of news items */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
-.news-item-wrapper:hover {
-  background-color: #f2f2f2; 
+.news-item {
+  width: calc(50% - 10px);
+  margin-bottom: 20px;
+
+}
+
+/* 调整一行中的新闻模块间距 */
+.news-row.adjusted {
+  justify-content: space-between; /* 居中并减少中间间距 */
 }
 
 .news-link {
-  display: block;
+  /* Add styles for the news link */
   text-decoration: none;
   color: inherit;
 }
 
+.news-item-wrapper {
+  /* Add styles for the news item wrapper */
+  border-radius: 10px;
+  background-color: #f0f0f0;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.news-image {
+  /* Add styles for the news image */
+  width: 100%;
+  height: 200px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.news-content {
+  /* Add styles for the news content */
+  padding: 10px;
+}
+
+.news-title {
+  /* Add styles for the news title */
+  margin-top: 0;
+}
+
+.news-summary {
+  /* Add styles for the news summary */
+  margin-bottom: 0;
+}
 
 /* 轮播图 */
-.carousel-image {
-  width: 1800px;
-  object-fit: contain;
-}
 
-.carousel-item-container {
-  width: 100%;
-  height: 80vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3); /* Add the box-shadow here */
-}
-
-.carousel-image {
-  border: 0;
-  width: 1800px;
-  object-fit: contain;
-}
 
 /* 右下组件——回到顶部 */
 .scroll-to-top-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 50px; /* Set the desired width for the square image */
-  height: 50px; /* Set the desired height for the square image */
+  width: 50px;
+  height: 50px; 
   cursor: pointer;
-  overflow: hidden; /* Hide overflowing content */
+  overflow: hidden; 
   z-index: 999;
 }
 
@@ -588,29 +662,29 @@ export default {
 
 .line {
   color: #4dcdf0;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 /* <!-- 下半部分 --> */
 /* 赛事，论坛，新闻选择 */
 .bottom-section {
-    display: flex;
-    justify-content: space-around;
-    background-color: #f0f0f0;
-    padding: 20px;
+  width: 86vw;
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
 }
 
 /* 设置模块样式 */
 .module {
-    position: relative;
-    text-align: center;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    width: 30%;
-    cursor: pointer; /* 添加交互：将鼠标光标变为手型 */
-    transition: transform 0.3s ease;
+  position: relative;
+  text-align: center;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 30%;
+  cursor: pointer; /* 添加交互：将鼠标光标变为手型 */
+  transition: transform 0.3s ease;
 }
 
 .module:hover {
@@ -618,51 +692,51 @@ export default {
 }
 
 .module .circle {
-    width: 80px;
-    height: 80px;
-    line-height: 80px;
-    border-radius: 50%;
-    background-color: #007bff;
-    color: #fff;
-    font-size: 36px;
-    margin: 0 auto 10px;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 36px;
+  margin: 0 auto 10px;
 }
 
 .module .module-text {
-    font-size: 16px;
-    color: #777;
+  font-size: 16px;
+  color: #777;
 }
 
 .overlay-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 123, 255, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 123, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .module:hover .overlay-background {
-    opacity: 1;
+  opacity: 1;
 }
 
 .module .overlay-text {
-    font-size: 24px;
-    color: #fff;
+  font-size: 24px;
+  color: #fff;
 }
 
 .module .module-text, .module .circle {
-    visibility: visible;
+  visibility: visible;
 }
 
 .module:hover .module-text, .module:hover .circle {
-    visibility: hidden;
+  visibility: hidden;
 }
 </style>
 
