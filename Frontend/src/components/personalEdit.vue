@@ -1,57 +1,88 @@
 <template>
-    <div class="common-layout">
-        <el-container>
-            <el-header>
-                <el-page-header @back="goBack">
-                    <template #content>
-                        <span class="text-large font-600 mr-3"> 资料编辑 </span>
+    <el-container class="maincontainer">
+        <el-header class="lrborder" style="height: 5vh;">
+            <el-page-header @back="goBack">
+                <template #content>
+                    <span> 资料编辑 </span>
+                </template>
+            </el-page-header>
+        </el-header>
+        <el-divider style="margin: 0;" />
+        <el-main class="lrborder" style="padding: 0px; height: 95vh;">
+            <el-tabs type="border-card" tab-position="left" style="height: 100%; border: 0;" class="demo-tabs">
+                <el-tab-pane>
+                    <template #label>
+                        <span class="custom-tabs-label">
+                            <el-icon>
+                                <UserFilled />
+                            </el-icon>
+                            <span>个人资料</span>
+                        </span>
                     </template>
-                </el-page-header>
-            </el-header>
-            <el-main>
-                <el-tabs type="border-card" tab-position="left" style="height: 80vh;" class="demo-tabs">
-                    <el-tab-pane label="个人资料">
-                        昵称
-                        <el-input class="inputbox"></el-input>
-                        个人账号
-                        <el-input class="inputbox"></el-input>
-
-                    </el-tab-pane>
-                    <el-tab-pane label="网页主题">网页主题</el-tab-pane>
-                    <el-tab-pane label="还没想好">Role</el-tab-pane>
-                    <el-tab-pane label="还没想好">Task</el-tab-pane>
-                </el-tabs>
-            </el-main>
-        </el-container>
-    </div>
+                    <userEdit />
+                </el-tab-pane>
+                <el-tab-pane>
+                    <template #label>
+                        <span class="custom-tabs-label">
+                            <el-icon>
+                                <Monitor />
+                            </el-icon>
+                            <span>个性装扮</span>
+                        </span>
+                    </template>
+                    <themeEdit />
+                </el-tab-pane>
+                <el-tab-pane label="还没想好">Role</el-tab-pane>
+                <el-tab-pane label="还没想好">Task</el-tab-pane>
+            </el-tabs>
+        </el-main>
+    </el-container>
 </template>
   
 <script>
+import userEdit from './userEdit.vue';
+import themeEdit from './themeEdit.vue';
 export default {
+    components: {
+        'userEdit': userEdit,
+        'themeEdit': themeEdit,
+    },
     data() {
         return {
-
+            avatarUrl: "./src/assets/img/carousel1.png", // 头像url
+            userName: "WinWin", // 用户名
+            account: "1145141919810", // 账号
+            dialogVisible: false, // 修改对话框是否可见
+            dialogTitle: '',
         };
     },
     methods: {
         goBack() {
-            this.$router.push('/personal')
-        }
+            this.$router.push('/personal');
+        },
+        openDialog(buttonType) {
+            if (buttonType == "username") {
+                this.dialogTitle = "修改用户昵称";
+            }
 
+            this.dialogVisible = true;
+
+        },
     },
 };
 </script>
+  
 <style scoped>
-.el-main {
-    padding: 0px;
+.maincontainer {
+    height: 100vh;
+    /* 上右下左 */
+    padding: 0 20vw 0 20vw;
 }
 
-.titleLayout {
-    position: absolute;
-    display: flex;
-    width: 940px;
-    flex-direction: column;
-    flex-shrink: 0;
+/* 页面左右的边框 */
+.lrborder {
+    border-left: 1px solid #EAEAEA;
+    border-right: 1px solid #EAEAEA;
 }
 
 .el-tabs--right .el-tabs__content,
@@ -59,17 +90,14 @@ export default {
     height: 100%;
 }
 
-.titleh1Typo {
-    color: var(--colors-text-dark-172239100, #172239);
-    font-family: Verdana;
-    font-size: 40px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 48px;
+.demo-tabs .custom-tabs-label .el-icon {
+    vertical-align: middle;
 }
 
-.inputbox {
-    display: flex;
-    width: 40vw;
+.demo-tabs .custom-tabs-label span {
+    vertical-align: middle;
+    margin-left: 4px;
+    font-size: 16px;
 }
 </style>
+  
