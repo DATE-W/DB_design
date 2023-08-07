@@ -26,11 +26,9 @@ export default {
             date:"",
             approvalNum:0,
 
-            judgers:[
-                {jName:"草神和伞兵什么时候结婚",jText:"你说得对，但是原神是一款",jDate:"2023-07-08"},
-                {jName:"丁真Official",jText:"义！乌！",jDate:"2023-07-09"},
-                {jName:"杰子",jText:"同学报一下学号姓名给你加创新学分",jDate:"2023-07-10"},
-            ],
+            jNames:[],
+            jTexts:[],
+            jDates:[],
 
             userJudge:"",
         }
@@ -111,11 +109,19 @@ export default {
                     this.isCollected = true
                 }
                 this.approvalNum = response.data.approvalNum;
+                //this.judgers.jText.push()
             }
             console.log("response.data.islike = " + response.data.islike);
             console.log("response.data.iscollect = " + response.data.iscollect);
             console.log("response.data.approvalNum = " + response.data.approvalNum);
-            console.log("response = " + response);
+            response.data.comments.forEach(jInfo => {
+                this.jNames.push(jInfo.userName);
+                this.jTexts.push(jInfo.contains);
+                this.jDates.push(jInfo.publishDateTime);
+                console.log("response.data.comments.userName = " + jInfo.userName);
+                console.log("response.data.comments.contains = " + jInfo.contains);
+                console.log("response.data.comments.publishDateTime = " + jInfo.publishDateTime); 
+            });
             console.log("isApproved1 = " + this.isApproved);
         },
         async approvePost()
@@ -161,7 +167,6 @@ export default {
         },
         async PostJudge()
         {
-            console.log('userJudge = ' + this.userJudge);
             const token = localStorage.getItem('token');
             let response
             try {
@@ -190,7 +195,7 @@ export default {
             }
             console.log("发送评论 " + response.data.value);
             this.userJudge="";
-            if(response.data.ok=='ok'){
+            if(response.data.ok=='yes'){
                 location.reload();
             }
         },
@@ -242,7 +247,7 @@ export default {
         <my-nav/>
         <el-container class="post-container">
             <el-header>
-                <el-page-header :icon="ArrowLeft" @back="goBack">
+                <el-page-header :icon="ArrowLeft" @back="goBack"></el-page-header>
                     <span class="header-text" >{{ title }}</span>
                     <el-button class="header-respond-btn" style="right:8.3vw" @click="collectPost()">
                         <span v-if="isCollected == false">收藏</span>
@@ -252,7 +257,6 @@ export default {
                     <img style="height:2vh;width: 1vw;margin-right: 0.5vw;" src="../assets/img/approve.png">
                         点赞 {{ approvalNum }}
                     </el-button>
-                </el-page-header>
             </el-header>
             <el-container style="border: 1px solid #ccc;">
                 <el-aside>
@@ -272,10 +276,10 @@ export default {
                     </div>
                     <!-- 评论 -->
                     <div class="judger-post">
-                        <div v-for="judger in judgers"> 
+                        <div v-for="(jName,index) in jNames"> 
                             <el-divider style="color: black;height:2vw"></el-divider>
-                            <p><text style="color: rgb(24, 151, 235);">{{ judger.jName }} ：</text><text>{{ judger.jText }}</text></p>
-                            <p style="top:2vw">{{ judger.jDate }}</p>
+                            <p><text style="color: rgb(24, 151, 235);">{{ jName }} ：</text><text>{{ jTexts[index] }}</text></p>
+                            <p style="top:3vw">{{ jDates[index] }}</p>
                         </div>
                     </div>
                 </el-main>
@@ -362,6 +366,7 @@ export default {
     font-size:1.25rem;
     color:rgb(41, 93, 151);
 }
+
 /*主信息板块*/
 .el-main{
     text-align: left;
@@ -376,6 +381,8 @@ export default {
     bottom: 0;
     right:0vw;
 }
+
+/*发布评论*/
 .input-respond-container{
     background-color: rgb(251, 249, 246);
     position: fixed;
@@ -393,7 +400,9 @@ export default {
     right:-60vw;
 }
 
+/*左上角返回箭头*/
 .el-page-header{
-    top:1vw;
+    position: relative;
+    top:1.2vw;
 }
 </style>
