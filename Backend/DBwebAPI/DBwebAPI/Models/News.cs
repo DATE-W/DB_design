@@ -3,6 +3,7 @@
     public class News
     {
         public int news_id { get; set; }
+        public string title { get; set; }
         public DateTime publishDateTime { get; set; }
         public string summary { get; set; }
         public string contains { get; set; }
