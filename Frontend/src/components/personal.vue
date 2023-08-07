@@ -13,33 +13,52 @@
         <!-- 左侧一列 -->
 
         <!-- 用户信息与邮箱 -->
-        <border-box class="bBox" style="width: 200px;height: 30vh; top: 11vh;left:3vw">
-
+        <el-card class="personal-card">
           <!-- 用户名 -->
-          <div class="userNameLayout" style="left:4.5vw;">
-            <p class="userNameTypo"> {{ userName }}</p>
+          <div class="userNameLayout">
+            <p class="userNameTypo">{{ userName }}</p>
           </div>
 
-          <!-- 跳转到个人信息 -->
-          <button class="goinBtn" style="right:1vw;top:2vh">
-            <!-- 待写入跳转逻辑 -->
-
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
-              style="position:absolute;right:0px;bottom: 0px;">
-              <path d="M5 14L11 8L5 2" stroke="#161616" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-
-          </button>
-
           <!-- 头像图片 -->
-
-          <!-- 待写入跳转逻辑 -->
-          <!-- 图片源需更改 -->
           <el-avatar :src="avatarUrl" class="avatar"></el-avatar>
+          <!-- 关注、粉丝、点赞数 -->
+          <el-card shadow="hover" class="childcard" style="margin-top: 6vh;">
+            <div class="childcardInfo">
+              <div>关注</div>
+              <div>
+                {{ followCnt }}&nbsp;
+                <el-icon>
+                  <ArrowRightBold />
+                </el-icon>
+              </div>
+            </div>
+          </el-card>
+          <el-card shadow="hover" class="childcard">
+            <div class="childcardInfo">
+              <div>粉丝</div>
+              <div>
+                {{ befollowCnt }}&nbsp;
+                <el-icon>
+                  <ArrowRightBold />
+                </el-icon>
+              </div>
+            </div>
+          </el-card>
+          <el-card shadow="hover" class="childcard">
+            <div class="childcardInfo">
+              <div>点赞</div>
+              <div>
+                {{ likeCnt }}&nbsp;
+                <el-icon>
+                  <ArrowRightBold />
+                </el-icon>
+              </div>
+            </div>
+          </el-card>
 
-        </border-box>
+        </el-card>
 
-        <button class="btn2" style="width: 180px; height: 40px; margin-top: 35vh; left: 3vw;position: relative;"
+        <button class="btn2" style="width: 180px; height: 40px; margin-top: 5vh; left: 3vw;position: relative;"
           :style="isEditSelected ? selectedStyle : ''" @click="showedit">
           <p2 class="textTypo1">资料编辑</p2>
         </button>
@@ -85,9 +104,6 @@ import pNotification from './personalNotification.vue';
 import pCredits from './personalCredits.vue';
 import pCheckin from './personalCheckin.vue';
 import pPost from './personalPost.vue';
-import { ElDivider } from 'element-plus'
-
-
 
 export default {
   components: {
@@ -108,9 +124,9 @@ export default {
       },
       avatarUrl: "./src/assets/img/carousel1.png", // 头像url
       userName: "WinWin", // 用户名
-      followCnt: 0,       // 关注数
-      befollowCnt: 0,     // 被关注数
-      likeCnt: 0,         // 被点赞总数
+      followCnt: 123,       // 关注数
+      befollowCnt: 114514,     // 被关注数
+      likeCnt: 1919810,         // 被点赞总数
 
     };
   },
@@ -128,6 +144,31 @@ export default {
 </script>
 
 <style scoped>
+.personal-card {
+  padding: 0px;
+  /* 调整卡片的内边距 */
+  margin: 10px;
+  /* 调整卡片的外边距 */
+  border: 1px solid #EAEAEA;
+  /* 添加卡片的灰色边框 */
+  border-radius: 8px;
+  /* 设置卡片的圆角 */
+
+  height: 400px;
+}
+
+.childcard {
+  margin-top: 10px;
+  font-size: 20px;
+}
+
+.childcardInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .el-main {
   flex: 1;
   padding: 0;
@@ -163,7 +204,6 @@ export default {
 
 /* 按钮样式 */
 .btn2 {
-  position: absolute;
   flex-shrink: 0;
   border-radius: 16px;
   border: 1px solid var(--colors-light-eaeaea-100, #EAEAEA);
@@ -177,7 +217,8 @@ export default {
 .userNameLayout {
   position: absolute;
   display: flex;
-  width: 156px;
+  width: 5vw;
+  left: 7vw;
   flex-direction: column;
   flex-shrink: 0;
 }
@@ -185,24 +226,17 @@ export default {
 .userNameTypo {
   color: var(--colors-text-dark-172239100, #172239);
   font-family: Verdana;
-  font-size: 16px;
+  font-size: 22px;
   font-style: normal;
   font-weight: 600;
   line-height: 24px;
 }
 
-/* 按钮风格 */
-.goinBtn {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-}
 
 /* 图片风格 */
 .avatar {
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-radius: 48px;
   margin-top: 0.7vh;
   margin-left: 1vw;
