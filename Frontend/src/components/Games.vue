@@ -22,40 +22,62 @@
   <border-box class="borderBoxMid" style="left:27rem">
     
     <!-- test -->
-    <p class="textDate">2023.08.12</p>
+    <p class="textDate">date:{{date11}}</p>
     <p class="textTypoLeague" style="left:10rem">test:leaCho:{{league11}} </p>
     <p class="textTypoLeague" style="left:28rem">matCho:{{match11}} </p>
 
     <!-- 使用v-for循环生成赛事列表 -->
     <border-box class="borderBoxMatch" v-for="(match,index) in matches" :key="match.id" 
     :style="{ top: `${index * 6+5}rem` }" @click="toMatchDetail(index)">
-      <!-- 可根据match数据渲染赛事列表的内容 -->
+      <!-- 根据matches数据渲染赛事列表的内容 -->
+      <p class="textTypoMatchTime">{{ match.dateTime }}</p>
+      <p class="textTypoMatchTeam">{{ match.homeTeamName }}</p>
+      <p class="textTypoMatchScore">{{ match.homeScore }} - {{ match.guestScore }}</p>
+      <p class="textTypoMatchTeam" style="left:25rem">{{ match.guestTeamName }}</p>
+      <p class="textTypoMatchStatus">{{ getMatchStatus(match.status) }}</p>
     </border-box>
 
   </border-box>
 
-  <border-box class="borderBoxRightTop" style="right:5rem">
-    <p>日期选择</p>
+  <border-box class="borderBoxRightTop" style="left:74rem">
+    <el-date-picker
+        v-model="date11"
+        type="date"
+        placeholder="日期选择"
+        :size="large"
+        value-format="YYYY-MM-DD"
+        style="left:1.5rem;top:8rem"
+        @change="this.getMatches(this.date11,this.league11);"
+      />
   </border-box>
 
-  <border-box class="borderBoxRightAD" style="right:5rem;">
+  <border-box class="borderBoxRightAD" style="left:74rem;">
     <p>广告</p>
   </border-box>
 
 </template>
 
 <script>
-import { requiredNumber } from 'element-plus/es/components/table-v2/src/common';
 import MyNav from './nav.vue';
+import axios from 'axios';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { ref } from 'vue';
+
 export default{
+
   components: {
     'my-nav': MyNav
   },
+
+  mounted() {
+    this.getMatches(this.date11,this.league11);
+  },
+
   methods:{
     toMatchDetail(choice){
       this.match11=choice;
-      etTimeout(function(){ getSignature() },5000);//Test
-      this.$router.push('/GamesDetail');
+      //etTimeout(function(){ getSignature() },5000);//Test
+      this.$router.push('/GamesDetail/'+choice);
     },
     leagueChoice(choice){
       if(this.league11!=choice){
@@ -64,7 +86,43 @@ export default{
       else{
         this.league11=0;
       }
+      this.getMatches(this.date11,this.league11);
     },
+    getMatchStatus(status) {
+      switch (status) {
+        case 0:
+          return "未开始";
+        case 1:
+          return "进行中";
+        case 2:
+          return "已结束";
+        default:
+          return "";
+      }
+    }, 
+
+    async getMatches(dateCho,leagueCho)
+    {
+      let response
+      try {
+          response = await axios.post('/api/updateTeam/searchTeamInGameTime', {
+              dateTime: dateCho,
+              gameType: leagueCho, 
+          }, {})
+      } catch (err) {
+            ElMessage({
+                message: '获取赛事数据失败',
+                grouping: false,
+                type: 'error',
+            });
+        }
+
+      console.log(dateCho,leagueCho);
+      this.matches=response.data;
+      console.log(this.matches);
+      
+    },
+
   },
 
   setup()
@@ -73,11 +131,14 @@ export default{
 		      return new URL(league.logo, import.meta.url).href; //本地文件路径
       }
   },
+
   data()
   {
     return{
+
       league11:0,
       match11:0,
+      date11:ref(''),
 
       leagues: [
       { name: "全部赛事", logo: "" },
@@ -89,14 +150,8 @@ export default{
       { name: "中超", logo: "/src/assets/img/cslogo.png" },
       { name: "其他赛事", logo: "" },],
 
-      matches:[
-        { },
-        { },
-        { },
-        { },
-        { },
-        { },
-      ],
+       matches:ref([]),
+
     }
   }
 }
@@ -113,8 +168,8 @@ export default{
 .borderBoxLeft
 {
 position:absolute;
-width: 16vw;
-height: 90vh;
+width: 15rem;
+height: 40.5rem;
 flex-shrink: 0; 
 /* 正式版本 */
 background: rgb(240, 240, 240);
@@ -141,9 +196,9 @@ width: 17rem;
 height: 15rem;
 flex-shrink: 0; 
 /* 正式版本 */
-
+background: rgb(240, 240, 240);
 /* 测试版本 */
-background: #4BDFBC; 
+/* background: #4BDFBC; */ 
 }
 /* 右侧下方容器框 */
 .borderBoxRightAD
@@ -152,7 +207,7 @@ position:absolute;
 width: 17rem;
 height: 20rem;
 flex-shrink: 0;
-bottom: 0.2rem;
+top: 24.3rem;
 /* 正式版本 */
 
 /* 测试版本 */
@@ -235,7 +290,54 @@ font-style: normal;
 font-weight: 100;
 line-height: normal; 
 }
-
+.textTypoMatchTime
+{
+  position:absolute;
+  color: rgb(17, 60, 158);
+  font-family: Georgia;
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 100;
+  line-height: normal;
+  top:-1rem;
+  left:1rem;
+}
+.textTypoMatchTeam
+{
+  position:absolute;
+  color: rgb(0, 0, 0);
+  font-family: Impact;
+  font-size: 2rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  top:-1.5rem;
+  left:6rem;
+}
+.textTypoMatchStatus
+{
+  position:absolute;
+  color: rgb(97, 97, 97);
+  font-family: Impact;
+  font-size: 0.8rem;
+  font-style: normal;
+  font-weight: 200;
+  line-height: normal;
+  top:1.6rem;
+  left:1.7rem;
+}
+.textTypoMatchScore
+{
+  position:absolute;
+  color: rgb(255, 0, 0);
+  font-family: Verdana;
+  font-size: 2.5rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  top:-2.2rem;
+  left:18rem;
+}
 
 /* 图片样式 */
 
