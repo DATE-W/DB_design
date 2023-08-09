@@ -7,102 +7,159 @@
   <my-nav></my-nav>
 
   <!-- 左侧联赛选择器 -->
-  <div class="left" style="left:5vw">
+  <div class="left" style="left:5rem">
+    <!-- 使用v-for指令循环生成联赛选择器内容 -->
+    <div class="leagueStyle" v-for="(league, index) in leagues" :key="index"
+      :style="{ top: `${index * 5 + 0.4}rem`, background: ((index === leagueNo) ? 'aqua' : '') }"
+      @click="leagueChoice(index)">
+      <!-- 插入联赛LOGO图片 -->
+      <img v-if="league.logo" :src="league.logo" class="imgLogo">
+      <!-- 将top值调整为合适的位置，同时调整“全部赛事”和“其他赛事”的位置 -->
+      <p class="textTypeLeague" :style="{ top: '-1.5rem', left: ((0 == index || 7 == index) ? '2.5rem' : '6rem') }">{{
+        league.name }}
+      </p>
 
-    <div class="league" style="top:1vw">
-      <p class="textTypeLeague" style="left:2.5vw">全部赛事</p>
-    </div>
-
-    <div class="league" style="top:5.8vw">
-      <img src="../assets/img/pmlogo.png" class="imgLogo">
-      <p class="textTypeLeague">英超</p>
-    </div>
-
-    <div class="league" style="top:10.6vw">
-      <img src="../assets/img/lllogo.png" class="imgLogo">
-      <p class="textTypeLeague">西甲</p>
-    </div>
-
-    <div class="league" style="top:15.4vw">
-      <img src="../assets/img/salogo.png" class="imgLogo">
-      <p class="textTypeLeague">意甲</p>
-    </div>
-
-    <div class="league" style="top:20.2vw;">
-      <img src="../assets/img/bllogo.png" class="imgLogo" style="border-radius: 0vw; ">
-      <p class="textTypeLeague">德甲</p>
-    </div>
-
-    <div class="league" style="top:25vw">
-      <img src="../assets/img/le1logo.png" class="imgLogo">
-      <p class="textTypeLeague">法甲</p>
-    </div>
-
-    <div class="league" style="top:30vw">
-      <img src="../assets/img/cslogo.png" class="imgLogo" style="left:1.5vw;top:0.2vw">
-      <p class="textTypeLeague">中超</p>
-    </div>
-
-    <div class="league" style="top:35vw">
-      <p class="textTypeLeague" style="left:2.5vw">其他赛事</p>
     </div>
   </div>
 
   <!-- 高光球员合集 -->
   <div class="highlightPlayer">
     <p>高光球员合集</p>
-    <img src="../assets/img/highlightPlayer.png" class="highlightPlayerPic" alt="Transfer to highlight player page" @click="toHighlightPlayer">
+    <img src="../assets/img/highlightPlayer.png" class="highlightPlayerPic" alt="Transfer to highlight player page"
+      @click="direct2HighlightPlayer">
   </div>
 
-  <el-main>
-    <div class="search-container">
-      <el-icon class="search-icon">
-        <Search />
-      </el-icon>
-      <el-input class="search-input" v-model="searchKeyword" placeholder="请输入关键词"
-        @keyup.enter.native="handleSearch"></el-input>
-    </div>
-    <div class="page-container">
-      <el-pagination @current-change="handlePageChange" :current-page="currentPage" :page-size="pageSize"
-        layout="prev, pager, next, jumper" :total="totalItems"></el-pagination>
-    </div>
-  </el-main>
+  <!-- 搜索栏 -->
+  <div class="search-container">
+    <el-icon class="search-icon">
+      <Search />
+    </el-icon>
+    <el-input class="search-input" v-model="keyword" placeholder="请输入关键词" @keyup.enter.native="handleSearch(keyword)">
+    </el-input>
+  </div>
 
 
+
+
+
+  <!-- 获取球队信息 -->
+  <div class="team" v-for="(temp, index) in temps" :key="index"
+    :style="{ top: `${Math.floor(index / 4) * 6 + 18}rem`, left: `${index % 4 * 14 + 26}rem` }"
+    @click="direct2TeamMsg(temp.teamName)">
+    <img class="teamLogo" :src="temp.teamLogo">
+    <div class="teamName">
+      <p>{{ temp.teamName }}</p>
+    </div>
+  </div>
 
   <!-- 广告 -->
   <div class="AD" style="right:5vw;">
-    <img src="../assets/img/AD.png" class="ADPic" alt="This is an AD image" >
+    <img src="../assets/img/AD.png" class="ADPic" alt="This is an AD image">
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import MyNav from './nav.vue';
+import { ElMessage } from 'element-plus';
+import { ref } from 'vue';
 
 export default {
   components: {
     'my-nav': MyNav
   },
-  methods:{
-      toHighlightPlayer(){
-        this.$router.push('/highlightPlayerDetail');
-      },
+
+  created() {
+    this.getBasicTeamMsg(0);
+  },
+
+  methods: {
+    direct2HighlightPlayer() {
+      this.$router.push('/highlightPlayerDetail');
+    },
+
+    direct2TeamMsg(teamName) {
+      this.$router.push({
+        path: '/teamMsg',
+        query: {
+          teamName: teamName
+        }
+      })
+    },
+
+    leagueChoice(choice) {
+      if (this.leagueNo != choice) {
+        this.leagueNo = choice;
+      }
+      else {
+        this.leagueNo = 0;
+      }
+
+      this.getBasicTeamMsg(choice);
+    },
+
+    async getBasicTeamMsg(leagueNo) {
+      let response;
+      try {
+        response = await axios.post('/api/updateTeam/searchTeamInGameType', {
+          gameType: leagueNo,
+        });
+
+      } catch (err) {
+        ElMessage({
+          message: '获取信息失败',
+          type: 'error',
+        });
+      }
+
+      this.temps = [];
+      this.temps = response.data;
+    },
+
+  },
+
+
+  data() {
+    return {
+      leagueNo: 0,
+      match11: 0,
+      keyword: '',
+      teamsResult:[],
+
+      leagues: [
+        { "name": "全部赛事", "logo": "" },
+        { "name": "英超", "logo": "/src/assets/img/pmlogo.png" },
+        { "name": "西甲", "logo": "/src/assets/img/lllogo.png" },
+        { "name": "意甲", "logo": "/src/assets/img/salogo.png" },
+        { "name": "德甲", "logo": "/src/assets/img/bllogo.png" },
+        { "name": "法甲", "logo": "/src/assets/img/le1logo.png" },
+        { "name": "中超", "logo": "/src/assets/img/cslogo.png" },
+        { "name": "其他赛事", "logo": "" },],
+
+      teams: [
+        { "teamName": "op", "teamLogo": "/src/assets/img/pmlogo.png" },
+        { "teamName": "mai批", "teamLogo": "/src/assets/img/pmlogo.png" },
+        { "teamName": "ba批", "teamLogo": "/src/assets/img/pmlogo.png" },
+        { "teamName": "农批", "teamLogo": "/src/assets/img/pmlogo.png" },
+        { "teamName": "傻批", "teamLogo": "/src/assets/img/lllogo.png" },
+      ],
+
+      temps: [],
+      temps: ref([]),
+
     }
+  }
 }
 </script>
 
 <style scoped>
-
 /* 左侧容器 */
 .left {
   position: absolute;
   width: 15vw;
-  height: 40vw;
+  height: 90vh;
   flex-shrink: 0;
-  /* 正式版本 */
   background: rgb(240, 240, 240);
-  /* 测试版本 */
-  /* background: #4BDFBC;  */
 }
 
 /* 广告 */
@@ -116,7 +173,7 @@ export default {
 }
 
 /* 联赛选择按钮 */
-.league {
+.leagueStyle {
   position: absolute;
   width: 13vw;
   height: 4vw;
@@ -128,7 +185,7 @@ export default {
   transition: background-color 0.8s ease;
 }
 
-.league:hover {
+.leagueStyle:hover {
   background-color: rgb(246, 77, 77);
 }
 
@@ -145,21 +202,27 @@ export default {
 
 /* 搜索框 */
 .search-container {
-    margin-top: 7vw;
-    margin-left: 19vw;
-    display: flex;
-    align-items: center;
+  margin-top: 20vh;
+  margin-left: 23.5vw;
+  display: flex;
+  align-items: center;
 }
 
 .search-input {
-    width: 30%;
+  width: 30%;
 }
 
 .search-icon {
-    font-size: 24px;
+  font-size: 25px;
 }
 
-/* 字体样式 */
+.page-container {
+  position: absolute;
+  bottom: 0px;
+  left: 55%;
+  transform: translateX(-50%);
+}
+
 
 /* 左侧联赛名称字体样式 */
 .textTypeLeague {
@@ -177,8 +240,6 @@ export default {
   line-height: normal;
 }
 
-/* 图片样式 */
-
 /* 联赛图标 */
 .imgLogo {
   position: absolute;
@@ -190,7 +251,7 @@ export default {
 }
 
 /* 广告图片 */
-.ADPic{
+.ADPic {
   position: absolute;
   width: 17vw;
   height: 40vw;
@@ -207,10 +268,34 @@ export default {
   left: 0vw;
 }
 
+/* 球队按钮大小 */
+.team {
+  position: absolute;
+  width: 10vw;
+  height: 3vw;
+  flex-shrink: 0;
+  border-radius: 2vw;
+  display: flex;
+  /* 添加flex布局 */
+  align-items: center;
+  border: 1px solid var(--colors-light-eaeaea-100, #EAEAEA);
+  background: linear-gradient(to right, #9afffd, #c1f3f0);
+}
 
+/* 设置合适的高度来控制间隔 */
+.teamName {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin-left: 7px;
+}
 
-/* 各个球员图片 */
-.playerPic1 {
-  background: rgb(220, 138, 241);
+/* 球队logo */
+.teamLogo {
+  margin-left: 10px;
+  height: 30px;
+  width: 30px;
 }
 </style>
+
+ 
