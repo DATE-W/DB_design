@@ -58,6 +58,14 @@ const router = createRouter({
       path: '/AdminMain',
       component: () => import('../components/AdminMain.vue')
     },
+    {
+      path: '/teamMsg',
+      component: () => import('../components/teamMsg.vue')
+    },
+    {
+      path: '/detailedPlayerMsg',
+      component: () => import('../components/detailedPlayerMsg.vue')
+    },
   ]
 })
 
