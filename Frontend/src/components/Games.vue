@@ -40,8 +40,9 @@
     </border-box>
 
   </border-box>
-
+  <!-- 右侧上方日期选择器容器 -->
   <border-box class="borderBoxRightTop" style="left:74rem">
+    <!-- 日期选择器 -->
     <el-date-picker
         v-model="date11"
         type="date"
@@ -52,9 +53,9 @@
         @change="this.getMatches(this.date11,this.league11);"
       />
   </border-box>
-
+  <!-- 右侧下方主队容器 -->
   <border-box class="borderBoxRightAD" style="left:74rem;">
-    <p>广告</p>
+    <p>主队</p>
   </border-box>
 
 </template>
@@ -72,10 +73,12 @@ export default{
   },
 
   mounted() {
+    // 在页面挂载后获取赛事列表数据
     this.getMatches(this.date11,this.league11);
   },
 
   methods:{
+    // 跳转到赛事详情页
     toMatchDetail(uid){
       this.match11=uid;
       //etTimeout(function(){ getSignature() },5000);//Test
@@ -88,6 +91,7 @@ export default{
         }
       );
     },
+    // 选择联赛
     leagueChoice(choice){
       if(this.league11!=choice){
         this.league11=choice;
@@ -97,6 +101,7 @@ export default{
       }
       this.getMatches(this.date11,this.league11);
     },
+    // 根据赛事状态返回对应的文字描述
     getMatchStatus(status) {
       switch (status) {
         case 0:
@@ -109,6 +114,7 @@ export default{
           return "";
       }
     }, 
+    // 将日期对象转换为字符串
     dateToString(date) {
       var year = date.getFullYear();
       var month =(date.getMonth() + 1).toString();
@@ -122,7 +128,7 @@ export default{
       var dateTime = year + "-" + month + "-" + day;
       return dateTime;
     },
-
+    // 调用接口获取赛事列表数据
     async getMatches(dateCho,leagueCho)
     {
       let response
