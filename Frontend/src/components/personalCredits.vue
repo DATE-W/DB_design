@@ -1,7 +1,7 @@
-<!-- 我的积分 v1.0 -->
+<!-- 我的积分 v1.1 -->
 <template>
     <div class="main-container">
-        <div>
+        <div class="left-container">
             <div class="user-title">{{ usertitle }}</div>
             <div class="user-point">
                 {{ userpoint }}
@@ -30,7 +30,7 @@
                 <el-collapse v-model="activeNames" @change="handleChange">
                     <el-collapse-item name="1">
                         <template #title>
-                            <span style="display: inline-block; min-width: 450px;">平平无奇</span>
+                            <span style="display: inline-block; min-width: 350px;">平平无奇</span>
                         </template>
                         <div>
                             1
@@ -68,6 +68,10 @@
 </template>
 
 <style scoped>
+.left-container {
+    flex: 1;
+}
+
 .user-title {
     font-family: YouYuan;
     font-weight: bold;
@@ -96,7 +100,7 @@
 }
 
 .rectangle {
-    width: 80px;
+    width: 100px;
     margin-right: 20px;
     border-radius: 8px;
     position: relative;
@@ -168,7 +172,7 @@ export default {
         return {
             usertitle: "普通用户",  //向后端请求获得用户的称号
             userpoint: 25,  //向后端请求获得用户的积分数
-            rectangleHeights: [20, 40, 60, 90, 130, 190],  //矩形的长度
+            rectangleHeights: [30, 50, 70, 100, 140, 200],  //矩形的长度
             title: ["平平无奇", "普通用户", "一贴成名", "球场金童", "明日之星", "名人堂"],  //称号名
             point: [0, 10, 50, 200, 500, 1000],  //各称号的最低积分
             userIndex: -1,   //判断用户是哪个称号范围
