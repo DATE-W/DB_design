@@ -10,7 +10,7 @@
   <div class="left" style="left:5rem">
     <!-- 使用v-for指令循环生成联赛选择器内容 -->
     <div class="leagueStyle" v-for="(league, index) in leagues" :key="index"
-      :style="{ top: `${index * 5 + 0.4}rem`, background: ((index === leagueNo) ? 'aqua' : '') }"
+      :style="{ top: `${index * 5 + 0.8}rem`, background: ((index === leagueNo) ? 'aqua' : '') }"
       @click="leagueChoice(index)">
       <!-- 插入联赛LOGO图片 -->
       <img v-if="league.logo" :src="league.logo" class="imgLogo">
@@ -38,13 +38,9 @@
     </el-input>
   </div>
 
-
-
-
-
   <!-- 获取球队信息 -->
-  <div class="team" v-for="(temp, index) in temps" :key="index"
-    :style="{ top: `${Math.floor(index / 4) * 6 + 18}rem`, left: `${index % 4 * 14 + 26}rem` }"
+  <div class="team" v-for="(temp, index) in teams" :key="index"
+    :style="{ top: `${Math.floor(index / 4) * 6 + 18}rem`, left: `${index % 4 * 13 + 22}rem` }"
     @click="direct2TeamMsg(temp.teamName)">
     <img class="teamLogo" :src="temp.teamLogo">
     <div class="teamName">
@@ -52,9 +48,16 @@
     </div>
   </div>
 
-  <!-- 广告 -->
-  <div class="AD" style="right:5vw;">
-    <img src="../assets/img/AD.png" class="ADPic" alt="This is an AD image">
+  <!-- 射手榜 -->
+  <div class="topScorerContainer" style="right:5vw;">
+    <div class="topScorerHeader">
+      <p class="topScorerFont">射手榜</p>
+    </div>
+    <div class="singleTopScorer" v-for="(topScorer, index) in topScorerList" :key="index" :style="{ top: `${index * 3}rem` }" 
+    @click="direct2detailedPlayerMsg(topScorer.topScorerName)">
+      <p>{{ topScorer.topScorerName }}--------------{{ topScorer.goals }}</p>
+    </div>
+
   </div>
 </template>
 
@@ -85,6 +88,15 @@ export default {
           teamName: teamName
         }
       })
+    },
+
+    direct2detailedPlayerMsg(topScorerName) {
+      this.$router.push({
+        path: '/detailedPlayerMsg',
+        query: {
+          playerName: topScorerName
+        }
+      });
     },
 
     leagueChoice(choice) {
@@ -124,7 +136,7 @@ export default {
       leagueNo: 0,
       match11: 0,
       keyword: '',
-      teamsResult:[],
+      teamsResult: [],
 
       leagues: [
         { "name": "全部赛事", "logo": "" },
@@ -137,15 +149,28 @@ export default {
         { "name": "其他赛事", "logo": "" },],
 
       teams: [
-        { "teamName": "op", "teamLogo": "/src/assets/img/pmlogo.png" },
-        { "teamName": "mai批", "teamLogo": "/src/assets/img/pmlogo.png" },
-        { "teamName": "ba批", "teamLogo": "/src/assets/img/pmlogo.png" },
-        { "teamName": "农批", "teamLogo": "/src/assets/img/pmlogo.png" },
-        { "teamName": "傻批", "teamLogo": "/src/assets/img/lllogo.png" },
+        { "teamName": "c102", "teamLogo": "/src/assets/img/pmlogo.png" },
+        { "teamName": "原神", "teamLogo": "/src/assets/img/pmlogo.png" },
+        { "teamName": "明日方舟", "teamLogo": "/src/assets/img/pmlogo.png" },
+        { "teamName": "cp30", "teamLogo": "/src/assets/img/pmlogo.png" },
+        { "teamName": "我好喜欢wyh", "teamLogo": "/src/assets/img/lllogo.png" },
       ],
 
       temps: [],
       temps: ref([]),
+
+      topScorerList: [
+        { "topScorerName": " wjl ", "goals": 1919810 },
+        { "topScorerName": " wyh ", "goals": 114514 },
+        { "topScorerName": " wh ", "goals": 1 },
+        { "topScorerName": " wrb ", "goals": 11514 },
+        { "topScorerName": " lll ", "goals": 114 },
+        { "topScorerName": " zk ", "goals": 4 },
+        { "topScorerName": " xjq ", "goals": 114514 },
+        { "topScorerName": " lth ", "goals": 114514 },
+        { "topScorerName": " wlq ", "goals": 114514 },
+        { "topScorerName": " zyp ", "goals": 114514 },
+      ],
 
     }
   }
@@ -160,16 +185,6 @@ export default {
   height: 90vh;
   flex-shrink: 0;
   background: rgb(240, 240, 240);
-}
-
-/* 广告 */
-.AD {
-  position: absolute;
-  width: 17vw;
-  height: 40vw;
-  flex-shrink: 0;
-  bottom: 2vw;
-  background: #4B8FDF;
 }
 
 /* 联赛选择按钮 */
@@ -250,15 +265,6 @@ export default {
   object-fit: cover;
 }
 
-/* 广告图片 */
-.ADPic {
-  position: absolute;
-  width: 17vw;
-  height: 40vw;
-  flex-shrink: 0;
-  bottom: 0vw;
-}
-
 /* 高光球员跳转图片 */
 .highlightPlayerPic {
   position: absolute;
@@ -282,7 +288,7 @@ export default {
   background: linear-gradient(to right, #9afffd, #c1f3f0);
 }
 
-/* 设置合适的高度来控制间隔 */
+/* 球队名称 */
 .teamName {
   display: flex;
   align-items: center;
@@ -295,6 +301,49 @@ export default {
   margin-left: 10px;
   height: 30px;
   width: 30px;
+}
+
+/* 射手榜 */
+.topScorerContainer {
+  position: absolute;
+  width: 17vw;
+  height: 85vh;
+  flex-shrink: 0;
+  bottom: 2vw;
+  background: rgb(240, 240, 240);
+}
+
+/* 射手榜抬头 */
+.topScorerHeader{
+  width: 14vw;
+  height: 6vh;
+  margin-left: 25px;  /*
+
+  background: white; */
+
+}
+
+/* 抬头字体 */
+.topScorerFont{
+  align-items: center;
+  text-align: center;
+  font-feature-settings: 'clig' off, 'liga' off;
+  font-family: Verdana;
+  font-size: 2vw;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* 射手榜单个射手 */
+.singleTopScorer {
+  width: 14vw;
+  height: 5vh;
+  margin-left: 25px;  /* 
+
+  background: white;*/
+
+ 
+
 }
 </style>
 
