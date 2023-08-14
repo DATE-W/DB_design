@@ -1,10 +1,11 @@
-<!-- 2154314_郑楷_赛事列表 2023.08.10 16:00 v1.5.0
+<!-- 2154314_郑楷_赛事列表 2023.08.11 14:00 v1.6.0
  v1.0.0 页面画了一半 
  v1.1.0 画出了左侧的联赛选择器（未添加逻辑），布局了中部的比赛列表（已添加跳转逻辑），增加了各大联赛LOGO素材图，日期选择器和广告区待实现
  v1.2.0 优化了联赛选择器组件的代码、视觉效果、功能、数据通路
  v1.3.0 中间一列赛事缩略图的代码简化与传值
  v1.4.0 功能基本完成，前后端接口已经对齐，能完成实时渲染
- v1.5.0 增加跳转到赛事详情页的通路，并完成传值，添加注释 -->
+ v1.5.0 增加跳转到赛事详情页的通路，并完成传值，添加注释
+ v1.6.0 与赛事详情页互相传值，使得在返回本页面时，之前的日期与联赛选择不会丢失 -->
 
  <template>
   <my-nav></my-nav>
@@ -12,7 +13,7 @@
 <border-box class="borderBoxLeft" style="left:5rem;">
   <!-- 使用v-for指令循环生成联赛选择器内容 -->
   <border-box class="borderBoxLeague" v-for="(league, index) in leagues" :key="index"
-    :style="{ top: `${index * 5 + 0.4}rem`,background:((index===league11)?'aqua':'')}" @click="leagueChoice(index)">
+    :style="{ top: `${index * 5 + 0.4}rem`,background:((index==league11)?'aqua':'')}" @click="leagueChoice(index)">
     <!-- 插入联赛LOGO图片 -->
     <img v-if="league.logo" :src="league.logo" class="imgLogo"> 
     <!-- 将top值调整为合适的位置，同时调整“全部赛事”和“其他赛事”的位置 -->
@@ -30,7 +31,7 @@
 
     <!-- 使用v-for循环生成赛事列表 -->
     <border-box class="borderBoxMatch" v-for="(match,index) in matches" :key="match.gameUid" 
-    :style="{ top: `${index * 6+5}rem` }" @click="toMatchDetail(match.gameUid)">
+    :style="{ top: `${index * 6+5}rem` }" @click="toMatchDetail(match.gameUid,this.league11,this.date11)">
       <!-- 根据matches数据渲染赛事列表的内容 -->
       <p class="textTypoMatchTime">{{ match.dateTime }}</p>
       <p class="textTypoMatchTeam">{{ match.homeTeamName }}</p>
@@ -72,21 +73,28 @@ export default{
     'my-nav': MyNav
   },
 
+  created(){
+    this.date11=this.$route.query.date11;
+    this.league11=this.$route.query.league11;
+  },
+
   mounted() {
     // 在页面挂载后获取赛事列表数据
-    this.getMatches(this.date11,this.league11);
+    this.getMatches(this.date11,this.league11);    
   },
 
   methods:{
     // 跳转到赛事详情页
-    toMatchDetail(uid){
+    toMatchDetail(uid,leagueC,dateC){
       this.match11=uid;
       //etTimeout(function(){ getSignature() },5000);//Test
       this.$router.push(
         {
           path:`/detailedMatch`,
           query:{
-            gameUid: uid
+            gameUid: uid,
+            lgeChoice: leagueC,
+            dateChoice: dateC,
           }
         }
       );
@@ -145,9 +153,9 @@ export default{
             });
         }
 
-      console.log(dateCho,leagueCho);
+      /* console.log(dateCho,leagueCho); */
       this.matches=response.data;
-      console.log(this.matches);
+      /* console.log(this.matches); */
       
     },
 
@@ -184,7 +192,7 @@ export default{
       /* 测试版本 */
        matches:[
         {"dateTime":"20:00","homeTeamName":"利物浦","guestTeamName":"曼联","status":1,"homeScore":7,"guestScore":0,"gameUid":"PRD13403419"},
-        {"dateTime":"20:00","homeTeamName":"利物浦","guestTeamName":"曼联","status":1,"homeScore":7,"guestScore":0,"gameUid":"ABC12345678"},
+        {"dateTime":"20:00","homeTeamName":"曼城","guestTeamName":"国际米兰","status":2,"homeScore":1,"guestScore":0,"gameUid":"ABC12345678"},
         {"dateTime":"16:45","homeTeamName":"巴塞罗那","guestTeamName":"皇马","status":1,"homeScore":1,"guestScore":1,"gameUid":"XYZ98765432"},
         {"dateTime":"19:30","homeTeamName":"拜仁慕尼黑","guestTeamName":"多特蒙德","status":0,"homeScore":0,"guestScore":2,"gameUid":"DEF54321098"},
         {"dateTime":"14:30","homeTeamName":"切尔西","guestTeamName":"阿森纳","status":1,"homeScore":2,"guestScore":0,"gameUid":"GHI76543210"},
