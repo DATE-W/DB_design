@@ -22,7 +22,7 @@
           <!-- 头像图片 -->
           <el-avatar :src="avatarUrl" class="avatar"></el-avatar>
           <!-- 关注、粉丝、点赞数 -->
-          <el-card shadow="hover" class="childcard" style="margin-top: 6vh;">
+          <el-card shadow="hover" class="childcard" style="margin-top: 6vh;" @click="showtabs = false">
             <div class="childcardInfo">
               <div>关注</div>
               <div>
@@ -67,26 +67,31 @@
         <el-button class="logout-button" type="danger" @click="logout">登出</el-button>
       </el-aside>
       <el-main>
-        <el-tabs type="border-card" tab-position="top" class="maintabs">
-          <el-tab-pane label="我的动态">
-            <detail />
-          </el-tab-pane>
-          <el-tab-pane label="我的帖子">
-            <post />
-          </el-tab-pane>
-          <el-tab-pane label="我的收藏">
-            <favorite />
-          </el-tab-pane>
-          <el-tab-pane label="我的积分">
-            <credits />
-          </el-tab-pane>
-          <el-tab-pane label="我的签到">
-            <checkin />
-          </el-tab-pane>
-          <el-tab-pane label="消息通知">
-            <notification />
-          </el-tab-pane>
-        </el-tabs>
+        <div v-if="showtabs">
+          <el-tabs type="border-card" tab-position="top" class="maintabs">
+            <el-tab-pane label="我的动态">
+              <detail />
+            </el-tab-pane>
+            <el-tab-pane label="我的帖子">
+              <post />
+            </el-tab-pane>
+            <el-tab-pane label="我的收藏">
+              <favorite />
+            </el-tab-pane>
+            <el-tab-pane label="我的积分">
+              <credits />
+            </el-tab-pane>
+            <el-tab-pane label="我的签到">
+              <checkin />
+            </el-tab-pane>
+            <el-tab-pane label="消息通知">
+              <notification />
+            </el-tab-pane>
+          </el-tabs>
+        </div>
+        <div v-else>
+          <following />
+        </div>
       </el-main>
 
     </el-container>
@@ -105,6 +110,7 @@ import pCredits from './personalCredits.vue';
 import pCheckin from './personalCheckin.vue';
 import pPost from './personalPost.vue';
 
+import pFollowing from './personalFollowing.vue';
 export default {
   components: {
     'my-nav': MyNav,
@@ -113,10 +119,12 @@ export default {
     'notification': pNotification,
     'credits': pCredits,
     'checkin': pCheckin,
-    'post': pPost
+    'post': pPost,
+    'following': pFollowing
   },
   data() {
     return {
+      showtabs: true,
       selectedStyle: {
         backgroundColor: "#FFDFD6", // 选中时的背景颜色
         fontWeight: "600", // 选中时的字体加粗
