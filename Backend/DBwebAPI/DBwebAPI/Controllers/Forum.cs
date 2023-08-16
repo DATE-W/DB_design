@@ -54,7 +54,10 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn()) {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get NewPost");
                 // 从请求头中获取传递的JWT令牌
@@ -164,7 +167,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get GetPostNum");
                 // Get the total count of posts from the database using SqlSugar's Queryable.Count method.
@@ -186,7 +193,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get GetPostbyPages");
                 int count = json.count;
@@ -277,7 +288,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get PostInfo");
                 int post_id = json.post_id;
@@ -395,7 +410,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get NewComment");
                 int post_id = json.post_id;
@@ -482,7 +501,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get Like");
                 int post_id = json.post_id;
@@ -581,7 +604,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get collect");
                 int post_id = json.post_id;

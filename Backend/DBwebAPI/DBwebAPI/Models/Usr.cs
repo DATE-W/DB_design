@@ -50,4 +50,10 @@ namespace DBwebAPI.Models
         public int post_id { get; set; }
         public DateTime createDateTime { get; set; }
     }
+    public class Checkins
+    {
+        [SugarColumn(IsPrimaryKey = true)]
+        public int user_id { get; set;}
+        public DateTime sign_in_date { get; set;}
+    }
 }

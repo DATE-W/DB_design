@@ -26,7 +26,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get profile");
                 // 从请求头中获取传递的JWT令牌
@@ -113,7 +117,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get modifyteam");
                 // 从请求头中获取传递的JWT令牌
@@ -212,7 +220,11 @@ namespace DBwebAPI.Controllers
             {
                 Console.WriteLine("Get userAction0");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get userAction");
                 // 从请求头中获取传递的JWT令牌
@@ -352,7 +364,11 @@ namespace DBwebAPI.Controllers
             {
                 Console.WriteLine("Get userPoint1");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get userPoint");
                 // 从请求头中获取传递的JWT令牌
@@ -405,7 +421,11 @@ namespace DBwebAPI.Controllers
             {
                 Console.WriteLine("Get userPointAction0");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get userAction");
                 // 从请求头中获取传递的JWT令牌
@@ -483,7 +503,7 @@ namespace DBwebAPI.Controllers
                     tmpac.type = "follow";
                     pointJson.points.Add(tmpac);
                 }
-                // 对 actionJson.actions 数组按照 datetime 降序排序
+                // 对 points 数组按照 datetime 降序排序
                 pointJson.points = pointJson.points.OrderByDescending(a => a.datetime).ToList();
                 List<String> response = new List<String>();
                 // 将 pointJson.points 复制给 response
@@ -492,6 +512,128 @@ namespace DBwebAPI.Controllers
                     response.Add(point.type);
                 }
                 return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("数据库错误：" + ex.Message);
+                return BadRequest(new { error = "数据库错误" });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> UserCheckin()
+        {
+            try
+            {
+                Console.WriteLine("Get UserCheckin");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                Console.WriteLine("Get userAction");
+                // 从请求头中获取传递的JWT令牌
+                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                //验证 Authorization 请求头是否包含 JWT 令牌
+                if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
+                {
+                    Console.WriteLine("未提供有效的JWT");
+                    return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
+                }
+                //
+                string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
+                // 验证并解析JWT令牌
+                var handler = new JwtSecurityTokenHandler();
+                var tokenS = handler.ReadJwtToken(jwtToken);
+                // 获取JWT令牌中的claims信息
+                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
+                    .ToListAsync();
+                //判断用户是否存在
+                if (tempUsr.Count() == 0)
+                {
+                    Console.WriteLine("用户不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
+                }
+                int user_id = tempUsr.FirstOrDefault().user_id;
+                Console.WriteLine("用户信息正确");
+
+                DateTime dateTime = DateTime.Now;
+                Checkins checkins = new Checkins();
+                checkins.user_id = user_id;
+                checkins.sign_in_date = dateTime;
+                int count = await sqlORM.Updateable(checkins).ExecuteCommandAsync();
+                if(count > 0)
+                {
+                    Console.WriteLine("签到成功");
+                    Console.WriteLine("用户id："+user_id+"  签到时间："+dateTime);
+                    return Ok(new CustomResponse { ok = "yes", value = "签到成功" });
+                }
+                else
+                {
+                    Console.WriteLine("签到失败");
+                    return Ok(new CustomResponse { ok = "yes", value = "签到失败" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("数据库错误：" + ex.Message);
+                return BadRequest(new { error = "数据库错误" });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> UserCheckTime()
+        {
+            try
+            {
+                Console.WriteLine("Get UserCheckin");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                Console.WriteLine("Get userAction");
+                // 从请求头中获取传递的JWT令牌
+                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                //验证 Authorization 请求头是否包含 JWT 令牌
+                if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
+                {
+                    Console.WriteLine("未提供有效的JWT");
+                    return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
+                }
+                //
+                string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
+                // 验证并解析JWT令牌
+                var handler = new JwtSecurityTokenHandler();
+                var tokenS = handler.ReadJwtToken(jwtToken);
+                // 获取JWT令牌中的claims信息
+                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
+                    .ToListAsync();
+                //判断用户是否存在
+                if (tempUsr.Count() == 0)
+                {
+                    Console.WriteLine("用户不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
+                }
+                int user_id = tempUsr.FirstOrDefault().user_id;
+                Console.WriteLine("用户信息正确");
+
+                List<DateTime> times = new List<DateTime>();
+                List<Checkins> checkins = new List<Checkins>();
+                checkins = await sqlORM.Queryable<Checkins>().Where(it => it.user_id == user_id)
+                    .ToListAsync();
+                foreach (var check in checkins)
+                {
+                    times.Add(check.sign_in_date);
+                }
+                DateTime[] timesArray = times.ToArray();
+                return Ok(timesArray);
             }
             catch (Exception ex)
             {
