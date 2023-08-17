@@ -27,7 +27,6 @@ namespace DBwebAPI.Controllers
         {
             Console.WriteLine("GET Login!");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
-            SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
             //提取参数
             string account = json.Account;
             string passwordHash = json.Password;
@@ -38,6 +37,7 @@ namespace DBwebAPI.Controllers
             {
                 try
                 {
+                    SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                     //进行用户查询
                     List<Usr> tempUsr = new List<Usr>();
                     tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account
@@ -64,7 +64,7 @@ namespace DBwebAPI.Controllers
                     return Ok(new CustomResponse { ok = "no", value = ex }); // Internal server error
                 }
             }
-            else {Console.WriteLine("数据库连接失败") ; return Ok(new CustomResponse { ok = "no", value = "数据库连接失败" }); };
+            else {return Ok(new CustomResponse { ok = "no", value = "数据库连接失败" }); };
         }
     }
 }
