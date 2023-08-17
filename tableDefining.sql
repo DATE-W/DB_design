@@ -26,7 +26,13 @@ createDateTime date not null,
 primary key (admin_id)
 );
 
-
+create table Checkins
+{
+    user_id number,
+    sign_in_date date,
+    primary key (user_id,sign_in_date),
+    foreign key (user_id) references Usr
+}
 
 
 create table Players
@@ -292,12 +298,31 @@ foreign key (reportee_id) references Usr(user_id)
 
 create table Follow
 (
-follower_id number,
-follow_id number,
-primary key(follower_id,follow_id),
-foreign key(follower_id) references Usr(user_id),
-foreign key(follow_id) references Usr(user_id)
+    follower_id number,
+    follow_id number,
+    createDateTime data not null,
+    primary key(follower_id,follow_id),
+    foreign key(follower_id) references Usr(user_id),
+    foreign key(follow_id) references Usr(user_id)
 );
 
-
-
+--收藏的帖子
+create table FollowPost
+{
+    user_id number,
+    post_id number,
+    createDateTime data not null,
+    foreign key (user_id) references Usr(user_id),
+    foreign key (post_id) references Posts(post_id),
+    primary key(user_id,post_id)
+}
+--赞同的帖子
+CREATE TABLE ApprovePost
+{
+    user_id number,
+    post_id number,
+    createDateTime data not null,
+    foreign key (user_id) references Usr(user_id),
+    foreign key (post_id) references Posts(post_id),
+    primary key(user_id,post_id)
+}

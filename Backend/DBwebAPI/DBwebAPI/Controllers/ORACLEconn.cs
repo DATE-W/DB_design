@@ -21,9 +21,11 @@ namespace DBwebAPI.Controllers
             
             sqlORM = dbconn.sqlORM;
 
-            if (sqlORM != null) return true;
+            if (sqlORM != null)
+            {
+                Console.WriteLine("open success!"); return true; 
+            }
             else return false;
-
         }
     }
 }

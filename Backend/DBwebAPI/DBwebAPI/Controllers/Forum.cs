@@ -54,7 +54,10 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn()) {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get NewPost");
                 // 从请求头中获取传递的JWT令牌
@@ -110,6 +113,12 @@ namespace DBwebAPI.Controllers
 
                 int count1 = await sqlORM.Insertable(post).ExecuteCommandAsync();
                 int count2 = await sqlORM.Insertable(publishPost).ExecuteCommandAsync();
+                // Update the point
+                var updateResult = await sqlORM.Updateable<Usr>()
+                    .SetColumns(u => new Usr { userPoint = u.userPoint+10 })
+                    .Where(u => u.userAccount == account)
+                    .ExecuteCommandAsync();
+                Console.WriteLine("发帖 积分+10");
                 //新建tag
                 foreach (string tagstr in tags)
                 {
@@ -158,7 +167,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get GetPostNum");
                 // Get the total count of posts from the database using SqlSugar's Queryable.Count method.
@@ -180,7 +193,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get GetPostbyPages");
                 int count = json.count;
@@ -271,7 +288,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get PostInfo");
                 int post_id = json.post_id;
@@ -389,7 +410,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get NewComment");
                 int post_id = json.post_id;
@@ -449,7 +474,12 @@ namespace DBwebAPI.Controllers
                     user_id = tempUsr.FirstOrDefault().user_id,
                     post_id = post_id
                 };
-               
+                // Update the point
+                var updateResult = await sqlORM.Updateable<Usr>()
+                    .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
+                    .Where(u => u.userAccount == account)
+                    .ExecuteCommandAsync();
+                Console.WriteLine("评论 积分+3");
                 int count = await sqlORM.Insertable(comment).ExecuteCommandAsync();
                 if(count > 0) { return Ok(new CustomResponse { ok = "yes", value = "发布成功" }); }
                 else {  return Ok(new CustomResponse { ok="no", value = "发布失败" }); }
@@ -471,7 +501,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get Like");
                 int post_id = json.post_id;
@@ -525,6 +559,12 @@ namespace DBwebAPI.Controllers
                     like.post_id=post_id;
                     int count = await sqlORM.Insertable(like).ExecuteCommandAsync();
                     tempPosts.FirstOrDefault().approvalNum++;
+                    // Update the point
+                    var updateResult = await sqlORM.Updateable<Usr>()
+                        .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
+                        .Where(u => u.userAccount == account)
+                        .ExecuteCommandAsync();
+                    Console.WriteLine("点赞 积分+1");
                     int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
                     if (count* updateCount > 0) { Console.WriteLine("like success"); return Ok(new CustomResponse { ok = "yes", value = "点赞成功" }); }
                     else { Console.WriteLine("like fail"); return Ok(new CustomResponse { ok = "no", value = "点赞失败" });  }
@@ -564,7 +604,11 @@ namespace DBwebAPI.Controllers
             try
             {
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                ORACLEConnectTry.getConn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get collect");
                 int post_id = json.post_id;
@@ -618,6 +662,12 @@ namespace DBwebAPI.Controllers
                     like.post_id = post_id;
                     int count = await sqlORM.Insertable(like).ExecuteCommandAsync();
                     tempPosts.FirstOrDefault().favouriteNum++;
+                    // Update the point
+                    var updateResult = await sqlORM.Updateable<Usr>()
+                        .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
+                        .Where(u => u.userAccount == account)
+                        .ExecuteCommandAsync();
+                    Console.WriteLine("收藏 积分+1");
                     int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
                     if (count * updateCount > 0) { Console.WriteLine("collect success"); return Ok(new CustomResponse { ok = "yes", value = "收藏成功" }); }
                     else { Console.WriteLine("collect fail"); return Ok(new CustomResponse { ok = "no", value = "收藏失败" }); }

@@ -28,13 +28,10 @@ namespace DBwebAPI.Controllers
             Console.WriteLine("GET Login!");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             //提取参数
-
             string account = json.Account;
             string passwordHash = json.Password;
             Console.WriteLine("account=" + account);
             Console.WriteLine("passwordHash= " + passwordHash);
-            //string securityQ = jsonParams["securityQ"];
-            //string securityAnsHash = jsonParams["securityAnsHash"];
 
             if (ORACLEConnectTry.getConn() == true)
             {
@@ -67,7 +64,7 @@ namespace DBwebAPI.Controllers
                     return Ok(new CustomResponse { ok = "no", value = ex }); // Internal server error
                 }
             }
-            else { return Ok(new CustomResponse { ok = "no", value = "数据库连接失败" }); };
+            else {return Ok(new CustomResponse { ok = "no", value = "数据库连接失败" }); };
         }
     }
 }
