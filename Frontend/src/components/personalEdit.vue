@@ -32,7 +32,17 @@
                     </template>
                     <themeEdit />
                 </el-tab-pane>
-                <el-tab-pane label="还没想好">Role</el-tab-pane>
+                <el-tab-pane>
+                    <template #label>
+                        <span class="custom-tabs-label">
+                            <el-icon>
+                                <Football />
+                            </el-icon>
+                            <span>个人主队</span>
+                        </span>
+                    </template>
+                    <hometeamEdit />
+                </el-tab-pane>
                 <el-tab-pane label="还没想好">Task</el-tab-pane>
             </el-tabs>
         </el-main>
@@ -42,10 +52,12 @@
 <script>
 import userEdit from './userEdit.vue';
 import themeEdit from './themeEdit.vue';
+import hometeamEdit from './hometeamEdit.vue';
 export default {
     components: {
         'userEdit': userEdit,
         'themeEdit': themeEdit,
+        'hometeamEdit': hometeamEdit,
     },
     data() {
         return {

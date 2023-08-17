@@ -1,16 +1,11 @@
 <template>
     <div>
         <!-- 当前主题展示 -->
-        <div style="display: flex; justify-content: space-between;">
-            <div>当前主题</div>
-            <div>
-                <img :src="selectedTheme.url" alt="Selected Theme" v-if="selectedTheme" class="theme-circle" />
-                <div v-else>没有选择主题</div>
-            </div>
+        <div class="currentTheme" :style="{ backgroundImage: `url(${selectedTheme.url})` }">
         </div>
-
+    </div>
         <el-divider></el-divider>
-
+    <div>
         <!-- 主题选项 -->
         <el-row class="frame-options">
             <el-col :span="8" v-for="(theme, index) in themeList" :key="index">
@@ -61,7 +56,7 @@ export default {
                 { name: '主题8', url: './src/assets/img/carousel2.png' },
                 // 添加更多主题对象...
             ],
-            selectedTheme: { name: '当前主题', url: './src/assets/img/carousel1.png' }, // 初始化选中的主题
+            selectedTheme: { name: '当前选择的主题', url: './src/assets/img/carousel1.png' }, // 初始化选中的主题
             previewImageUrl: './src/assets/img/carousel1.png' // 用于保存预览图片的 URL
         };
     },
@@ -109,8 +104,17 @@ export default {
     text-align: center;
     overflow-y: auto;
     /* 添加垂直滚动条 */
-    max-height: 740px;
+    max-height: 40vh;
     /* 设置最大高度，超过部分会出现滚动条 */
+}
+
+.frame-options::-webkit-scrollbar {
+    width: 5px; /* 设置滚动条宽度 */
+}
+
+.frame-options::-webkit-scrollbar-thumb {
+    background-color: #888; /* 设置滚动条颜色 */
+    border-radius: 5px; /* 设置滚动条圆角 */
 }
 
 .frame-option {
@@ -136,11 +140,20 @@ export default {
     width: 100px;
     height: 100px;
     background-size: cover;
-    border-radius: 50%;
+    border-radius: 10px; /* 调整这里的值来设置圆角大小 */
 }
+
 
 .theme-name {
     margin-top: 5px;
     font-size: 12px;
+}
+.currentTheme {
+  align-items: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 40vh;
+  padding: 20px; /* 添加内边距以使文字内容不紧贴边界 */
 }
 </style>
