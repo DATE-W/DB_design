@@ -455,7 +455,7 @@ namespace DBwebAPI.Controllers
                 //判断帖子是否存在
                 if (tempPosts.Count() == 0)
                 {
-                    Console.WriteLine("帖子不存在");
+                    Console.WriteLine("no such post");
                     return Ok(new CustomResponse { ok = "no", value = "帖子不存在" });
                 }
                 //找到评论人ID
@@ -479,10 +479,10 @@ namespace DBwebAPI.Controllers
                     .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
                     .Where(u => u.userAccount == account)
                     .ExecuteCommandAsync();
-                Console.WriteLine("评论 积分+3");
+                Console.WriteLine("comment point+3");
                 int count = await sqlORM.Insertable(comment).ExecuteCommandAsync();
-                if(count > 0) { return Ok(new CustomResponse { ok = "yes", value = "发布成功" }); }
-                else {  return Ok(new CustomResponse { ok="no", value = "发布失败" }); }
+                if(count > 0) { return Ok(new CustomResponse { ok = "yes", value = "comment success" }); }
+                else {  return Ok(new CustomResponse { ok="no", value = "comment fail" }); }
             }
             catch (Exception ex)
             {
@@ -548,42 +548,44 @@ namespace DBwebAPI.Controllers
                     return Ok(new CustomResponse { ok = "no", value = "帖子不存在" });
                 }
                 //找到Like
-                List<UsrLikePost> tempLike = new List<UsrLikePost>();
-                tempLike = await sqlORM.Queryable<UsrLikePost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
+                List<ApprovePost> tempLike = new List<ApprovePost>();
+                tempLike = await sqlORM.Queryable<ApprovePost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
                     .ToListAsync();
                 //未点赞
                 if (tempLike.Count == 0)
                 {
-                    UsrLikePost like = new UsrLikePost();
+                    ApprovePost like = new ApprovePost();
                     like.user_id = tempUsr.FirstOrDefault().user_id;
                     like.post_id=post_id;
+                    like.createDateTime = DateTime.Now;
                     int count = await sqlORM.Insertable(like).ExecuteCommandAsync();
                     tempPosts.FirstOrDefault().approvalNum++;
                     // Update the point
                     var updateResult = await sqlORM.Updateable<Usr>()
-                        .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
+                        .SetColumns(u => new Usr { userPoint = u.userPoint + 1 })
                         .Where(u => u.userAccount == account)
                         .ExecuteCommandAsync();
-                    Console.WriteLine("点赞 积分+1");
+                    Console.WriteLine("Like point+1");
+                    Console.WriteLine("userPoint:" + tempUsr.FirstOrDefault().userPoint);
                     int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
-                    if (count* updateCount > 0) { Console.WriteLine("like success"); return Ok(new CustomResponse { ok = "yes", value = "点赞成功" }); }
-                    else { Console.WriteLine("like fail"); return Ok(new CustomResponse { ok = "no", value = "点赞失败" });  }
+                    if (count* updateCount > 0) { Console.WriteLine("like success"); return Ok(new CustomResponse { ok = "yes", value = "like success" }); }
+                    else { Console.WriteLine("like fail"); return Ok(new CustomResponse { ok = "no", value = "like fail" });  }
                 }
                 else
                 {
                     // 已点赞，执行取消点赞逻辑
                     tempPosts.FirstOrDefault().approvalNum--;
                     int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
-                    int deletedCount = await sqlORM.Deleteable<UsrLikePost>(tempLike.FirstOrDefault()).ExecuteCommandAsync();
+                    int deletedCount = await sqlORM.Deleteable<ApprovePost>(tempLike.FirstOrDefault()).ExecuteCommandAsync();
                     if (deletedCount* updateCount > 0)
                     {
                         Console.WriteLine("delike success");
-                        return Ok(new CustomResponse { ok = "yes", value = "取消点赞成功" });
+                        return Ok(new CustomResponse { ok = "yes", value = "cancle like success" });
                     }
                     else
                     {
                         Console.WriteLine("delike fail");
-                        return Ok(new CustomResponse { ok = "no", value = "取消点赞失败" });
+                        return Ok(new CustomResponse { ok = "no", value = "cancle like fail" });
                     }
                 }
             }
@@ -651,15 +653,16 @@ namespace DBwebAPI.Controllers
                     return Ok(new CustomResponse { ok = "no", value = "帖子不存在" });
                 }
                 //找到Collect
-                List<Collect> tempCollect = new List<Collect>();
-                tempCollect = await sqlORM.Queryable<Collect>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
+                List<FollowPost> tempCollect = new List<FollowPost>();
+                tempCollect = await sqlORM.Queryable<FollowPost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
                     .ToListAsync();
                 //未收藏
                 if (tempCollect.Count == 0)
                 {
-                    Collect like = new Collect();
+                    FollowPost like = new FollowPost();
                     like.user_id = tempUsr.FirstOrDefault().user_id;
                     like.post_id = post_id;
+                    like.createDateTime = DateTime.Now;
                     int count = await sqlORM.Insertable(like).ExecuteCommandAsync();
                     tempPosts.FirstOrDefault().favouriteNum++;
                     // Update the point
@@ -667,26 +670,26 @@ namespace DBwebAPI.Controllers
                         .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
                         .Where(u => u.userAccount == account)
                         .ExecuteCommandAsync();
-                    Console.WriteLine("收藏 积分+1");
+                    Console.WriteLine("Collect point+1");
                     int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
-                    if (count * updateCount > 0) { Console.WriteLine("collect success"); return Ok(new CustomResponse { ok = "yes", value = "收藏成功" }); }
-                    else { Console.WriteLine("collect fail"); return Ok(new CustomResponse { ok = "no", value = "收藏失败" }); }
+                    if (count * updateCount > 0) { Console.WriteLine("collect success"); return Ok(new CustomResponse { ok = "yes", value = "collect success" }); }
+                    else { Console.WriteLine("collect fail"); return Ok(new CustomResponse { ok = "no", value = "collect fail" }); }
                 }
                 else
                 {
                     // 已点赞，执行取消点赞逻辑
                     tempPosts.FirstOrDefault().favouriteNum--;
                     int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
-                    int deletedCount = await sqlORM.Deleteable<Collect>(tempCollect.FirstOrDefault()).ExecuteCommandAsync();
+                    int deletedCount = await sqlORM.Deleteable<FollowPost>(tempCollect.FirstOrDefault()).ExecuteCommandAsync();
                     if (deletedCount * updateCount > 0)
                     {
                         Console.WriteLine("decollect success");
-                        return Ok(new CustomResponse { ok = "yes", value = "取消收藏成功" });
+                        return Ok(new CustomResponse { ok = "yes", value = "cancle collect success" });
                     }
                     else
                     {
                         Console.WriteLine("decollect fail");
-                        return Ok(new CustomResponse { ok = "no", value = "取消收藏失败" });
+                        return Ok(new CustomResponse { ok = "no", value = "cancle collect success" });
                     }
                 }
             }

@@ -29,8 +29,8 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("数据库连接失败");
-                    return BadRequest("数据库连接失败");
+                    Console.WriteLine("connect DB fail");
+                    return BadRequest("connect DB fail");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get profile");
@@ -40,7 +40,7 @@ namespace DBwebAPI.Controllers
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
                     Console.WriteLine("未提供有效的JWT");
-                    return BadRequest(new { ok = "no",value="未提供有效的JWT" });
+                    //return BadRequest(new { ok = "no",value="未提供有效的JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
@@ -53,16 +53,17 @@ namespace DBwebAPI.Controllers
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
                 //判断用户是否存在
+                int user_id = 1;
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("用户不存在");
-                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
+                    Console.WriteLine("no such user");
+                    //return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                
-                int user_id=tempUsr.FirstOrDefault().user_id;
+                else
+                user_id = tempUsr.FirstOrDefault().user_id;
                 //用户名
                 String userName = tempUsr.FirstOrDefault().userName;
-                Console.WriteLine("用户信息正确");
+                Console.WriteLine("right user");
                 //关注数
                 List<Follow> tmpFollowers = new List<Follow>();
                 tmpFollowers = await sqlORM.Queryable<Follow>().Where(it => it.follower_id == user_id)
@@ -77,11 +78,11 @@ namespace DBwebAPI.Controllers
                 List<UserFavouriteTeam> tmpUFT_id = new List<UserFavouriteTeam>();
                 tmpUFT_id = await sqlORM.Queryable<UserFavouriteTeam>().Where(it => it.user_id == user_id)
                     .ToListAsync();
-                int UFT_id =tmpUFT_id.Count()!=0? tmpUFT_id.FirstOrDefault().team_id:0;
+                int UFT_id =tmpUFT_id.Count()!=0? tmpUFT_id.FirstOrDefault().team_id:-1;
                 List<Team> tmpUFT = new List<Team>();
                 tmpUFT = await sqlORM.Queryable<Team>().Where(it => it.team_id == UFT_id)
                     .ToListAsync();
-                String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().teamName : "查无此队";
+                String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().teamName : "no such team";
                 //点赞数
                 List<PublishPost> tmpPP = new List<PublishPost>();
                 tmpPP = await sqlORM.Queryable<PublishPost>().Where(it => it.user_id == user_id)
@@ -101,6 +102,12 @@ namespace DBwebAPI.Controllers
                 response.follower_num = follower_num;
                 response.follow_num = follow_num;
                 response.account = account;
+                Console.WriteLine("response.username:"+ response.username);
+                Console.WriteLine("response.uft:" + response.uft);
+                Console.WriteLine("response.approval_num:" + response.approval_num);
+                Console.WriteLine("response.follower_num:" + response.follower_num);
+                Console.WriteLine("response.follow_num:" + response.follow_num);
+                Console.WriteLine("response.account:" + response.account);
                 return Ok(new CustomResponse { ok = "yes", value = response });
             }
             catch (Exception ex)
@@ -109,8 +116,14 @@ namespace DBwebAPI.Controllers
                 return BadRequest(new { error = "An error occurred." });
             }
         }
+        public class modifyprofileJson
+        {
+            public String username { get; set; }
+            public String sign { get;set; }
+            public String avatar { get; set; }
+        }
         [HttpPost]
-        public async Task<IActionResult> modifyprofile([FromBody] profileJson json)
+        public async Task<IActionResult> modifyprofile([FromBody] modifyprofileJson json)
         {
             try
             {
@@ -158,32 +171,16 @@ namespace DBwebAPI.Controllers
                 }
                 count0 += 1;
                 count += await sqlORM.Updateable(tmpU).ExecuteCommandAsync();
-                //主队
-                Team tmpTeam;
-                UserFavouriteTeam tmpUFT;
-                if (json.uft != null)
-                {
-                    tmpTeam = await sqlORM.Queryable<Team>()
-                                .Where(it => it.teamName == json.uft)
-                                .FirstAsync();
-                    tmpUFT = await sqlORM.Queryable<UserFavouriteTeam>()
-                                .Where(it => it.user_id == user_id)
-                                .FirstAsync();
-                    if(tmpUFT != null)
-                    {
-                        tmpUFT.team_id = tmpTeam.team_id;
-                        count0 += 1;
-                        count += await sqlORM.Updateable(tmpUFT).ExecuteCommandAsync();
-                    }
-                }
+
                 if (count0 == count)
                 {
-                    Console.WriteLine("修改成功");
+                    Console.WriteLine("modify success");
+                    Console.WriteLine("-------------------------------------------------------------------------------------------");
                     return Ok(new{ ok = "yes" });
                 }
                 else
                 {
-                    Console.WriteLine("修改失败");
+                    Console.WriteLine("modify fail");
                     return Ok(new{ ok = "no" });
                 }
                 //return Ok(new CustomResponse { ok = "yes", value = response });
@@ -286,18 +283,19 @@ namespace DBwebAPI.Controllers
         }
         public class ActionJson
         {
-            public List<action> actions { get; set; } = new List<action>();
+           //public List<action> actions { get; set; } = new List<action>();
+            public action[] actions { get; set; }
             public class action
             {
-                public String type;
-                public String title;
-                public String contains;
-                public String name;
-                public String author;
-                public int post_id;
-                public DateTime datetime;
-                public String comment;
-                public String follower_name;
+                public String type { get; set; }
+                public String title { get; set; }
+                public String contains { get; set; }
+                public String name { get; set; }
+                public String author { get; set; }
+                public int post_id { get; set; }
+                public DateTime datetime { get; set; }
+                public String comment { get; set; }
+                public String follower_name { get; set; }
             }
         }
         [HttpPost]
@@ -305,7 +303,6 @@ namespace DBwebAPI.Controllers
         {
             try
             {
-                Console.WriteLine("Get userAction0");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
@@ -343,7 +340,7 @@ namespace DBwebAPI.Controllers
 
                 // 创建 ActionJson 实例
                 ActionJson actionJson = new ActionJson();
-
+                List<ActionJson.action> actionsList = new List<ActionJson.action>();
                 //赞同帖子
                 List<ApprovePost> tmpAP = new List<ApprovePost>();
                 tmpAP = await sqlORM.Queryable<ApprovePost>().Where(it => it.user_id == user_id)
@@ -367,7 +364,7 @@ namespace DBwebAPI.Controllers
                     tmpac.author = tmpusr.FirstOrDefault().userName;
                     tmpac.post_id = ap.post_id;
 
-                    actionJson.actions.Add(tmpac);
+                    actionsList.Add(tmpac);
                 }
                 //收藏帖子
                 List<FollowPost> tmpFP = new List<FollowPost>();
@@ -392,7 +389,7 @@ namespace DBwebAPI.Controllers
                     tmpac.author = tmpusr.FirstOrDefault().userName;
                     tmpac.post_id = ap.post_id;
 
-                    actionJson.actions.Add(tmpac);
+                    actionsList.Add(tmpac);
                 }
                 //评论帖子
                 List<Comments> tmpCP = new List<Comments>();
@@ -417,7 +414,7 @@ namespace DBwebAPI.Controllers
                     tmpac.author = tmpusr.FirstOrDefault().userName;
                     tmpac.post_id = ap.post_id;
                     tmpac.comment = ap.contains;
-                    actionJson.actions.Add(tmpac);
+                    actionsList.Add(tmpac);
                 }
                 //关注用户
                 List<Follow> tmpFU = new List<Follow>();
@@ -432,11 +429,15 @@ namespace DBwebAPI.Controllers
                     tmpac.datetime = ap.createDateTime;
                     tmpac.type = "follow";
                     tmpac.name = tmpusr.FirstOrDefault().userName;
-                    actionJson.actions.Add(tmpac);
+                    actionsList.Add(tmpac);
                 }
                 // 对 actionJson.actions 数组按照 datetime 降序排序
-                actionJson.actions = actionJson.actions.OrderByDescending(a => a.datetime).ToList();
-                return Ok(actionJson);
+                actionsList = actionsList.OrderByDescending(a => a.datetime).ToList();
+                actionJson.actions = actionsList.ToArray();
+                Console.WriteLine("count:"+ actionJson.actions.Count());
+                Console.WriteLine("get userAction success");
+                Console.WriteLine("-------------------------------------------------------------------------------------------");
+                return Ok(actionJson.actions);
             }
             catch (Exception ex)
             {
@@ -497,8 +498,8 @@ namespace DBwebAPI.Controllers
             public List<point> points { get; set; } = new List<point>();
             public class point
             {
-                public String type;
-                public DateTime datetime;
+                public String type { get; set; }
+                public DateTime datetime { get; set; }
             }
         }
         [HttpPost]
@@ -593,12 +594,16 @@ namespace DBwebAPI.Controllers
                 // 对 points 数组按照 datetime 降序排序
                 pointJson.points = pointJson.points.OrderByDescending(a => a.datetime).ToList();
                 List<String> response = new List<String>();
+                
                 // 将 pointJson.points 复制给 response
                 foreach (var point in pointJson.points)
                 {
                     response.Add(point.type);
                 }
-                return Ok(response);
+                String[] resString = response.ToArray();
+                Console.WriteLine(resString);
+                Console.WriteLine("-------------------------------------------------------------------------------------------");
+                return Ok(resString);
             }
             catch (Exception ex)
             {
@@ -651,17 +656,18 @@ namespace DBwebAPI.Controllers
                 Checkins checkins = new Checkins();
                 checkins.user_id = user_id;
                 checkins.sign_in_date = dateTime;
-                int count = await sqlORM.Updateable(checkins).ExecuteCommandAsync();
+                int count = await sqlORM.Insertable(checkins).ExecuteCommandAsync();
                 if(count > 0)
                 {
-                    Console.WriteLine("签到成功");
-                    Console.WriteLine("用户id："+user_id+"  签到时间："+dateTime);
-                    return Ok(new CustomResponse { ok = "yes", value = "签到成功" });
+                    Console.WriteLine("checkin success");
+                    Console.WriteLine("userid："+user_id+"  checkinTime："+dateTime);
+                    Console.WriteLine("-------------------------------------------------------------------------------------------");
+                    return Ok(new CustomResponse { ok = "yes", value = "success" });
                 }
                 else
                 {
-                    Console.WriteLine("签到失败");
-                    return Ok(new CustomResponse { ok = "yes", value = "签到失败" });
+                    Console.WriteLine("checkin fail");
+                    return Ok(new CustomResponse { ok = "no", value = "fail" });
                 }
             }
             catch (Exception ex)
@@ -675,7 +681,7 @@ namespace DBwebAPI.Controllers
         {
             try
             {
-                Console.WriteLine("Get UserCheckin");
+                Console.WriteLine("Get UserCheckTime");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
@@ -720,6 +726,8 @@ namespace DBwebAPI.Controllers
                     times.Add(check.sign_in_date);
                 }
                 DateTime[] timesArray = times.ToArray();
+                Console.WriteLine("CheckinTimeCount:" + timesArray.Count());
+                Console.WriteLine("-------------------------------------------------------------------------------------------");
                 return Ok(timesArray);
             }
             catch (Exception ex)
@@ -776,6 +784,7 @@ namespace DBwebAPI.Controllers
                 //
                 
                 List<Followed> followed = new List<Followed>();
+                
                 List<Follow> tmpF = new List<Follow>();
                 tmpF = await sqlORM.Queryable<Follow>().Where(it => it.follower_id == user_id)
                     .ToListAsync();
@@ -788,8 +797,8 @@ namespace DBwebAPI.Controllers
                     t.userName =user.userName;
                     if (user != null) { followed.Add(t); };
                 }
-               
-                return Ok(followed);
+                Followed[] followArr = followed.ToArray();
+                return Ok(followArr);
             }
             catch (Exception ex)
             {
@@ -852,8 +861,8 @@ namespace DBwebAPI.Controllers
                     t.userName = user.userName;
                     if (user != null) { followed.Add(t); };
                 }
-
-                return Ok(followed);
+                Followed[] followArr = followed.ToArray();
+                return Ok(followArr);;
             }
             catch (Exception ex)
             {

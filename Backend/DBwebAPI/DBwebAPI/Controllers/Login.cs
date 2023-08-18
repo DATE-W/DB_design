@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SqlSugar;
 using DBwebAPI.Models;
-using DBwebAPI.Controllers;
-using Newtonsoft.Json.Linq;
-using System.Security.Principal;
-using Newtonsoft.Json;
 
 namespace DBwebAPI.Controllers
 {
