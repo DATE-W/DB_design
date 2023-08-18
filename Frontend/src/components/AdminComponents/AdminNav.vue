@@ -22,7 +22,7 @@
             <div class="nav-right">
                 <el-dropdown trigger="hover">
                     <span class="user-avatar" @click="redirectToPersonal">
-                        <img src="../assets/img/football_logo.png" alt="Avatar" />
+                        <img src="../../assets/img/football_logo.png" alt="Avatar" />
                     </span>
                     <template #dropdown>
                         <el-dropdown-menu v-slot: dropdown>

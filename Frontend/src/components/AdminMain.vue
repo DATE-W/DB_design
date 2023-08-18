@@ -1,9 +1,9 @@
 <script>
-import AdminReportedUsers from './AdminReportedUsers.vue';
-import AdminAnnouncement from './AdminAnnouncement.vue';
-import AdminReportedPost from './AdminReportedPost.vue';
-import AdminAllUsers from './AdminAllUsers.vue';
-import AdminNav from './AdminNav.vue';
+import AdminReportedUsers from './AdminComponents/AdminReportedUsers.vue';
+import AdminAnnouncement from './AdminComponents/AdminAnnouncement.vue';
+import AdminReportedPost from './AdminComponents/AdminReportedPost.vue';
+import AdminAllUsers from './AdminComponents/AdminAllUsers.vue';
+import AdminNav from './AdminComponents/AdminNav.vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 export default {
     components:{
