@@ -17,7 +17,7 @@ namespace DBwebAPI.Models
         //public byte[] pictureBox;
         public int approvalNum { get; set; }
         public int? disapprovalNum { get; set; }
-        public int? favouriteNum { get; set; }
+        public int favouriteNum { get; set; }
     }
     public class PublishPost
     {
@@ -40,18 +40,18 @@ namespace DBwebAPI.Models
         public int user_id { get; set; }
         public int post_id { get; set; }
     }
-    public class UsrLikePost
+    public class Reports
     {
-
         [SugarColumn(IsPrimaryKey = true)]
-        public int post_id { get; set; }
-        public int user_id { get; set; }
-    }
-    public class Collect
-    {
+        public int? admin_id { get; set; }
+        public DateTime reporte_time { get; set; }
+        public int? reporter_id { get; set; }
+        public int? reportee_id { get; set; }
+        public string? descriptions { get; set; }
+        public string? reply { get; set; }
 
-        [SugarColumn(IsPrimaryKey = true)]
-        public int post_id { get; set; }
-        public int user_id { get; set; }
+        public int? report_state { get; set; }
+        public int? post_id { get; set; }
+
     }
 }

@@ -29,6 +29,7 @@ namespace DBwebAPI.Models
         public int team_id { get; set; }
         public DateTime modifyDateTime { get; set; }
     }
+    //关注
     public class Follow
     {
         [SugarColumn(IsPrimaryKey = true)]
@@ -36,14 +37,16 @@ namespace DBwebAPI.Models
         public int follow_id { get; set; }
         public DateTime createDateTime { get; set; }
     }
-    public class FollowPost
+    //收藏帖子
+    public class CollectPost
     {
         [SugarColumn(IsPrimaryKey = true)]
         public int user_id { get; set; }
         public int post_id { get; set; }
         public DateTime createDateTime { get; set; }
     }
-    public class ApprovePost
+    //点赞帖子
+    public class LikePost
     {
         [SugarColumn(IsPrimaryKey = true)]
         public int user_id { get; set; }
