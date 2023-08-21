@@ -26,7 +26,7 @@
             <!-- 头像图片 -->
             <el-avatar :src="avatarUrl" class="avatar"></el-avatar>
             <!-- 关注、粉丝、点赞数 -->
-            <el-card shadow="hover" class="childcard" style="margin-top: 6vh;">
+            <el-card shadow="hover" class="childcard" style="margin-top: 6vh;" @click="showfollowing">
               <div class="childcardInfo">
                 <div>关注</div>
                 <div>
@@ -37,7 +37,7 @@
                 </div>
               </div>
             </el-card>
-            <el-card shadow="hover" class="childcard">
+            <el-card shadow="hover" class="childcard" @click="showfollowed">
               <div class="childcardInfo">
                 <div>粉丝</div>
                 <div>
@@ -59,10 +59,16 @@
                 </div>
               </div>
             </el-card>
-            <button class="btn2" style="width: 180px; height: 40px; margin-top: 8vh; left: 3vw;position: absolute;"
-              :style="selectedStyle" @click="showedit">
-              <p2 class="textTypo1">资料编辑</p2>
+            <button class="btn2 personal-btn"
+              style="width: 180px; height: 50px; margin-top: 8vh; left: 3vw;position: absolute;" @click="showtabs = true">
+              <div style="font-size: 20px;">个人动态</div>
             </button>
+            <button class="btn2 personal-btn"
+              style="width: 180px; height: 50px; margin-top: 16vh; left: 3vw;position: absolute;" @click="showedit">
+              <div style="font-size: 20px;">资料编辑</div>
+            </button>
+
+
 
             <!-- 退出登录 -->
             <el-button class="logout-button" type="danger" @click="logout">登出</el-button>
@@ -102,12 +108,15 @@
           </el-tabs>
         </div>
         <div v-else>
-          <following />
+          <div v-if="showfollow">
+            <following />
+          </div>
+          <div v-else>
+
+          </div>
         </div>
       </el-main>
-
     </el-container>
-
   </el-container>
 </template>
 
@@ -140,12 +149,8 @@ export default {
   data() {
     return {
       isAccount: false, // 为true表示有账号登录
-      showtabs: true,
-      selectedStyle: {
-        backgroundColor: "#FFDFD6", // 选中时的背景颜色
-        fontWeight: "600", // 选中时的字体加粗
-        lineHeight: "24px", // 选中时的行高
-      },
+      showtabs: true, // 是否展示tab标签页
+      showfollow: true, // 是否展示关注，只有showtabs为true的时候该变量有意义
       avatarUrl: "./src/assets/img/carousel1.png", // 头像url
       userName: "WinWin", // 用户名
       homeTeam: "明日方舟", //主队名
@@ -157,7 +162,6 @@ export default {
   },
   mounted() {
     this.JudgeAccount();
-
   },
   methods: {
     showedit() {
@@ -171,8 +175,21 @@ export default {
       // 在这里执行登录操作的逻辑
       this.$router.push('/signin');
     },
+    showfollowing() {
+      this.showtabs = false;
+      this.showfollow = true;
+    },
+    showfollowed() {
+      this.showtabs = false;
+      this.showfollow = false;
+    },
     async JudgeAccount() {
       const token = localStorage.getItem('token');
+      if (token == null) {
+        this.isAccount = false;
+        console.log(this.isAccount);
+        return;
+      }
       let response
       try {
         const headers = {
@@ -180,6 +197,7 @@ export default {
         };
         response = await axios.post('/api/User/profile', {}, { headers })
       } catch (err) {
+        console.log(err);
         if (err.response.data.result == 'fail') {
           ElMessage({
             message: err.response.data.msg,
@@ -197,15 +215,19 @@ export default {
         return
       }
       console.log(response);
+      //有账号
       if (response.data.ok == 'yes') {
         this.isAccount = true;
-        console.log(this.isAccount)
-        //没账号  把按钮调成登录
+        console.log(this.isAccount);
+        this.userName = response.data.value.username;
+        this.homeTeam = response.data.value.uft;
+        this.followCnt = response.data.value.follower_num;
+        this.befollowCnt = response.data.value.follow_num;
+        this.likeCnt = response.data.value.approval_num;
       }
       else {
         this.isAccount = false;
         console.log(this.isAccount)
-        //有账号且合法  把按钮调成按此发帖
       }
     },
   }
@@ -239,7 +261,7 @@ export default {
   border-radius: 8px;
   /* 设置卡片的圆角 */
 
-  height: 400px;
+  height: 600px;
 }
 
 .childcard {
@@ -294,8 +316,7 @@ export default {
   border: 1px solid var(--colors-light-eaeaea-100, #EAEAEA);
   /* 正式版本用此颜色*/
   background-color: #ffffff;
-  /* 方便检测位置*/
-  /* background-color: #939393;  */
+
 }
 
 /* 文字风格 */
@@ -344,5 +365,29 @@ export default {
   margin-top: 0.7vh;
   margin-left: 1vw;
   object-fit: cover;
+}
+
+.personal-btn {
+  /* 按钮基本样式 */
+  border-radius: 16px;
+  border: 1px solid var(--colors-light-eaeaea-100, #EAEAEA);
+  background-color: #ffffff;
+  position: relative;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.3s;
+}
+
+.personal-btn div {
+  font-size: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 按钮悬停样式 */
+.personal-btn:hover {
+  background-color: var(--colors-light-eaeaea-100, #EAEAEA);
+  border-color: var(--colors-light-eaeaea-100, #EAEAEA);
+  color: var(--colors-text-dark-172239100, #172239);
+  cursor: pointer;
+  transform: scale(1.02);
 }
 </style>
