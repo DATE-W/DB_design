@@ -27,7 +27,8 @@
 </template>
   
 <script>
-import { ElMessageBox } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import axios from 'axios';
 export default {
     mounted() {
 
@@ -88,10 +89,28 @@ export default {
                 this.previewImageUrl = '';
             });
         },
-        selectteam(team) {
+        async selectteam(team) {
             this.selectedteam = team;
             // 执行选中球队相关操作
             this.previewImageUrl = '';
+            const teamname = this.selectedteam.name;
+            const token = localStorage.getItem('token');
+            let response
+            try {
+                const headers = {
+                    Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/User/modifyteam', { teamname }, { headers })
+            } catch (err) {
+                console.log(err)
+                ElMessage({
+                    message: '未知错误',
+                    grouping: false,
+                    type: 'error',
+                })
+                return
+            }
+            console.log(response);
         }
     }
 };
