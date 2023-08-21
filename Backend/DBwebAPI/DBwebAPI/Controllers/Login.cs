@@ -17,11 +17,6 @@ namespace DBwebAPI.Controllers
             public string Account { get; set; }
             public string Password { get; set; }
         }
-        public class CustomResponse
-        {
-            public string ok { get; set; }
-            public object value { get; set; }
-        }
         [HttpPost]
         public async Task<IActionResult> LoginPassword([FromBody] LoginRequest json)
         {
@@ -57,6 +52,7 @@ namespace DBwebAPI.Controllers
                     {
                         Console.WriteLine("登录成功");
                         // 生成JWT令牌
+<<<<<<< Updated upstream
                         // string token = new createToken().createTokenFun(account, passwordHash, authority);
                         string token;
                         try
@@ -71,6 +67,14 @@ namespace DBwebAPI.Controllers
                             Console.WriteLine(ex.Message);
                             return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" });
                         }
+=======
+                        string token = new createToken().createTokenFun(account, passwordHash);
+                        //更新用户上一次登录时间
+                        await sqlORM.Updateable<Usr>().Where(it => it.user_id == tempUsr[0].user_id).ReSetValue(it => { it.signDate = DateTime.Now; }).ExecuteCommandAsync();
+                        Console.WriteLine(token);
+                        // 返回登录成功及JWT令牌
+                        return Ok(new CustomResponse { ok = "yes", value = token });
+>>>>>>> Stashed changes
                     }
                 }
                 catch (Exception)

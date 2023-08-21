@@ -17,11 +17,6 @@ namespace DBwebAPI.Controllers
             public string UserSecQue { get; set; }
             public string UserSecAns { get; set; }
         }
-        public class CustomResponse
-        {
-            public string ok { get; set; }
-            public object value { get; set; }
-        }
         [HttpPost]
         public async Task<IActionResult> normalRegisterAsync([FromBody] RegisterRequest registerRequest)
         {

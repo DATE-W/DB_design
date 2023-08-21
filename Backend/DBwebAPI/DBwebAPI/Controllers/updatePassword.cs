@@ -19,11 +19,6 @@ namespace DBwebAPI.Controllers
             public string UserSecAns { get; set; }
             public string NewPassword { get; set; }
         }
-        public class CustomResponse
-        {
-            public string ok { get; set; }
-            public string value { get; set; }
-        }
 
         [HttpPost]
         public async Task<IActionResult> GetUserSecQue([FromBody] UserAccountRequest json)
