@@ -16,7 +16,8 @@ namespace DBwebAPI.Models
         public int isBanned { get; set; } = 0;
         public int? userPoint { get; set; } = 0;
         public int? themeType { get; set; }
-        //public byte[]? avatar { get; set; }
+        public string avatar { get; set; }
+        public string signature { get; set; }
         public DateTime? signDate { get; set; }
         public DateTime createDateTime { get; set; }
         public string userSecQue { get; set; }

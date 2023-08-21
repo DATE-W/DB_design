@@ -56,13 +56,14 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get NewPost--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn()) {
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("--------------------------Get NewPost--------------------------");
+                
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
                 //验证 Authorization 请求头是否包含 JWT 令牌
@@ -87,8 +88,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                Console.WriteLine("用户信息正确");
-                //获取新的Post_id
+               //获取新的Post_id
                 int post_id = sqlORM.Queryable<Posts>().Max(it => it.post_id) + 1;
                 //解析json文件
                 String title = json.title;
@@ -169,6 +169,7 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get GetPostNum--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
@@ -176,7 +177,7 @@ namespace DBwebAPI.Controllers
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("--------------------------Get GetPostNum--------------------------");
+               
                 // Get the total count of posts from the database using SqlSugar's Queryable.Count method.
                 int totalCount = await sqlORM.Queryable<Posts>().CountAsync();
                 Console.WriteLine("PostsNum：" + totalCount);
@@ -195,6 +196,7 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get GetPostbyOrder--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
@@ -202,7 +204,7 @@ namespace DBwebAPI.Controllers
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("--------------------------Get GetPostbyOrder--------------------------");
+                
                 int count = json.count;
                 int page = json.page;
                 string tag = json.tag;
@@ -294,6 +296,7 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get PostInfo--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
@@ -301,7 +304,7 @@ namespace DBwebAPI.Controllers
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("--------------------------Get PostInfo--------------------------");
+                
                 int post_id = json.post_id;
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -327,7 +330,6 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                Console.WriteLine("用户信息正确");
 
                 Console.WriteLine("post_id: " + post_id);
                 Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
@@ -422,6 +424,7 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get NewComment--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
@@ -429,7 +432,7 @@ namespace DBwebAPI.Controllers
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("--------------------------Get NewComment--------------------------");
+                
                 int post_id = json.post_id;
                 string contains = json.contains;
                 // 从请求头中获取传递的JWT令牌
@@ -456,7 +459,6 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                Console.WriteLine("用户信息正确");
 
                 Console.WriteLine("post_id: " + post_id);
                 Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
@@ -513,6 +515,7 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get Like--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
@@ -520,7 +523,7 @@ namespace DBwebAPI.Controllers
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("--------------------------Get Like--------------------------");
+
                 int post_id = json.post_id;
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -546,7 +549,6 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                Console.WriteLine("用户信息正确");
 
                 Console.WriteLine("post_id: " + post_id);
                 Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
@@ -617,6 +619,7 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get collect--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
@@ -624,7 +627,7 @@ namespace DBwebAPI.Controllers
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("--------------------------Get collect--------------------------");
+                
                 int post_id = json.post_id;
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -650,7 +653,6 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                Console.WriteLine("用户信息正确");
 
                 Console.WriteLine("post_id: " + post_id);
                 Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
@@ -713,13 +715,14 @@ namespace DBwebAPI.Controllers
         }
         public class followJosn
         {
-            public int post_id;
+            public int post_id { get; set; }
         }
         [HttpPost]
         public async Task<IActionResult> follow([FromBody] followJosn json)
         {
             try
             {
+                Console.WriteLine("--------------------------Get Follow--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
@@ -727,7 +730,6 @@ namespace DBwebAPI.Controllers
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("--------------------------Get Follow--------------------------");
                 int post_id = json.post_id;
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -779,17 +781,38 @@ namespace DBwebAPI.Controllers
                 follow.follow_id = PostUsr.FirstOrDefault().user_id;
                 follow.follower_id = user_id;
                 follow.createDateTime = DateTime.Now;
-                int count = await sqlORM.Insertable(follow).ExecuteCommandAsync();
-                if(count > 0) 
-                { 
-                    Console.WriteLine("follow success");
-                    return Ok(new CustomResponse { ok = "yes", value = "success" });
+
+                Follow searchF = await sqlORM.Queryable<Follow>().Where(it=>it.follower_id == follow.follower_id && it.follow_id==follow.follow_id).FirstAsync();
+                int count = 0;
+                if (searchF != null)
+                {
+                    count = await sqlORM.Deleteable(searchF).ExecuteCommandAsync();
+                    if (count > 0)
+                    {
+                        Console.WriteLine("defollow success");
+                        return Ok(new CustomResponse { ok = "yes", value = "success" });
+                    }
+                    else
+                    {
+                        Console.WriteLine("defollow success");
+                        return Ok(new CustomResponse { ok = "no", value = "fail" });
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("follow success");
-                    return Ok(new CustomResponse { ok = "no", value = "fail" });
+                    count = await sqlORM.Insertable(follow).ExecuteCommandAsync();
+                    if (count > 0)
+                    {
+                        Console.WriteLine("follow success");
+                        return Ok(new CustomResponse { ok = "yes", value = "success" });
+                    }
+                    else
+                    {
+                        Console.WriteLine("follow success");
+                        return Ok(new CustomResponse { ok = "no", value = "fail" });
+                    }
                 }
+                
             }
             catch (Exception ex)
             {
@@ -807,6 +830,7 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get reports--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
@@ -814,7 +838,7 @@ namespace DBwebAPI.Controllers
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("--------------------------Get reports--------------------------");
+                
                 int post_id = json.post_id;
                 String descriptions = json.descriptions;
                 // 从请求头中获取传递的JWT令牌

@@ -43,6 +43,9 @@ namespace DBwebAPI.Controllers
                     usr.userAccount = registerRequest.Account;
                     usr.userSecQue = registerRequest.UserSecQue;
                     usr.userSecAns = registerRequest.UserSecAns;
+                    usr.userPoint = 0;
+                    usr.avatar = "/";
+                    usr.signature = "...";
                     usr.createDateTime = DateTime.Now;
                     Console.WriteLine("user_id= " + user_id);
                     Console.WriteLine("userName= " + usr.userName);

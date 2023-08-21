@@ -50,7 +50,7 @@ namespace DBwebAPI.Models
         public string? descriptions { get; set; }
         public string? reply { get; set; }
 
-        public int? report_state { get; set; }
+        public int report_state { get; set; }
         public int? post_id { get; set; }
 
     }
