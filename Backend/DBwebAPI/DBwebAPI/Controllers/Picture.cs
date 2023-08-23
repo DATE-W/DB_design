@@ -60,6 +60,7 @@ namespace DBwebAPI.Controllers
                     fileName = strb.ToString();
                 }
                 string filePath = "/home/ubuntu/DataBase/test/";
+                //string filePath = "C:/Users/13293/Desktop/fuck/";
                 string extension = Path.GetExtension(file.FileName);
                 filePath += fileName + extension;
                 Stream saveStream = new FileStream(filePath, FileMode.Create);
@@ -67,6 +68,7 @@ namespace DBwebAPI.Controllers
                 {
                     await file.CopyToAsync(saveStream);
                     Console.WriteLine("成功");
+                    saveStream.Close();
                     return Ok(new CustomResponse { ok = "yes", value = fileName + extension });
                 }
                 catch (Exception ex)
