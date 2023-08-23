@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+ï»¿using Microsoft.AspNetCore.Mvc;
 using SqlSugar;
 using DBwebAPI.Models;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,6 +10,8 @@ using System.Security.Cryptography;
 using System;
 using Dm;
 using System.Reflection.Metadata;
+using System.Security.Principal;
+using Newtonsoft.Json.Linq;
 
 namespace DBwebAPI.Controllers
 {
@@ -36,54 +38,54 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("æœªæä¾›æœ‰æ•ˆçš„JWT");
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
                 if (tempUsr.Count() == 0)
                 {
                     Console.WriteLine("no such user");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
                 }
 
                 int user_id = tempUsr.FirstOrDefault().user_id;
-                //ÓÃ»§Ãû
+                //ç”¨æˆ·å
                 String userName = tempUsr.FirstOrDefault().userName;
-                //¸öĞÔÇ©Ãû
+                //ä¸ªæ€§ç­¾å
                 String signature = tempUsr.FirstOrDefault().signature;
-                //Í·Ïñ
+                //å¤´åƒ
                 String avatar = tempUsr.FirstOrDefault().avatar;
-                //¹Ø×¢Êı
+                //å…³æ³¨æ•°
                 List<Follow> tmpFollowers = new List<Follow>();
                 tmpFollowers = await sqlORM.Queryable<Follow>().Where(it => it.follower_id == user_id)
                     .ToListAsync();
                 int follower_num = tmpFollowers.Count();
-                //·ÛË¿Êı
+                //ç²‰ä¸æ•°
                 List<Follow> tmpFollows = new List<Follow>();
                 tmpFollows = await sqlORM.Queryable<Follow>().Where(it => it.follow_id == user_id)
                     .ToListAsync();
                 int follow_num = tmpFollows.Count();
-                //Ö÷¶Ó
+                //ä¸»é˜Ÿ
                 List<UserFavouriteTeam> tmpUFT_id = new List<UserFavouriteTeam>();
                 tmpUFT_id = await sqlORM.Queryable<UserFavouriteTeam>().Where(it => it.user_id == user_id)
                     .ToListAsync();
@@ -91,8 +93,8 @@ namespace DBwebAPI.Controllers
                 List<Team> tmpUFT = new List<Team>();
                 tmpUFT = await sqlORM.Queryable<Team>().Where(it => it.team_id == UFT_id)
                     .ToListAsync();
-                String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "²éÎŞ´Ë¶Ó";
-                //µãÔŞÊı
+                String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "æŸ¥æ— æ­¤é˜Ÿ";
+                //ç‚¹èµæ•°
                 List<PublishPost> tmpPP = new List<PublishPost>();
                 tmpPP = await sqlORM.Queryable<PublishPost>().Where(it => it.user_id == user_id)
                     .ToListAsync();
@@ -145,34 +147,34 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
                     Console.WriteLine("JWT error");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
                 if (tempUsr.Count() == 0)
                 {
                     Console.WriteLine("no such user");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
                 }
 
                 Usr tmpU = tempUsr.FirstOrDefault();
@@ -200,7 +202,7 @@ namespace DBwebAPI.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine("errorResponse: " + ex.Message);
-                return Ok(new CustomResponse { ok = "no", value = "Êı¾İ¿âÁ¬½Ó´íÎó" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                return Ok(new CustomResponse { ok = "no", value = "æ•°æ®åº“è¿æ¥é”™è¯¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
             }
         }
         public class utfJson
@@ -216,45 +218,45 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("æœªæä¾›æœ‰æ•ˆçš„JWT");
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ç”¨æˆ·ä¸å­˜åœ¨");
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
                 }
 
                 int user_id = tempUsr.FirstOrDefault().user_id;
-                //²éÕÒ¶ÓÎéid
+                //æŸ¥æ‰¾é˜Ÿä¼id
                 int team_id;
                 List<Team> tmpteam = new List<Team>();
                 tmpteam = await sqlORM.Queryable<Team>().Where(it => it.chinesename == json.teamname)
                     .ToListAsync();
                 if (tmpteam.Count() == 0)
                 {
-                    return Ok(new CustomResponse { ok = "no", value = "²éÎŞ´Ë¶Ó" });//²éÎŞ´Ë¶Ó
+                    return Ok(new CustomResponse { ok = "no", value = "æŸ¥æ— æ­¤é˜Ÿ" });//æŸ¥æ— æ­¤é˜Ÿ
                 }
                 else
                 {
@@ -265,7 +267,7 @@ namespace DBwebAPI.Controllers
                     .ToListAsync();
                 int count;
                 if (tmpUFT.Count() == 0) {
-                    //ĞÂ½¨¹ØÏµ
+                    //æ–°å»ºå…³ç³»
                     UserFavouriteTeam tmp = new UserFavouriteTeam();
                     tmp.user_id = user_id;
                     tmp.team_id = team_id;
@@ -273,24 +275,24 @@ namespace DBwebAPI.Controllers
                 }
                 else
                 {
-                    //ĞŞ¸Ä¹ØÏµ
+                    //ä¿®æ”¹å…³ç³»
                     tmpUFT.FirstOrDefault().team_id = team_id;
-                    // ¸üĞÂÊı¾İ¿âÖĞµÄ¹ØÏµ
+                    // æ›´æ–°æ•°æ®åº“ä¸­çš„å…³ç³»
                     count = await sqlORM.Updateable(tmpUFT.FirstOrDefault()).ExecuteCommandAsync();
                 }
                 if (count > 0)
                 {
-                    return Ok(new CustomResponse { ok = "ok", value = "Ö÷¶ÓĞŞ¸Ä³É¹¦" });
+                    return Ok(new CustomResponse { ok = "ok", value = "ä¸»é˜Ÿä¿®æ”¹æˆåŠŸ" });
                 }
                 else
                 {
-                    return Ok(new CustomResponse { ok = "no", value = "Ö÷¶ÓĞŞ¸ÄÊ§°Ü" });
+                    return Ok(new CustomResponse { ok = "no", value = "ä¸»é˜Ÿä¿®æ”¹å¤±è´¥" });
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("errorResponse: " + ex.Message);
-                return Ok(new CustomResponse { ok = "no", value = "Êı¾İ¿âÁ¬½Ó´íÎó" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                return Ok(new CustomResponse { ok = "no", value = "æ•°æ®åº“è¿æ¥é”™è¯¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
             }
         }
         public class ActionJson
@@ -319,41 +321,41 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("æœªæä¾›æœ‰æ•ˆçš„JWT");
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ç”¨æˆ·ä¸å­˜åœ¨");
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
                 }
                 int user_id = tempUsr.FirstOrDefault().user_id;
 
-                // ´´½¨ ActionJson ÊµÀı
+                // åˆ›å»º ActionJson å®ä¾‹
                 ActionJson actionJson = new ActionJson();
 
-                //·¢²¼Ìû×Ó
+                //å‘å¸ƒå¸–å­
                 List<PublishPost> tmpPP = new List<PublishPost>();
                 tmpPP = await sqlORM.Queryable<PublishPost>().Where(it => it.user_id == user_id)
                     .ToListAsync();
@@ -375,7 +377,7 @@ namespace DBwebAPI.Controllers
 
                     actionJson.actions.Add(tmpac);
                 }
-                //ÔŞÍ¬Ìû×Ó
+                //èµåŒå¸–å­
                 List<LikePost> tmpAP = new List<LikePost>();
                 tmpAP = await sqlORM.Queryable<LikePost>().Where(it => it.user_id == user_id)
                     .ToListAsync();
@@ -400,7 +402,7 @@ namespace DBwebAPI.Controllers
 
                     actionJson.actions.Add(tmpac);
                 }
-                //ÊÕ²ØÌû×Ó
+                //æ”¶è—å¸–å­
                 List<CollectPost> tmpFP = new List<CollectPost>();
                 tmpFP = await sqlORM.Queryable<CollectPost>().Where(it => it.user_id == user_id)
                     .ToListAsync();
@@ -425,7 +427,7 @@ namespace DBwebAPI.Controllers
 
                     actionJson.actions.Add(tmpac);
                 }
-                //ÆÀÂÛÌû×Ó
+                //è¯„è®ºå¸–å­
                 List<Comments> tmpCP = new List<Comments>();
                 tmpCP = await sqlORM.Queryable<Comments>().Where(it => it.user_id == user_id)
                     .ToListAsync();
@@ -450,7 +452,7 @@ namespace DBwebAPI.Controllers
                     tmpac.comment = ap.contains;
                     actionJson.actions.Add(tmpac);
                 }
-                //¹Ø×¢ÓÃ»§
+                //å…³æ³¨ç”¨æˆ·
                 List<Follow> tmpFU = new List<Follow>();
                 tmpFU = await sqlORM.Queryable<Follow>().Where(it => it.follower_id == user_id)
                     .ToListAsync();
@@ -465,13 +467,13 @@ namespace DBwebAPI.Controllers
                     tmpac.name = tmpusr.FirstOrDefault().userName;
                     actionJson.actions.Add(tmpac);
                 }
-                // ¶Ô actionJson.actions Êı×é°´ÕÕ datetime ½µĞòÅÅĞò
+                // å¯¹ actionJson.actions æ•°ç»„æŒ‰ç…§ datetime é™åºæ’åº
                 actionJson.actions = actionJson.actions.OrderByDescending(a => a.datetime).ToList();
                 return Ok(actionJson);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("DB error£º" + ex.Message);
+                Console.WriteLine("DB errorï¼š" + ex.Message);
                 return BadRequest(new { error = "DB error" });
             }
         }
@@ -484,34 +486,34 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("æœªæä¾›æœ‰æ•ˆçš„JWT");
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ç”¨æˆ·ä¸å­˜åœ¨");
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
                 }
                 int user_id = tempUsr.FirstOrDefault().user_id;
                 Console.WriteLine("Point:" + tempUsr.FirstOrDefault().userPoint);
@@ -519,7 +521,7 @@ namespace DBwebAPI.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("DB error£º" + ex.Message);
+                Console.WriteLine("DB errorï¼š" + ex.Message);
                 return BadRequest(new { error = "DB error" });
             }
         }
@@ -541,42 +543,42 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("æœªæä¾›æœ‰æ•ˆçš„JWT");
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ç”¨æˆ·ä¸å­˜åœ¨");
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
                 }
                 int user_id = tempUsr.FirstOrDefault().user_id;
 
-                // ´´½¨ ActionJson ÊµÀı
+                // åˆ›å»º ActionJson å®ä¾‹
                 PointJson pointJson = new PointJson();
 
 
-                //·¢²¼Ìû×Ó
+                //å‘å¸ƒå¸–å­
                 List<PublishPost> tmpPP = new List<PublishPost>();
                 tmpPP = await sqlORM.Queryable<PublishPost>().Where(it => it.user_id == user_id)
                     .ToListAsync();
@@ -590,7 +592,7 @@ namespace DBwebAPI.Controllers
                     tmpac.type = "publish";
                     pointJson.points.Add(tmpac);
                 }
-                //ÔŞÍ¬Ìû×Ó
+                //èµåŒå¸–å­
                 List<LikePost> tmpAP = new List<LikePost>();
                 tmpAP = await sqlORM.Queryable<LikePost>().Where(it => it.user_id == user_id)
                     .ToListAsync();
@@ -601,7 +603,7 @@ namespace DBwebAPI.Controllers
                     tmpac.type = "like";
                     pointJson.points.Add(tmpac);
                 }
-                //ÊÕ²ØÌû×Ó
+                //æ”¶è—å¸–å­
                 List<CollectPost> tmpFP = new List<CollectPost>();
                 tmpFP = await sqlORM.Queryable<CollectPost>().Where(it => it.user_id == user_id)
                     .ToListAsync();
@@ -613,7 +615,7 @@ namespace DBwebAPI.Controllers
                     tmpac.type = "collect";
                     pointJson.points.Add(tmpac);
                 }
-                //ÆÀÂÛÌû×Ó
+                //è¯„è®ºå¸–å­
                 List<Comments> tmpCP = new List<Comments>();
                 tmpCP = await sqlORM.Queryable<Comments>().Where(it => it.user_id == user_id)
                     .ToListAsync();
@@ -624,7 +626,7 @@ namespace DBwebAPI.Controllers
                     tmpac.type = "comment";
                     pointJson.points.Add(tmpac);
                 }
-                //¹Ø×¢ÓÃ»§
+                //å…³æ³¨ç”¨æˆ·
                 List<Follow> tmpFU = new List<Follow>();
                 tmpFU = await sqlORM.Queryable<Follow>().Where(it => it.follower_id == user_id)
                     .ToListAsync();
@@ -635,10 +637,10 @@ namespace DBwebAPI.Controllers
                     tmpac.type = "follow";
                     pointJson.points.Add(tmpac);
                 }
-                // ¶Ô points Êı×é°´ÕÕ datetime ½µĞòÅÅĞò
+                // å¯¹ points æ•°ç»„æŒ‰ç…§ datetime é™åºæ’åº
                 pointJson.points = pointJson.points.OrderByDescending(a => a.datetime).ToList();
                 List<String> response = new List<String>();
-                // ½« pointJson.points ¸´ÖÆ¸ø response
+                // å°† pointJson.points å¤åˆ¶ç»™ response
                 foreach (var point in pointJson.points)
                 {
                     response.Add(point.type);
@@ -647,8 +649,8 @@ namespace DBwebAPI.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Êı¾İ¿â´íÎó£º" + ex.Message);
-                return BadRequest(new { error = "Êı¾İ¿â´íÎó" });
+                Console.WriteLine("æ•°æ®åº“é”™è¯¯ï¼š" + ex.Message);
+                return BadRequest(new { error = "æ•°æ®åº“é”™è¯¯" });
             }
         }
         public class NoticeJson 
@@ -663,7 +665,7 @@ namespace DBwebAPI.Controllers
             public String people { get; set; }
             public String content { get; set; }
         }
-        //Í¨Öª
+        //é€šçŸ¥
         [HttpPost]
         public async Task<IActionResult> Notice()
         {
@@ -673,41 +675,41 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("æœªæä¾›æœ‰æ•ˆçš„JWT");
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ç”¨æˆ·ä¸å­˜åœ¨");
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
                 }
                 int user_id = tempUsr.FirstOrDefault().user_id;
 
-                // ´´½¨ NoticeClass ÊµÀı
+                // åˆ›å»º NoticeClass å®ä¾‹
                 List<NoticeClass> noticeList = new List<NoticeClass>();
 
-                //»ñµÃµãÔŞ
+                //è·å¾—ç‚¹èµ
                 List<Posts> posts = await sqlORM.Queryable<Posts, PublishPost>((p, pp) => p.post_id == pp.post_id)
                     .Where((p, pp) => pp.user_id == user_id)
                     .Select((p, pp) => p)
@@ -732,7 +734,7 @@ namespace DBwebAPI.Controllers
                     }
                 }
 
-                //»ñµÃÊÕ²Ø
+                //è·å¾—æ”¶è—
                 List<Posts> posts2 = await sqlORM.Queryable<Posts, PublishPost>((p, pp) => p.post_id == pp.post_id)
                     .Where((p, pp) => pp.user_id == user_id)
                     .Select((p, pp) => p)
@@ -756,7 +758,7 @@ namespace DBwebAPI.Controllers
                         noticeList.Add(notice);
                     }
                 }
-                //ÆÀÂÛÌû×Ó
+                //è¯„è®ºå¸–å­
                 List<Posts> posts3 = await sqlORM.Queryable<Posts, PublishPost>((p, pp) => p.post_id == pp.post_id)
                     .Where((p, pp) => pp.user_id == user_id)
                     .Select((p, pp) => p)
@@ -781,7 +783,7 @@ namespace DBwebAPI.Controllers
                     }
                 }
 
-                // ¶Ô points Êı×é°´ÕÕ datetime ½µĞòÅÅĞò
+                // å¯¹ points æ•°ç»„æŒ‰ç…§ datetime é™åºæ’åº
                 noticeList = noticeList.OrderByDescending(a => a.dateTime).ToList();
 
                 NoticeJson response = new NoticeJson();
@@ -801,8 +803,8 @@ namespace DBwebAPI.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Êı¾İ¿â´íÎó£º" + ex.Message);
-                return BadRequest(new { error = "Êı¾İ¿â´íÎó" });
+                Console.WriteLine("æ•°æ®åº“é”™è¯¯ï¼š" + ex.Message);
+                return BadRequest(new { error = "æ•°æ®åº“é”™è¯¯" });
             }
         }
         [HttpPost]
@@ -815,34 +817,34 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("æœªæä¾›æœ‰æ•ˆçš„JWT");
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ç”¨æˆ·ä¸å­˜åœ¨");
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
                 }
                 int user_id = tempUsr.FirstOrDefault().user_id;
 
@@ -855,18 +857,18 @@ namespace DBwebAPI.Controllers
                 {
                     Console.WriteLine("checkin success");
                     Console.WriteLine("userid:  "+user_id+"  checkinTime:   "+dateTime);
-                    return Ok(new CustomResponse { ok = "yes", value = "Ç©µ½³É¹¦" });
+                    return Ok(new CustomResponse { ok = "yes", value = "ç­¾åˆ°æˆåŠŸ" });
                 }
                 else
                 {
                     Console.WriteLine("checkin fail");
-                    return Ok(new CustomResponse { ok = "yes", value = "Ç©µ½Ê§°Ü" });
+                    return Ok(new CustomResponse { ok = "yes", value = "ç­¾åˆ°å¤±è´¥" });
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Êı¾İ¿â´íÎó£º" + ex.Message);
-                return BadRequest(new { error = "Êı¾İ¿â´íÎó" });
+                Console.WriteLine("æ•°æ®åº“é”™è¯¯ï¼š" + ex.Message);
+                return BadRequest(new { error = "æ•°æ®åº“é”™è¯¯" });
             }
         }
         [HttpPost]
@@ -878,34 +880,34 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get userAction");
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("æœªæä¾›æœ‰æ•ˆçš„JWT");
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ç”¨æˆ·ä¸å­˜åœ¨");
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
                 }
                 int user_id = tempUsr.FirstOrDefault().user_id;
 
@@ -923,18 +925,25 @@ namespace DBwebAPI.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Êı¾İ¿â´íÎó£º" + ex.Message);
-                return BadRequest(new { error = "Êı¾İ¿â´íÎó" });
+                Console.WriteLine("æ•°æ®åº“é”™è¯¯ï¼š" + ex.Message);
+                return BadRequest(new { error = "æ•°æ®åº“é”™è¯¯" });
             }
         }
         private class Followed
         {
             public int user_id { get; set; }
             public String userName { get; set; }
+            public String uft { get;set; }
+            public String signature { get; set; }
+            public int follownum { get;set; }
+            public int likenum { get;set; }
+            public int fansnum { get;set; }
+            public string avatar { get; set; }
+            public int isfollowed { get;set; }
         }
-        //¹Ø×¢ÈËÁĞ±í
+        //å…³æ³¨åˆ—è¡¨
         [HttpPost]
-        public async Task<IActionResult> following()
+        public async Task<IActionResult> followList()
         {
             try
             {
@@ -942,34 +951,34 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("æœªæä¾›æœ‰æ•ˆçš„JWT");
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ç”¨æˆ·ä¸å­˜åœ¨");
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
                 }
                 int user_id = tempUsr.FirstOrDefault().user_id;
                 //
@@ -985,6 +994,50 @@ namespace DBwebAPI.Controllers
                     Followed t = new Followed();
                     t.user_id = user.user_id;
                     t.userName =user.userName;
+                    t.signature =user.signature;
+                    t.avatar =user.avatar;
+                    //ä¸»é˜Ÿ
+                    List<UserFavouriteTeam> tmpUFT_id = new List<UserFavouriteTeam>();
+                    tmpUFT_id = await sqlORM.Queryable<UserFavouriteTeam>().Where(it => it.user_id == user.user_id)
+                        .ToListAsync();
+                    int UFT_id = tmpUFT_id.Count() != 0 ? tmpUFT_id.FirstOrDefault().team_id : 0;
+                    List<Team> tmpUFT = new List<Team>();
+                    tmpUFT = await sqlORM.Queryable<Team>().Where(it => it.team_id == UFT_id)
+                        .ToListAsync();
+                    String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "no such team";
+                    t.uft = UFT;
+
+                    //ç‚¹èµæ•°
+                    List<PublishPost> tmpPP = new List<PublishPost>();
+                    tmpPP = await sqlORM.Queryable<PublishPost>().Where(it => it.user_id == user.user_id)
+                        .ToListAsync();
+                    int approvalNum = 0;
+                    foreach (var pp in tmpPP)
+                    {
+                        List<Posts> tmpPost = new List<Posts>();
+                        tmpPost = await sqlORM.Queryable<Posts>().Where(it => it.post_id == pp.post_id)
+                            .ToListAsync();
+                        approvalNum += tmpPost.Count() != 0 ? tmpPost.FirstOrDefault().approvalNum : 0;
+                    }
+                    t.likenum=approvalNum;
+                    //å…³æ³¨æ•°
+                    List<Follow> tmpFollowers = new List<Follow>();
+                    tmpFollowers = await sqlORM.Queryable<Follow>().Where(it => it.follower_id == user.user_id)
+                        .ToListAsync();
+                    t.follownum = tmpFollowers.Count();
+
+                    //ç²‰ä¸æ•°
+                    List<Follow> tmpFollows = new List<Follow>();
+                    tmpFollows = await sqlORM.Queryable<Follow>().Where(it => it.follow_id == user.user_id)
+                        .ToListAsync();
+                    t.fansnum= tmpFollows.Count();
+
+                    //æ˜¯å¦å…³æ³¨
+                    List<Follow> tmpf = new List<Follow> ();
+                    tmpf = await sqlORM.Queryable<Follow>().Where(it => it.follow_id == user.user_id && it.follower_id==user_id)
+                        .ToListAsync();
+                    t.isfollowed = tmpf.Count() > 0 ? 1 : 0;
+
                     if (user != null) { followed.Add(t); };
                 }
                
@@ -992,11 +1045,11 @@ namespace DBwebAPI.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Êı¾İ¿â´íÎó£º" + ex.Message);
-                return BadRequest(new { error = "Êı¾İ¿â´íÎó" });
+                Console.WriteLine("æ•°æ®åº“é”™è¯¯ï¼š" + ex.Message);
+                return BadRequest(new { error = "æ•°æ®åº“é”™è¯¯" });
             }
         }
-        //·ÛË¿ÈËÁĞ±í
+        //ç²‰ä¸åˆ—è¡¨
         [HttpPost]
         public async Task<IActionResult> fansList()
         {
@@ -1006,34 +1059,34 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("æœªæä¾›æœ‰æ•ˆçš„JWT");
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ç”¨æˆ·ä¸å­˜åœ¨");
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
                 }
                 int user_id = tempUsr.FirstOrDefault().user_id;
                 //
@@ -1049,6 +1102,50 @@ namespace DBwebAPI.Controllers
                     Followed t = new Followed();
                     t.user_id = user.user_id;
                     t.userName = user.userName;
+                    t.signature = user.signature;
+                    t.avatar = user.avatar;
+                    //ä¸»é˜Ÿ
+                    List<UserFavouriteTeam> tmpUFT_id = new List<UserFavouriteTeam>();
+                    tmpUFT_id = await sqlORM.Queryable<UserFavouriteTeam>().Where(it => it.user_id == user.user_id)
+                        .ToListAsync();
+                    int UFT_id = tmpUFT_id.Count() != 0 ? tmpUFT_id.FirstOrDefault().team_id : 0;
+                    List<Team> tmpUFT = new List<Team>();
+                    tmpUFT = await sqlORM.Queryable<Team>().Where(it => it.team_id == UFT_id)
+                        .ToListAsync();
+                    String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "no such team";
+                    t.uft = UFT;
+
+                    //ç‚¹èµæ•°
+                    List<PublishPost> tmpPP = new List<PublishPost>();
+                    tmpPP = await sqlORM.Queryable<PublishPost>().Where(it => it.user_id == user.user_id)
+                        .ToListAsync();
+                    int approvalNum = 0;
+                    foreach (var pp in tmpPP)
+                    {
+                        List<Posts> tmpPost = new List<Posts>();
+                        tmpPost = await sqlORM.Queryable<Posts>().Where(it => it.post_id == pp.post_id)
+                            .ToListAsync();
+                        approvalNum += tmpPost.Count() != 0 ? tmpPost.FirstOrDefault().approvalNum : 0;
+                    }
+                    t.likenum = approvalNum;
+                    //å…³æ³¨æ•°
+                    List<Follow> tmpFollowers = new List<Follow>();
+                    tmpFollowers = await sqlORM.Queryable<Follow>().Where(it => it.follower_id == user.user_id)
+                        .ToListAsync();
+                    t.follownum = tmpFollowers.Count();
+
+                    //ç²‰ä¸æ•°
+                    List<Follow> tmpFollows = new List<Follow>();
+                    tmpFollows = await sqlORM.Queryable<Follow>().Where(it => it.follow_id == user.user_id)
+                        .ToListAsync();
+                    t.fansnum = tmpFollows.Count();
+
+                    //æ˜¯å¦å…³æ³¨
+                    List<Follow> tmpf = new List<Follow>();
+                    tmpf = await sqlORM.Queryable<Follow>().Where(it => it.follow_id == user.user_id && it.follower_id == user_id)
+                        .ToListAsync();
+                    t.isfollowed = tmpf.Count() > 0 ? 1 : 0;
+
                     if (user != null) { followed.Add(t); };
                 }
 
@@ -1056,9 +1153,218 @@ namespace DBwebAPI.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Êı¾İ¿â´íÎó£º" + ex.Message);
-                return BadRequest(new { error = "Êı¾İ¿â´íÎó" });
+                Console.WriteLine("æ•°æ®åº“é”™è¯¯ï¼š" + ex.Message);
+                return BadRequest(new { error = "æ•°æ®åº“é”™è¯¯" });
             }
         }
+        public class TeamsJson
+        {
+            public string chinesename { get;set; }
+            public string logo { get; set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> getallteam()
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get getallteam--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+               
+                List<Team> allteams = new List<Team>();
+                allteams = await sqlORM.Queryable<Team>().ToListAsync();
+                List<TeamsJson> tmpTeams = new List<TeamsJson>();
+
+                foreach (var t in allteams)
+                {
+                    TeamsJson tmp = new TeamsJson();
+                    tmp.chinesename = t.chinesename;
+                    tmp.logo = t.logo;
+                    tmpTeams.Add(tmp);
+                }
+                TeamsJson[] teamsJson = tmpTeams.ToArray();
+                return Ok(teamsJson);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("æ•°æ®åº“é”™è¯¯ï¼š" + ex.Message);
+                return BadRequest(new { error = "æ•°æ®åº“é”™è¯¯" });
+            }
+        }
+        public class ThemeJson
+        {
+            public int id { get; set; }
+            public string name { get; set; }
+            public string image1 { get; set; }
+            public string image2 { get; set; }
+        }
+        [HttpGet]
+        public async Task<IActionResult> getalltheme()
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get getalltheme--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
+                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
+                if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
+                {
+                    Console.WriteLine("æœªæä¾›æœ‰æ•ˆçš„JWT");
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
+                }
+                //
+                string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
+                var handler = new JwtSecurityTokenHandler();
+                var tokenS = handler.ReadJwtToken(jwtToken);
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
+                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
+                    .ToListAsync();
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
+                if (tempUsr.Count() == 0)
+                {
+                    Console.WriteLine("ç”¨æˆ·ä¸å­˜åœ¨");
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
+                }
+                int user_id = tempUsr.FirstOrDefault().user_id;
+                /*
+                int user_id = 4;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
+                    .ToListAsync();*/
+                List<Theme> allthemes = new List<Theme>();
+                allthemes = await sqlORM.Queryable<Theme>().ToListAsync();
+                List<ThemeJson> tmpThemes = new List<ThemeJson>();
+
+                Theme userTheme = await sqlORM.Queryable<Theme>().SingleAsync(it=>it.id == tempUsr.FirstOrDefault().themeType);
+                ThemeJson userThemejson = new ThemeJson();
+                userThemejson.id = userTheme.id;
+                userThemejson.name = userTheme.name;
+                userThemejson.image1 = userTheme.image1;
+                userThemejson.image2 = userTheme.image2;
+                tmpThemes.Add(userThemejson);
+
+                foreach (var t in allthemes)
+                {
+                    ThemeJson tmp = new ThemeJson();
+                    tmp.id = t.id;
+                    tmp.name = t.name;
+                    tmp.image1 = t.image1;
+                    tmp.image2 = t.image2;
+                    tmpThemes.Add(tmp);
+                }
+                ThemeJson[] themesJson = tmpThemes.ToArray();
+                return Ok(themesJson);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("æ•°æ®åº“é”™è¯¯ï¼š" + ex.Message);
+                return BadRequest(new { error = "æ•°æ®åº“é”™è¯¯" });
+            }
+        }
+        public class ModifyThemeJson
+        {
+            public int theme_id { get;set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> modifytheme([FromBody]ModifyThemeJson json)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get modifytheme--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                    return BadRequest("æ•°æ®åº“è¿æ¥å¤±è´¥");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+
+                // ä»è¯·æ±‚å¤´ä¸­è·å–ä¼ é€’çš„JWTä»¤ç‰Œ
+                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                //éªŒè¯ Authorization è¯·æ±‚å¤´æ˜¯å¦åŒ…å« JWT ä»¤ç‰Œ
+                if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
+                {
+                    Console.WriteLine("æœªæä¾›æœ‰æ•ˆçš„JWT");
+                    return BadRequest(new { ok = "no", value = "æœªæä¾›æœ‰æ•ˆçš„JWT" });
+                }
+                //
+                string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
+                // éªŒè¯å¹¶è§£æJWTä»¤ç‰Œ
+                var handler = new JwtSecurityTokenHandler();
+                var tokenS = handler.ReadJwtToken(jwtToken);
+                // è·å–JWTä»¤ç‰Œä¸­çš„claimsä¿¡æ¯
+                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
+                    .ToListAsync();
+                Usr usr = tempUsr.FirstOrDefault();
+                //åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å­˜åœ¨
+                if (tempUsr.Count() == 0)
+                {
+                    Console.WriteLine("ç”¨æˆ·ä¸å­˜åœ¨");
+                    return Ok(new CustomResponse { ok = "no", value = "é”™è¯¯çš„ç”¨æˆ·ä¿¡æ¯" });//ç”¨æˆ·è´¦æˆ·æˆ–å¯†ç é”™è¯¯
+                }
+                int user_id = tempUsr.FirstOrDefault().user_id;
+                /*
+                int user_id = 4;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
+                    .ToListAsync();
+                Usr usr = tempUsr.FirstOrDefault();*/
+
+                Theme modify = await sqlORM.Queryable<Theme>().SingleAsync(it=>it.id == json.theme_id);
+                int count = 0;
+                if (modify != null)
+                {
+                    usr.themeType = json.theme_id;
+                    count = await sqlORM.Updateable(usr).ExecuteCommandAsync();
+                    if (count > 0)
+                    {
+                        Console.WriteLine("modify success");
+                        return Ok(new CustomResponse { ok = "yes", value = "success" });
+                    }
+                    else
+                    {
+                        Console.WriteLine("modify fail");
+                        return Ok(new CustomResponse { ok = "no", value = "fail" });
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("no such theme");
+                    return Ok(new CustomResponse { ok = "no", value = "no such theme" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("æ•°æ®åº“é”™è¯¯ï¼š" + ex.Message);
+                return BadRequest(new { error = "æ•°æ®åº“é”™è¯¯" });
+            }
+        }
+        public class PostinfoJson
+        {
+            public int post_id { get; set; }
+            public string title { get; set; }
+            public string contains { get;set; }
+            public int approvalNum { get; set; }
+            public int collectNum { get;set; }
+        }
+
     }
 }

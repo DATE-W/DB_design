@@ -44,13 +44,12 @@ namespace DBwebAPI.Models
     {
         [SugarColumn(IsPrimaryKey = true)]
         public int? admin_id { get; set; }
-        public DateTime reporte_time { get; set; }
+        public DateTime report_time { get; set; }
         public int? reporter_id { get; set; }
-        public int? reportee_id { get; set; }
         public string? descriptions { get; set; }
         public string? reply { get; set; }
 
-        public int report_state { get; set; }
+        public int status { get; set; }
         public int? post_id { get; set; }
 
     }

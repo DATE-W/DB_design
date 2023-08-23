@@ -60,4 +60,12 @@ namespace DBwebAPI.Models
         public int user_id { get; set;}
         public DateTime sign_in_date { get; set;}
     }
+    public class Theme
+    {
+        [SugarColumn(IsPrimaryKey = true)]
+        public int id { get; set; }
+        public string name { get; set; }
+        public string image1 { get; set; }
+        public string image2 { get; set; }
+    }
 }

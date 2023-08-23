@@ -890,16 +890,16 @@ namespace DBwebAPI.Controllers
                 Reports reports = new Reports();
                 reports.reporter_id = user_id;
                 reports.post_id = post_id;
-                reports.reportee_id = PostUsr.FirstOrDefault().user_id;
-                reports.reporte_time=DateTime.Now;
-                reports.report_state = 0;
+                //reports.reportee_id = PostUsr.FirstOrDefault().user_id;
+                reports.report_time=DateTime.Now;
+                reports.status = 0;
                 reports.descriptions = descriptions;
                 int count = await sqlORM.Insertable(reports).ExecuteCommandAsync();
                 if (count > 0)
                 {
                     Console.WriteLine("reporter_id:"+ reports.reporter_id);
                     Console.WriteLine("post_id:"+ post_id);
-                    Console.WriteLine("reportee_id:" + reports.reportee_id);
+                    //Console.WriteLine("reportee_id:" + reports.reportee_id);
                     Console.WriteLine("descriptions:" + descriptions);
                     Console.WriteLine("reports success");
                     return Ok(new CustomResponse { ok = "yes", value = "success" });
