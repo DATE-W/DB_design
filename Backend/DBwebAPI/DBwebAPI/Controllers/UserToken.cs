@@ -16,7 +16,6 @@ namespace DBwebAPI.Controllers
         public IActionResult UserToken()
         {
             var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
             var valid = new ValidateToken();
             try
             {
