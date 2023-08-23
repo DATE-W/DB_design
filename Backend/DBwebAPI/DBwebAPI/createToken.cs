@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Logging;
 using NetTaste;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -44,16 +45,43 @@ namespace DBwebAPI
     public class ValidateToken
     {
         private string secretKey = "f47b558d-7654-458c-99f2-13b190ef0199";//密钥，同上
-        public bool ValidateJwtToken(string token)
+        public bool ValidateJwtToken(string token, ValidTokenAuthority option)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secretKey);
             bool valid = tokenHandler.CanReadToken(token);
-            if(!valid)
+            if (!valid)
             {
+                //LogHelper.LogInformation("token格式验证失败");
                 throw (new Exception("错误的token格式"));
             }
             var tokenS = tokenHandler.ReadJwtToken(token);
+            var autret = tokenS.Claims.FirstOrDefault(o => o.Type == "Authority");
+            string? aut = autret == null ? null : autret.Value;
+            
+            if(aut == null)
+            {
+                //无论如何，aut不应该为null，因为token中必须包含Authority值
+                throw (new Exception("token的authority值错误，createToken.cs:62"));
+            }
+            switch(option)
+            {
+                case ValidTokenAuthority.Normal:
+                    if(aut != "Normal")
+                    {
+                        throw (new Exception($"指定的身份为普通用户，但实际验证得到的是aut"));
+                    }
+                    break;
+                case ValidTokenAuthority.Admin:
+                    if (aut != "Normal")
+                    {
+                        throw (new Exception($"指定的身份为管理员，但实际验证得到的是aut"));
+                    }
+                    break;
+                case ValidTokenAuthority.None:
+                    break;
+            }
+        
             string alg = tokenS.Header.Alg;//读取出算法
             IList<string> aud = tokenS.Payload.Aud;
             string iss = tokenS.Payload.Iss;
