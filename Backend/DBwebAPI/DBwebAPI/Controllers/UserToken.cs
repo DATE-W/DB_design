@@ -1,49 +1,63 @@
 using Microsoft.AspNetCore.Mvc;
-using SqlSugar;
-using DBwebAPI.Models;
-using DBwebAPI.Controllers;
-using Newtonsoft.Json.Linq;
-using System.Security.Principal;
-using Newtonsoft.Json;
-using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using NetTaste;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
 
 namespace DBwebAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class UserTokenController : ControllerBase
     {
         [HttpPost]
         public IActionResult UserToken()
         {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            var valid = new ValidateToken();
             try
             {
-                Console.WriteLine("Get TokenTest");
-                // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //验证 Authorization 请求头是否包含 JWT 令牌
-                if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
+                bool pass = valid.ValidateJwtToken(token, ValidTokenAuthority.Normal);
+                if (pass)
                 {
-                    return BadRequest(new { ok = "未提供有效的JWT" });
+                    return Ok(new { ok = "yes" });
                 }
-                //
-                string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // 验证并解析JWT令牌
-                var handler = new JwtSecurityTokenHandler();
-                var tokenS = handler.ReadJwtToken(jwtToken);
-                // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
-                string password = tokenS.Claims.FirstOrDefault(claim => claim.Type == "password").Value;
-                // 返回从令牌获取的账户和密码。
-                Console.WriteLine("account= " + account + "   Password=" + password);
-                return Ok(new { ok = "yes" });
+                else
+                {
+                    return Ok(new { ok = "no" });
+                }
             }
             catch (Exception ex)
             {
-                // 如果在令牌提取过程中出现任何异常，返回一个错误响应。
-                Console.WriteLine("提取令牌时发生错误：" + ex.Message);
-                return BadRequest(new { ok = "提取令牌时发生错误：" + ex.Message });
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost]
+        public IActionResult Test(string token)
+        {
+            //var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            var valid = new ValidateToken();
+            try
+            {
+                bool pass = valid.ValidateJwtToken(token, ValidTokenAuthority.Normal);
+                if (pass)
+                {
+                    return Ok(new { ok = "yes" });
+                }
+                else
+                {
+                    return Ok(new { ok = "no" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
     }

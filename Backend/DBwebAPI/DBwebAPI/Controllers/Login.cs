@@ -53,7 +53,7 @@ namespace DBwebAPI.Controllers
                     {
                         Console.WriteLine("登录成功");
                         // 生成JWT令牌
-                        string token = new createToken().createTokenFun(account, passwordHash);
+                        string token = new CreateToken().createToken(account, "Normal");//生成token，标定用户为Normal
                         Console.WriteLine(token);
                         // 返回登录成功及JWT令牌
                         return Ok(new CustomResponse { ok = "yes", value = token });
