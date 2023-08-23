@@ -19,9 +19,11 @@ namespace DBwebAPI.Models
         public string avatar { get; set; }
         public string signature { get; set; }
         public DateTime? signDate { get; set; }
-        public DateTime createDateTime { get; set; }
+        public DateTime? createDateTime { get; set; }
         public string userSecQue { get; set; }
         public string userSecAns { get; set; }
+        public int follownumber { get; set; }
+        public int followednumber { get; set; }
     }
     public class UserFavouriteTeam
     {
@@ -57,8 +59,8 @@ namespace DBwebAPI.Models
     public class Checkins
     {
         [SugarColumn(IsPrimaryKey = true)]
-        public int user_id { get; set;}
-        public DateTime sign_in_date { get; set;}
+        public int user_id { get; set; }
+        public DateTime sign_in_date { get; set; }
     }
     public class Theme
     {

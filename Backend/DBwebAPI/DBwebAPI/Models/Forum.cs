@@ -40,17 +40,17 @@ namespace DBwebAPI.Models
         public int user_id { get; set; }
         public int post_id { get; set; }
     }
-    public class Reports
-    {
-        [SugarColumn(IsPrimaryKey = true)]
-        public int? admin_id { get; set; }
-        public DateTime report_time { get; set; }
-        public int? reporter_id { get; set; }
-        public string? descriptions { get; set; }
-        public string? reply { get; set; }
+    //public class Reports
+    //{
+    //    [SugarColumn(IsPrimaryKey = true)]
+    //    public int? admin_id { get; set; }
+    //    public DateTime report_time { get; set; }
+    //    public int? reporter_id { get; set; }
+    //    public string? descriptions { get; set; }
+    //    public string? reply { get; set; }
 
-        public int status { get; set; }
-        public int? post_id { get; set; }
+    //    public int status { get; set; }
+    //    public int? post_id { get; set; }
 
-    }
+    //}
 }

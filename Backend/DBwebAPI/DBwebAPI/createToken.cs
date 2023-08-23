@@ -73,7 +73,7 @@ namespace DBwebAPI
                     }
                     break;
                 case ValidTokenAuthority.Admin:
-                    if (aut != "Normal")
+                    if (aut != "Admin")
                     {
                         throw (new Exception($"指定的身份为管理员，但实际验证得到的是aut"));
                     }
