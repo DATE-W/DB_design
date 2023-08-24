@@ -7,7 +7,7 @@
       </el-aside>
       <!-- 右侧输入框 -->
       <el-main>
-
+        <el-page-header @back="$router.push('/')"></el-page-header>
         <div class="right">
           <!-- 右侧左上角logo -->
           <img src="../assets/img/recover_logo.png" class="imgR">

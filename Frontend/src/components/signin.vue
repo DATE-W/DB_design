@@ -7,6 +7,7 @@
   <div class="common-layout">
     <el-container>
       <el-aside style="width: 50%;">
+        <el-page-header @back="$router.push('/')" style="position: relative;top:1vh;height: 1vh;"></el-page-header>
         <img src="../assets/img/recover_logo.png" class="imgR">
         <!-- 注册字体 -->
         <div class="FontLayout">
@@ -167,65 +168,73 @@ export default {
         })
         return
       }
-      let response
-      try {
-        response = await axios.post('/api/Login/LoginPassword', {
-          account: String(this.account),
-          // password: String(this.password),
-          password: String(await this.sha256(this.password)),
-        })
-      } catch (err) {
-        if (err.response.data.result == 'fail') {
-          ElMessage({
-            message: err.response.data.msg,
-            grouping: false,
-            type: 'error',
+      console.log(this.$route.query.isAdmin);
+      if(this.$route.query.isAdmin==0)
+      {
+        let response
+        try {
+          response = await axios.post('/api/Login/LoginPassword', {
+            account: String(this.account),
+            // password: String(this.password),
+            password: String(await this.sha256(this.password)),
           })
-        } else {
-          ElMessage({
-            message: '未知错误',
-            grouping: false,
-            type: 'error',
-          })
+        } catch (err) {
+          if (err.response.data.result == 'fail') {
+            ElMessage({
+              message: err.response.data.msg,
+              grouping: false,
+              type: 'error',
+            })
+          } else {
+            ElMessage({
+              message: '未知错误',
+              grouping: false,
+              type: 'error',
+            })
+            // 延迟刷新页面
+            setTimeout(() => {
+              window.location.reload(); // 刷新当前页面
+            }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
+            return
+          }
+          return
+        }
+        console.log(response)
+        if (response.data.ok == 'no') {
+          if (response.data.value == 'Fail') {
+            ElMessage({
+              message: '账号或密码错误，请重试!',
+              grouping: false,
+              type: 'error',
+            })
+          }
+          else if (response.data.value == 'UNKNOWN') {
+            ElMessage({
+              message: '未知错误!',
+              grouping: false,
+              type: 'error',
+            })
+          }
           // 延迟刷新页面
           setTimeout(() => {
             window.location.reload(); // 刷新当前页面
           }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
           return
         }
-        return
-      }
-      console.log(response)
-      if (response.data.ok == 'no') {
-        if (response.data.value == 'Fail') {
+        else if (response.data.ok == "yes") {
           ElMessage({
-            message: '账号或密码错误，请重试!',
+            message: '登录成功',
             grouping: false,
-            type: 'error',
+            type: 'success',
           })
+          localStorage.setItem('token', response.data.value)
+          console.log(response.data.value)
+          this.$router.push('/')
         }
-        else if (response.data.value == 'UNKNOWN') {
-          ElMessage({
-            message: '未知错误!',
-            grouping: false,
-            type: 'error',
-          })
-        }
-        // 延迟刷新页面
-        setTimeout(() => {
-          window.location.reload(); // 刷新当前页面
-        }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
-        return
       }
-      else if (response.data.ok == "yes") {
-        ElMessage({
-          message: '登录成功',
-          grouping: false,
-          type: 'success',
-        })
-        localStorage.setItem('token', response.data.value)
-        console.log(response.data.value)
-        this.$router.push('/')
+      else if(this.$route.query.isAdmin==1)
+      {
+        //添加管理员登录接口
       }
 
     },

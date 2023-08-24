@@ -1,4 +1,66 @@
 <script>
+import axios from 'axios';
+import { ElMessage, ElMessageBox } from 'element-plus';
+    export default {
+    components:{
+      
+    },
+    data() {
+        return {
+            InNum: 0,
+            SignNum:0,
+            newPost:0,
+        };
+    },
+    methods:{
+        killUser(){
+
+        },
+    }
+}
+</script>
+
+<template>
+    <el-container class="aside-upper-box">
+          <el-container class="sub-box" style="background-color: rgb(246, 148, 148);margin-top:10px;">
+                <span class="sub-text">昨日访问人数：{{ InNum }} 人</span>
+          </el-container>
+          <el-container class="sub-box" style="background-color: rgb(156, 233, 49);margin-top:20px;">
+                <span class="sub-text">昨日新增用户：{{ SignNum }} 个</span>
+          </el-container>
+          <el-container class="sub-box" style="background-color: rgb(148, 174, 246);margin-top:20px;">
+                <span class="sub-text">昨日新增帖子：{{ newPost }} 个</span>
+          </el-container>
+    </el-container>
+</template>
+
+<style scoped>
+/*整个组件的容器*/
+.aside-upper-box{
+    margin-top: 5vh;
+    margin-left:1vw;
+    position: relative;
+    width:95%;
+    height:30%;
+    display: flex;
+    flex-direction: column;
+    /* background-color: white; */
+}
+.sub-box{
+    position: relative;
+    border-radius: 20px;
+    height:1.5vh;
+    width:100%;
+}
+.sub-text{
+    margin-top:1.7vh;
+    margin-left: 5vw;
+    height:1.5vh;
+    color:white; 
+}
+</style>
+
+<!-- <script>
     export default {
     components:{
       
@@ -77,4 +139,4 @@
     position: relative;
     background-color: rgb(228, 222, 222);
 }
-</style>
+</style> -->
