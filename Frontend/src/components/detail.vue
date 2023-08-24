@@ -19,6 +19,7 @@ export default {
 
             isApproved:false,
             isCollected:false,
+            isReported:false,
             title:"",
             uImg:"这是头像",
             uName:"",
@@ -234,6 +235,10 @@ export default {
             }
             this.isCollected = !this.isCollected;
         },
+        async reportPost()
+        {
+
+        },
         goBack()
         {
             this.$router.push('/forum');
@@ -256,6 +261,10 @@ export default {
                     <el-button :class="isApproved == false?'header-respond-btn':'header-respond-btn-active'" id="approveBtn" @click="approvePost()">
                     <img style="height:2vh;width: 1vw;margin-right: 0.5vw;" src="../assets/img/approve.png">
                         点赞 {{ approvalNum }}
+                    </el-button>
+                    <el-button class="header-respond-btn" style="right:8.3vw" @click="reportPost()">
+                        <span v-if="isReported == false">举报</span>
+                        <span v-if="isReported == true">已举报</span>
                     </el-button>
             </el-header>
             <el-container style="border: 1px solid #ccc;">

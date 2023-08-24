@@ -195,7 +195,7 @@ export default {
         }
         return
       }
-      console.log(await this.sha256(this.password))
+      console.log(response)
       if (response.data.ok == 'no') {
         if (response.data.value == 'Fail') {
           ElMessage({

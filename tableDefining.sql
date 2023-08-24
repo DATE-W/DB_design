@@ -3,16 +3,16 @@ create table Usr
 (
 user_id number,
 userName varchar2(50) not null,
-userPassword varchar2(50) not null,
+userPassword varchar2(70) not null,
 userAccount varchar2(50) unique not null,
-isBanned number(1) not null,
-userPoint number,
+isBanned number(1) not null DEFAULT 0, 
+userPoint number DEFAULT 0,  
 themeType number,
 avatar bfile,
 signDate date,
 createDateTime date not null,
 userSecQue varchar2(50) not null,
-userSecAns varchar2(50) not null,
+userSecAns varchar2(70) not null,
 primary key (user_id)
 );
 
@@ -25,9 +25,6 @@ avatar bfile,
 createDateTime date not null,
 primary key (admin_id)
 );
-
-
-
 
 create table Players
 (
@@ -162,14 +159,15 @@ foreign key (user_id) references Usr,
 foreign key (player_id) references Players
 );
 
+
 create table UserFavouriteTeam
 (
 user_id number,
 team_id number,
 modifyDateTime date,
-primary key (user_id, team_id,modifyDateTime),
+primary key (user_id, team_id),
 foreign key (user_id) references Usr,
-foreign key (team_id,modifyDateTime) references Team(team_id,modifyDateTime)
+foreign key (team_id) references Team
 );
 
 create table UserScoringGame
@@ -292,12 +290,39 @@ foreign key (reportee_id) references Usr(user_id)
 
 create table Follow
 (
-follower_id number,
-follow_id number,
-primary key(follower_id,follow_id),
-foreign key(follower_id) references Usr(user_id),
-foreign key(follow_id) references Usr(user_id)
+    follower_id number,
+    follow_id number,
+    createDateTime data not null,
+    primary key(follower_id,follow_id),
+    foreign key(follower_id) references Usr(user_id),
+    foreign key(follow_id) references Usr(user_id)
 );
 
+--收藏的帖子
+create table FollowPost
+{
+    user_id number,
+    post_id number,
+    createDateTime data not null,
+    foreign key (user_id) references Usr(user_id),
+    foreign key (post_id) references Posts(post_id),
+    primary key(user_id,post_id)
+}
+--赞同的帖子
+CREATE TABLE ApprovePost
+{
+    user_id number,
+    post_id number,
+    createDateTime data not null,
+    foreign key (user_id) references Usr(user_id),
+    foreign key (post_id) references Posts(post_id),
+    primary key(user_id,post_id)
+}
 
-
+create table Checkins
+{
+    user_id number,
+    sign_in_date date,
+    primary key (user_id,sign_in_date),
+    foreign key (user_id) references Usr
+}

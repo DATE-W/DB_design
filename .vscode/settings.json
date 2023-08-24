@@ -1,0 +1,28 @@
+{
+  "workbench.iconTheme": "vscode-icons",
+  "python.defaultInterpreterPath": "D:\\Python\\python.exe",
+  "terminal.integrated.enableMultiLinePasteWarning": false,
+  "C_Cpp.intelliSenseEngine": "Disabled",
+  "[cpp]": {
+      "editor.defaultFormatter": "xaver.clang-format"
+  },
+  "[python]": {
+      "editor.formatOnType": true
+  },
+  "cph.general.defaultLanguage": "cpp",
+  "[vue]": {
+      "editor.defaultFormatter": "Vue.volar"
+  },
+  "editor.mouseWheelZoom": true,
+  "remote.SSH.showLoginTerminal": true,
+  "remote.SSH.remotePlatform": {
+      "os_design": "linux",
+      "osexp": "linux",
+      "192.168.245.130": "linux"
+  },
+  "editor.formatOnSave": true,
+  "window.zoomLevel": 1,
+  "workbench.settings.applyToAllProfiles": [
+      
+  ]
+}
