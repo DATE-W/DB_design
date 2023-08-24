@@ -30,6 +30,7 @@ namespace DBwebAPI.Models
         [SugarColumn(IsPrimaryKey = true)]
         public int user_id { get; set; }
         public int team_id { get; set; }
+        public DateTime createDateTime { get; set; }
         public DateTime modifyDateTime { get; set; }
     }
     //关注

@@ -39,15 +39,16 @@ namespace DBwebAPI.Controllers
         {
             public int post_id { get; set; }
             public string title { get; set; }
-            public string contains { get; set; }
+            public string contains { get;set; }
             public int approvalNum { get; set; }
             public int collectNum { get; set; }
-            public string author { get; set; }
+            public string author { get;set; }
 
         }
         public class PostsJson
         {
             public string ok { get; set; }
+            public int count { get; set; }
             public PostInfoJson[] postInfoJsons { get; set; }
         }
         public class PagesJson
@@ -62,45 +63,44 @@ namespace DBwebAPI.Controllers
             {
                 Console.WriteLine("--------------------------Get NewPost--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                if (!ORACLEConnectTry.getConn())
-                {
-                    Console.WriteLine("���ݿ�����ʧ��");
-                    return BadRequest("���ݿ�����ʧ��");
+                if (!ORACLEConnectTry.getConn()) {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-
-                // ������ͷ�л�ȡ���ݵ�JWT����
+                
+                // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //��֤ Authorization ����ͷ�Ƿ���� JWT ����
+                //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("δ�ṩ��Ч��JWT");
-                    return BadRequest(new { ok = "δ�ṩ��Ч��JWT" });
+                    Console.WriteLine("未提供有效的JWT");
+                    return BadRequest(new { ok = "未提供有效的JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ��֤������JWT����
+                // 验证并解析JWT令牌
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // ��ȡJWT�����е�claims��Ϣ
+                // 获取JWT令牌中的claims信息
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //�ж��û��Ƿ����
+                //判断用户是否存在
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("�û�������");
-                    return Ok(new CustomResponse { ok = "no", value = "������û���Ϣ" });//�û��˻����������
+                    Console.WriteLine("用户不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                //��ȡ�µ�Post_id
+               //获取新的Post_id
                 int post_id = sqlORM.Queryable<Posts>().Max(it => it.post_id) + 1;
-                //����json�ļ�
+                //解析json文件
                 String title = json.title;
                 String contains = json.contains;
                 string[] tags = json.tags;
 
-                //�½�post
+                //新建post
                 Posts post = new Posts
                 {
                     post_id = post_id,
@@ -112,7 +112,7 @@ namespace DBwebAPI.Controllers
                     disapprovalNum = 0,
                     favouriteNum = 0
                 };
-                //�½�PublishPost
+                //新建PublishPost
                 PublishPost publishPost = new PublishPost
                 {
                     user_id = tempUsr.FirstOrDefault().user_id,
@@ -123,11 +123,11 @@ namespace DBwebAPI.Controllers
                 int count2 = await sqlORM.Insertable(publishPost).ExecuteCommandAsync();
                 // Update the point
                 var updateResult = await sqlORM.Updateable<Usr>()
-                    .SetColumns(u => new Usr { userPoint = u.userPoint + 10 })
+                    .SetColumns(u => new Usr { userPoint = u.userPoint+10 })
                     .Where(u => u.userAccount == account)
                     .ExecuteCommandAsync();
-                Console.WriteLine("���� ����+10");
-                //�½�tag
+                Console.WriteLine("发帖 积分+10");
+                //新建tag
                 foreach (string tagstr in tags)
                 {
                     Console.WriteLine("tag= " + tagstr);
@@ -140,7 +140,7 @@ namespace DBwebAPI.Controllers
                 }
                 if (count1 == 1 && count2 == 1)
                 {
-                    Console.WriteLine("���ӷ����ɹ�");
+                    Console.WriteLine("帖子发布成功");
                     Console.WriteLine("post_id= " + post.post_id);
                     Console.WriteLine("publishDateTime= " + post.publishDateTime);
                     Console.WriteLine("title= " + post.title);
@@ -154,19 +154,19 @@ namespace DBwebAPI.Controllers
                 else
                 {
                     if (count1 == 0)
-                        Console.WriteLine("���ӷ���ʧ��");
+                        Console.WriteLine("帖子发布失败");
                     else if (count2 == 0)
-                        Console.WriteLine("publishPost����ʧ��");
+                        Console.WriteLine("publishPost发布失败");
                     //else if (count3 == 0)
-                    //    Console.WriteLine("Tag����ʧ��");
+                    //    Console.WriteLine("Tag发布失败");
                     return Ok(new CustomResponse { ok = "no", value = "Fail" });
                 }
             }
             catch (Exception ex)
             {
-                // �����������ȡ�����г����κ��쳣������һ��������Ӧ��
-                Console.WriteLine("��ȡ����ʱ��������" + ex.Message);
-                return BadRequest(new { ok = "��ȡ����ʱ��������" + ex.Message });
+                // 如果在令牌提取过程中出现任何异常，返回一个错误响应。
+                Console.WriteLine("提取令牌时发生错误：" + ex.Message);
+                return BadRequest(new { ok = "提取令牌时发生错误：" + ex.Message });
             }
         }
         [HttpGet]
@@ -178,20 +178,20 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("���ݿ�����ʧ��");
-                    return BadRequest("���ݿ�����ʧ��");
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-
+               
                 // Get the total count of posts from the database using SqlSugar's Queryable.Count method.
                 int totalCount = await sqlORM.Queryable<Posts>().CountAsync();
-                Console.WriteLine("PostsNum��" + totalCount);
+                Console.WriteLine("PostsNum：" + totalCount);
                 // Return the total count as a JSON response.
                 return Ok(new { totalPostsCount = totalCount });
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An error occurred while retrieving the total count of posts��" + ex.Message);
+                Console.WriteLine("An error occurred while retrieving the total count of posts：" + ex.Message);
                 return BadRequest(new { error = "An error occurred while retrieving the total count of posts." });
             }
         }
@@ -205,16 +205,17 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("���ݿ�����ʧ��");
-                    return BadRequest("���ݿ�����ʧ��");
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-
+                
                 int count = json.count;
                 int page = json.page;
                 string tag = json.tag;
                 int startIndex = (page - 1) * count;
                 int endIndex = startIndex + count;
+                int total = 0;
 
                 Console.WriteLine("page: " + page);
                 Console.WriteLine("count: " + count);
@@ -232,6 +233,7 @@ namespace DBwebAPI.Controllers
                     List<int> matchingPostIds = allTags.Where(t => t.tagName.Equals(tag)).Select(t => t.post_id).ToList();
                     filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id))
                             .OrderByDescending(post => post.publishDateTime).ToListAsync();
+                    total = filteredPosts.Count();
                     IEnumerable<Posts> postsForPage = filteredPosts.Skip(startIndex).Take(count);
                     IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
@@ -254,6 +256,7 @@ namespace DBwebAPI.Controllers
                 else
                 {
                     allPosts = await sqlORM.Queryable<Posts>().Where(it => true).OrderByDescending(post => post.publishDateTime).ToListAsync();
+                    total = allPosts.Count();
                     // Retrieve the posts for the current page
                     IEnumerable<Posts> postsForPage = allPosts.Skip(startIndex).Take(count);
                     // Map the posts to the desired PostInfoJson format
@@ -275,11 +278,12 @@ namespace DBwebAPI.Controllers
                     PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
                     postInfoJsons = postInfoJsonsArray.ToList();
                 }
-
+                
 
                 PostsJson response = new PostsJson
                 {
                     ok = "yes",
+                    count = total,
                     postInfoJsons = postInfoJsons.ToArray()
                 };
                 Console.WriteLine("success");
@@ -305,8 +309,8 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("���ݿ�����ʧ��");
-                    return BadRequest("���ݿ�����ʧ��");
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
 
@@ -315,6 +319,8 @@ namespace DBwebAPI.Controllers
                 string tag = json.tag;
                 int startIndex = (page - 1) * count;
                 int endIndex = startIndex + count;
+
+                int total = 0;
 
                 Console.WriteLine("page: " + page);
                 Console.WriteLine("count: " + count);
@@ -332,6 +338,7 @@ namespace DBwebAPI.Controllers
                     List<int> matchingPostIds = allTags.Where(t => t.tagName.Equals(tag)).Select(t => t.post_id).ToList();
                     filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id))
                             .OrderBy(post => post.publishDateTime).ToListAsync();
+                    total= filteredPosts.Count;
                     IEnumerable<Posts> postsForPage = filteredPosts.Skip(startIndex).Take(count);
                     IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
@@ -354,6 +361,7 @@ namespace DBwebAPI.Controllers
                 else
                 {
                     allPosts = await sqlORM.Queryable<Posts>().Where(it => true).OrderBy(post => post.publishDateTime).ToListAsync();
+                    total = allPosts.Count;
                     // Retrieve the posts for the current page
                     IEnumerable<Posts> postsForPage = allPosts.Skip(startIndex).Take(count);
                     // Map the posts to the desired PostInfoJson format
@@ -380,6 +388,7 @@ namespace DBwebAPI.Controllers
                 PostsJson response = new PostsJson
                 {
                     ok = "yes",
+                    count = total,
                     postInfoJsons = postInfoJsons.ToArray()
                 };
                 Console.WriteLine("success");
@@ -405,8 +414,8 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("���ݿ�����ʧ��");
-                    return BadRequest("���ݿ�����ʧ��");
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
 
@@ -415,6 +424,7 @@ namespace DBwebAPI.Controllers
                 string tag = json.tag;
                 int startIndex = (page - 1) * count;
                 int endIndex = startIndex + count;
+                int total;
 
                 Console.WriteLine("page: " + page);
                 Console.WriteLine("count: " + count);
@@ -432,6 +442,8 @@ namespace DBwebAPI.Controllers
                     List<int> matchingPostIds = allTags.Where(t => t.tagName.Equals(tag)).Select(t => t.post_id).ToList();
                     filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id))
                             .OrderByDescending(post => post.approvalNum).ToListAsync();
+                   
+                    total = filteredPosts.Count();
                     IEnumerable<Posts> postsForPage = filteredPosts.Skip(startIndex).Take(count);
                     IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
@@ -454,6 +466,7 @@ namespace DBwebAPI.Controllers
                 else
                 {
                     allPosts = await sqlORM.Queryable<Posts>().Where(it => true).OrderByDescending(post => post.approvalNum).ToListAsync();
+                    total = allPosts.Count();
                     // Retrieve the posts for the current page
                     IEnumerable<Posts> postsForPage = allPosts.Skip(startIndex).Take(count);
                     // Map the posts to the desired PostInfoJson format
@@ -480,6 +493,168 @@ namespace DBwebAPI.Controllers
                 PostsJson response = new PostsJson
                 {
                     ok = "yes",
+                    count = total,
+                    postInfoJsons = postInfoJsons.ToArray()
+                };
+                Console.WriteLine("success");
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("errorResponse: " + ex.Message);
+                PostsJson errorResponse = new PostsJson
+                {
+                    ok = "no",
+                    postInfoJsons = new PostInfoJson[0]
+                };
+                return Ok(errorResponse);
+            }
+        }
+        public class SearchPost
+        {
+            public int page { get; set; }
+            public int count { get; set; }
+            public string tag { get; set; }
+            public string key { get;set; }
+        }
+        // 计算帖子的关联度
+        double CalculateRelevance(Posts post, string keyword)
+        {
+            int titleKeywordCount = CountKeywordOccurrences(post.title.ToLower(), keyword);
+            int contentKeywordCount = CountKeywordOccurrences(post.contains.ToLower(), keyword);
+
+            // 这里的权重是经验性的，可以根据需要进行调整
+            double titleWeight = 0.7;
+            double contentWeight = 0.3;
+            double approvalWeight = 0.1;
+            double favoriteWeight = 0.05;
+
+            // 计算关联度分数
+            double relevanceScore =
+                titleWeight * titleKeywordCount +
+                contentWeight * contentKeywordCount +
+                approvalWeight * post.approvalNum +
+                favoriteWeight * post.favouriteNum;
+
+            return relevanceScore;
+        }
+        // 计算关键词在文本中出现的次数
+        int CountKeywordOccurrences(string text, string keyword)
+        {
+            int count = 0;
+            int index = text.IndexOf(keyword);
+            while (index != -1)
+            {
+                count++;
+                index = text.IndexOf(keyword, index + keyword.Length);
+            }
+            return count;
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetPostbySearch([FromBody] SearchPost json)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get GetPostbySearch--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+
+                int count = json.count;
+                int page = json.page;
+                string tag = json.tag;
+                int startIndex = (page - 1) * count;
+                int endIndex = startIndex + count;
+                int total;
+
+                Console.WriteLine("page: " + page);
+                Console.WriteLine("count: " + count);
+                List<Posts> allPosts = new List<Posts>();
+                List<Posts> filteredPosts = new List<Posts>();
+                List<Posts> posts = new List<Posts>();
+                List<PostInfoJson> postInfoJsons = new List<PostInfoJson>();
+                if (!tag.Equals("ALL"))
+                {
+                    List<Tag> allTags = await sqlORM.Queryable<Tag>().Where(it => true).ToListAsync();
+                    foreach (Tag t in allTags)
+                    {
+                        Console.WriteLine("Post_id: " + t.post_id + "   Tag: " + t.tagName);
+                    }
+                    List<int> matchingPostIds = allTags.Where(t => t.tagName.Equals(tag)).Select(t => t.post_id).ToList();
+                    filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id))
+                            .OrderByDescending(post => post.approvalNum).ToListAsync();
+
+                    //json.key为关键词，需要在post的title和contain中筛选出与key存在关联度的帖子，并按关联度从高到低排序
+                    //以下为实现的代码
+                    string keyword = json.key.ToLower(); // Convert the keyword to lowercase for case-insensitive comparison
+                    filteredPosts = filteredPosts
+                        .Where(post => post.title.ToLower().Contains(keyword) || post.contains.ToLower().Contains(keyword))
+                        .OrderByDescending(post => CalculateRelevance(post, keyword))
+                        .ToList();
+
+                    total = filteredPosts.Count();
+                    IEnumerable<Posts> postsForPage = filteredPosts.Skip(startIndex).Take(count);
+                    IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
+                    {
+                        int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
+                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+
+                        return new PostInfoJson
+                        {
+                            post_id = post.post_id,
+                            title = post.title,
+                            contains = post.contains,
+                            approvalNum = post.approvalNum,
+                            collectNum = post.favouriteNum,
+                            author = author // Add the author property here
+                        };
+                    });
+                    PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
+                    postInfoJsons = postInfoJsonsArray.ToList();
+                }
+                else
+                {
+                    allPosts = await sqlORM.Queryable<Posts>().Where(it => true).OrderByDescending(post => post.approvalNum).ToListAsync();
+                    //json.key为关键词，需要在post的title和contain中筛选出与key存在关联度的帖子，并按关联度从高到低排序
+                    //以下为实现的代码
+                    string keyword = json.key.ToLower(); // Convert the keyword to lowercase for case-insensitive comparison
+                    allPosts = allPosts
+                        .Where(post => post.title.ToLower().Contains(keyword) || post.contains.ToLower().Contains(keyword))
+                        .OrderByDescending(post => CalculateRelevance(post, keyword))
+                        .ToList();
+
+                    total = allPosts.Count();
+                    // Retrieve the posts for the current page
+                    IEnumerable<Posts> postsForPage = allPosts.Skip(startIndex).Take(count);
+                    // Map the posts to the desired PostInfoJson format
+                    IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
+                    {
+                        int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
+                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+
+                        return new PostInfoJson
+                        {
+                            post_id = post.post_id,
+                            title = post.title,
+                            contains = post.contains,
+                            approvalNum = post.approvalNum,
+                            collectNum = post.favouriteNum,
+                            author = author // Add the author property here
+                        };
+                    });
+                    PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
+                    postInfoJsons = postInfoJsonsArray.ToList();
+                }
+
+
+                PostsJson response = new PostsJson
+                {
+                    ok = "yes",
+                    count = total,
                     postInfoJsons = postInfoJsons.ToArray()
                 };
                 Console.WriteLine("success");
@@ -511,7 +686,7 @@ namespace DBwebAPI.Controllers
             public string ok { get; set; }
             public string name { get; set; }
             public string title { get; set; }
-            public string avatar { get; set; }
+            public string avatar { get;set; }
             public string contains { get; set; }
             public DateTime publishDateTime { get; set; }
             public int approvalNum { get; set; }
@@ -529,78 +704,78 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("���ݿ�����ʧ��");
-                    return BadRequest("���ݿ�����ʧ��");
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-
+                
                 int post_id = json.post_id;
-                // ������ͷ�л�ȡ���ݵ�JWT����
+                // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //��֤ Authorization ����ͷ�Ƿ���� JWT ����
+                //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("δ�ṩ��Ч��JWT");
-                    return BadRequest(new { ok = "no", value = "δ�ṩ��Ч��JWT" });
+                    Console.WriteLine("未提供有效的JWT");
+                    return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ��֤������JWT����
+                // 验证并解析JWT令牌
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // ��ȡJWT�����е�claims��Ϣ
+                // 获取JWT令牌中的claims信息
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //�ж��û��Ƿ����
+                //判断用户是否存在
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("�û�������");
-                    return Ok(new CustomResponse { ok = "no", value = "������û���Ϣ" });//�û��˻����������
+                    Console.WriteLine("用户不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
 
                 Console.WriteLine("post_id: " + post_id);
                 Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
                 int user_id = tempUsr.FirstOrDefault().user_id;
-                //�ҵ�post
+                //找到post
                 List<Posts> tempPosts = new List<Posts>();
                 tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //�ж������Ƿ����
+                //判断帖子是否存在
                 if (tempPosts.Count() == 0)
                 {
-                    Console.WriteLine("���Ӳ�����");
-                    return Ok(new CustomResponse { ok = "no", value = "���Ӳ�����" });
+                    Console.WriteLine("帖子不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "帖子不存在" });
                 }
-                //�ҵ�������ID
+                //找到发帖人ID
                 List<PublishPost> tempPublicshPosts = new List<PublishPost>();
                 tempPublicshPosts = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //�ҵ�������
+                //找到发帖人
                 List<Usr> PostUsr = new List<Usr>();
                 PostUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tempPublicshPosts.FirstOrDefault().user_id)
                     .ToListAsync();
-                //�ҵ���ע
+                //找到关注
                 List<Follow> follow = new List<Follow>();
                 follow = await sqlORM.Queryable<Follow>().Where(it => it.follow_id == PostUsr.FirstOrDefault().user_id && it.follower_id == user_id)
                     .ToListAsync();
-                //�ҵ�����
+                //找到评论
                 List<Comments> PostComments = new List<Comments>();
                 PostComments = await sqlORM.Queryable<Comments>().Where(it => it.post_id == post_id)
                     .ToListAsync();
 
                 Sentpostinfo sentpostinfo = new Sentpostinfo();
-                //�ҵ�Like
+                //找到Like
                 List<LikePost> tempLike = new List<LikePost>();
                 tempLike = await sqlORM.Queryable<LikePost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
                     .ToListAsync();
-                //�ҵ�collect
+                //找到collect
                 List<CollectPost> tempCollect = new List<CollectPost>();
                 tempCollect = await sqlORM.Queryable<CollectPost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
                     .ToListAsync();
-                sentpostinfo.iscollect = tempCollect.Count != 0 ? 1 : 0;
-                sentpostinfo.islike = tempLike.Count != 0 ? 1 : 0;
+                sentpostinfo.iscollect= tempCollect.Count!=0? 1 : 0;
+                sentpostinfo.islike = tempLike.Count != 0? 1: 0;
                 sentpostinfo.isfollow = follow.Count != 0 ? 1 : 0;
                 sentpostinfo.ok = "yes";
                 sentpostinfo.name = PostUsr.FirstOrDefault().userName;//string
@@ -610,10 +785,10 @@ namespace DBwebAPI.Controllers
                 sentpostinfo.approvalNum = (int)tempPosts.FirstOrDefault().approvalNum;//int
                 sentpostinfo.comments = new Comment[0];
                 sentpostinfo.avatar = PostUsr.FirstOrDefault().avatar;
-                List<Comment> commentsList = new List<Comment>();
+                List <Comment> commentsList = new List<Comment>();
                 foreach (var comment in PostComments)
                 {
-                    //�ҵ�������username
+                    //找到评论人username
                     List<Usr> ComUsr = new List<Usr>();
                     ComUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == comment.user_id)
                         .ToListAsync();
@@ -641,7 +816,7 @@ namespace DBwebAPI.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine("errorResponse: " + ex.Message);
-                return Ok(new CustomResponse { ok = "no", value = "���ݿ����Ӵ���" });//�û��˻����������
+                return Ok(new CustomResponse { ok = "no", value = "数据库连接错误" });//用户账户或密码错误
             }
         }
         public class newComment
@@ -658,59 +833,59 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("���ݿ�����ʧ��");
-                    return BadRequest("���ݿ�����ʧ��");
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-
+                
                 int post_id = json.post_id;
                 string contains = json.contains;
-                // ������ͷ�л�ȡ���ݵ�JWT����
+                // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //��֤ Authorization ����ͷ�Ƿ���� JWT ����
+                //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("δ�ṩ��Ч��JWT");
-                    return BadRequest(new { ok = "no", value = "δ�ṩ��Ч��JWT" });
+                    Console.WriteLine("未提供有效的JWT");
+                    return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ��֤������JWT����
+                // 验证并解析JWT令牌
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // ��ȡJWT�����е�claims��Ϣ
+                // 获取JWT令牌中的claims信息
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //�ж��û��Ƿ����
+                //判断用户是否存在
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("�û�������");
-                    return Ok(new CustomResponse { ok = "no", value = "������û���Ϣ" });//�û��˻����������
+                    Console.WriteLine("用户不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
 
                 Console.WriteLine("post_id: " + post_id);
                 Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
                 Console.WriteLine("contains: " + contains);
-                //�ҵ�post
+                //找到post
                 List<Posts> tempPosts = new List<Posts>();
                 tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //�ж������Ƿ����
+                //判断帖子是否存在
                 if (tempPosts.Count() == 0)
                 {
-                    Console.WriteLine("���Ӳ�����");
-                    return Ok(new CustomResponse { ok = "no", value = "���Ӳ�����" });
+                    Console.WriteLine("帖子不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "帖子不存在" });
                 }
-                //�ҵ�������ID
+                //找到评论人ID
                 List<PublishPost> tempPublicshPosts = new List<PublishPost>();
                 tempPublicshPosts = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //��ȡ�µ�comment_id
+                //获取新的comment_id
                 int comment_id = sqlORM.Queryable<Comments>().Max(it => it.comment_id) + 1;
-                //����json�ļ�
-                //�½�post
+                //解析json文件
+                //新建post
                 Comments comment = new Comments
                 {
                     comment_id = comment_id,
@@ -724,22 +899,22 @@ namespace DBwebAPI.Controllers
                     .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
                     .Where(u => u.userAccount == account)
                     .ExecuteCommandAsync();
-                Console.WriteLine("���� ����+3");
+                Console.WriteLine("评论 积分+3");
                 int count = await sqlORM.Insertable(comment).ExecuteCommandAsync();
-                if (count > 0) { return Ok(new CustomResponse { ok = "yes", value = "�����ɹ�" }); }
-                else { return Ok(new CustomResponse { ok = "no", value = "����ʧ��" }); }
+                if(count > 0) { return Ok(new CustomResponse { ok = "yes", value = "发布成功" }); }
+                else {  return Ok(new CustomResponse { ok="no", value = "发布失败" }); }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("errorResponse: " + ex.Message);
-                return Ok(new CustomResponse { ok = "no", value = "���ݿ����Ӵ���" });//�û��˻����������
+                return Ok(new CustomResponse { ok = "no", value = "数据库连接错误" });//用户账户或密码错误
             }
         }
         public class LikeJson
         {
             public int post_id { get; set; }
         }
-
+       
         [HttpPost]
         public async Task<IActionResult> Like([FromBody] LikeJson json)
         {
@@ -749,65 +924,65 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("���ݿ�����ʧ��");
-                    return BadRequest("���ݿ�����ʧ��");
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 int post_id = json.post_id;
-
-
-                // ������ͷ�л�ȡ���ݵ�JWT����
+ 
+                
+                // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //��֤ Authorization ����ͷ�Ƿ���� JWT ����
+                //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("δ�ṩ��Ч��JWT");
-                    return BadRequest(new { ok = "no", value = "δ�ṩ��Ч��JWT" });
+                    Console.WriteLine("未提供有效的JWT");
+                    return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ��֤������JWT����
+                // 验证并解析JWT令牌
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // ��ȡJWT�����е�claims��Ϣ
+                // 获取JWT令牌中的claims信息
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //�ж��û��Ƿ����
+                //判断用户是否存在
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("�û�������");
-                    return Ok(new CustomResponse { ok = "no", value = "������û���Ϣ" });//�û��˻����������
+                    Console.WriteLine("用户不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                /*
- int user_id = 12;
- List<Usr> tempUsr = new List<Usr>();
- tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
-     .ToListAsync();
- String account = tempUsr.FirstOrDefault().userAccount;
+                               /*
+                int user_id = 12;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
+                    .ToListAsync();
+                String account = tempUsr.FirstOrDefault().userAccount;
 */
-                //�ҵ�post
+                //找到post
                 List<Posts> tempPosts = new List<Posts>();
                 tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //�ж������Ƿ����
+                //判断帖子是否存在
                 if (tempPosts.Count() == 0)
                 {
-                    Console.WriteLine("���Ӳ�����");
-                    return Ok(new CustomResponse { ok = "no", value = "���Ӳ�����" });
+                    Console.WriteLine("帖子不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "帖子不存在" });
                 }
 
-                //�ҵ�Like
+                //找到Like
                 List<LikePost> tempLike = new List<LikePost>();
                 tempLike = await sqlORM.Queryable<LikePost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
                     .ToListAsync();
-                //δ����
+                //未点赞
                 if (tempLike.Count == 0)
                 {
                     LikePost like = new LikePost();
                     like.user_id = tempUsr.FirstOrDefault().user_id;
-                    like.post_id = post_id;
+                    like.post_id=post_id;
                     like.createDateTime = DateTime.Now;
                     int count = await sqlORM.Insertable(like).ExecuteCommandAsync();
                     //tempPosts.FirstOrDefault().approvalNum++;
@@ -816,14 +991,14 @@ namespace DBwebAPI.Controllers
                         .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
                         .Where(u => u.userAccount == account)
                         .ExecuteCommandAsync();
-                    Console.WriteLine("���� ����+1");
+                    Console.WriteLine("点赞 积分+1");
                     //int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
-                    if (count > 0) { Console.WriteLine("like success"); return Ok(new CustomResponse { ok = "yes", value = "���޳ɹ�" }); }
-                    else { Console.WriteLine("like fail"); return Ok(new CustomResponse { ok = "no", value = "����ʧ��" }); }
+                    if (count > 0) { Console.WriteLine("like success"); return Ok(new CustomResponse { ok = "yes", value = "点赞成功" }); }
+                    else { Console.WriteLine("like fail"); return Ok(new CustomResponse { ok = "no", value = "点赞失败" });  }
                 }
                 else
                 {
-                    // �ѵ��ޣ�ִ��ȡ�������߼�
+                    // 已点赞，执行取消点赞逻辑
                     //tempPosts.FirstOrDefault().approvalNum--;
                     //int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
                     int deletedCount = await sqlORM.Deleteable<LikePost>()
@@ -832,19 +1007,19 @@ namespace DBwebAPI.Controllers
                     if (deletedCount > 0)
                     {
                         Console.WriteLine("delike success");
-                        return Ok(new CustomResponse { ok = "yes", value = "ȡ�����޳ɹ�" });
+                        return Ok(new CustomResponse { ok = "yes", value = "取消点赞成功" });
                     }
                     else
                     {
                         Console.WriteLine("delike fail");
-                        return Ok(new CustomResponse { ok = "no", value = "ȡ������ʧ��" });
+                        return Ok(new CustomResponse { ok = "no", value = "取消点赞失败" });
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("errorResponse: " + ex.Message);
-                return Ok(new CustomResponse { ok = "no", value = "���ݿ����Ӵ���" });//�û��˻����������
+                return Ok(new CustomResponse { ok = "no", value = "数据库连接错误" });//用户账户或密码错误
             }
         }
         public class CollectJson
@@ -861,34 +1036,34 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("���ݿ�����ʧ��");
-                    return BadRequest("���ݿ�����ʧ��");
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 int post_id = json.post_id;
-                // ������ͷ�л�ȡ���ݵ�JWT����
+                // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //��֤ Authorization ����ͷ�Ƿ���� JWT ����
+                //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("δ�ṩ��Ч��JWT");
-                    return BadRequest(new { ok = "no", value = "δ�ṩ��Ч��JWT" });
+                    Console.WriteLine("未提供有效的JWT");
+                    return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ��֤������JWT����
+                // 验证并解析JWT令牌
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // ��ȡJWT�����е�claims��Ϣ
+                // 获取JWT令牌中的claims信息
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //�ж��û��Ƿ����
+                //判断用户是否存在
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("�û�������");
-                    return Ok(new CustomResponse { ok = "no", value = "������û���Ϣ" });//�û��˻����������
+                    Console.WriteLine("用户不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
                 /*
                 int post_id = json.post_id;
@@ -899,21 +1074,21 @@ namespace DBwebAPI.Controllers
                 string account = tempUsr.FirstOrDefault().userAccount;
                 Usr usr = tempUsr.FirstOrDefault();
                 */
-                //�ҵ�post
+                //找到post
                 List<Posts> tempPosts = new List<Posts>();
                 tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //�ж������Ƿ����
+                //判断帖子是否存在
                 if (tempPosts.Count() == 0)
                 {
-                    Console.WriteLine("���Ӳ�����");
-                    return Ok(new CustomResponse { ok = "no", value = "���Ӳ�����" });
+                    Console.WriteLine("帖子不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "帖子不存在" });
                 }
-                //�ҵ�Collect
+                //找到Collect
                 List<CollectPost> tempCollect = new List<CollectPost>();
                 tempCollect = await sqlORM.Queryable<CollectPost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
                     .ToListAsync();
-                //δ�ղ�
+                //未收藏
                 if (tempCollect.Count == 0)
                 {
                     CollectPost like = new CollectPost();
@@ -927,14 +1102,14 @@ namespace DBwebAPI.Controllers
                         .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
                         .Where(u => u.userAccount == account)
                         .ExecuteCommandAsync();
-                    Console.WriteLine("�ղ� ����+1");
+                    Console.WriteLine("收藏 积分+1");
                     //int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
-                    if (count > 0) { Console.WriteLine("collect success"); return Ok(new CustomResponse { ok = "yes", value = "�ղسɹ�" }); }
-                    else { Console.WriteLine("collect fail"); return Ok(new CustomResponse { ok = "no", value = "�ղ�ʧ��" }); }
+                    if (count > 0) { Console.WriteLine("collect success"); return Ok(new CustomResponse { ok = "yes", value = "收藏成功" }); }
+                    else { Console.WriteLine("collect fail"); return Ok(new CustomResponse { ok = "no", value = "收藏失败" }); }
                 }
                 else
                 {
-                    // ���ղأ�ִ��ȡ���ղ��߼�
+                    // 已收藏，执行取消收藏逻辑
                     //tempPosts.FirstOrDefault().favouriteNum--;
                     int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
                     //int deletedCount = await sqlORM.Deleteable<CollectPost>(tempCollect.FirstOrDefault()).ExecuteCommandAsync();
@@ -944,19 +1119,19 @@ namespace DBwebAPI.Controllers
                     if (deletedCount > 0)
                     {
                         Console.WriteLine("decollect success");
-                        return Ok(new CustomResponse { ok = "yes", value = "ȡ���ղسɹ�" });
+                        return Ok(new CustomResponse { ok = "yes", value = "取消收藏成功" });
                     }
                     else
                     {
                         Console.WriteLine("decollect fail");
-                        return Ok(new CustomResponse { ok = "no", value = "ȡ���ղ�ʧ��" });
+                        return Ok(new CustomResponse { ok = "no", value = "取消收藏失败" });
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("errorResponse: " + ex.Message);
-                return Ok(new CustomResponse { ok = "no", value = "���ݿ����Ӵ���" });//�û��˻����������
+                return Ok(new CustomResponse { ok = "no", value = "数据库连接错误" });//用户账户或密码错误
             }
         }
         public class followJosn
@@ -972,54 +1147,54 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("���ݿ�����ʧ��");
-                    return BadRequest("���ݿ�����ʧ��");
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 int post_id = json.post_id;
-                // ������ͷ�л�ȡ���ݵ�JWT����
+                // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //��֤ Authorization ����ͷ�Ƿ���� JWT ����
+                //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
                     Console.WriteLine("error JWT");
-                    return BadRequest(new { ok = "no", value = "δ�ṩ��Ч��JWT" });
+                    return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ��֤������JWT����
+                // 验证并解析JWT令牌
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // ��ȡJWT�����е�claims��Ϣ
+                // 获取JWT令牌中的claims信息
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //�ж��û��Ƿ����
+                //判断用户是否存在
                 if (tempUsr.Count() == 0)
                 {
                     Console.WriteLine("error account");
-                    return Ok(new CustomResponse { ok = "no", value = "������û���Ϣ" });//�û��˻����������
+                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
 
                 Console.WriteLine("post_id: " + post_id);
                 Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
                 int user_id = tempUsr.FirstOrDefault().user_id;
-                //�ҵ�post
+                //找到post
                 List<Posts> tempPosts = new List<Posts>();
                 tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //�ж������Ƿ����
+                //判断帖子是否存在
                 if (tempPosts.Count() == 0)
                 {
                     Console.WriteLine("no such post");
                     return Ok(new CustomResponse { ok = "no", value = "no such post" });
                 }
-                //�ҵ�������ID
+                //找到发帖人ID
                 List<PublishPost> tempPublicshPosts = new List<PublishPost>();
                 tempPublicshPosts = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //�ҵ�������
+                //找到发帖人
                 List<Usr> PostUsr = new List<Usr>();
                 PostUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tempPublicshPosts.FirstOrDefault().user_id)
                     .ToListAsync();
@@ -1028,7 +1203,7 @@ namespace DBwebAPI.Controllers
                 follow.follower_id = user_id;
                 follow.createDateTime = DateTime.Now;
 
-                Follow searchF = await sqlORM.Queryable<Follow>().Where(it => it.follower_id == follow.follower_id && it.follow_id == follow.follow_id).FirstAsync();
+                Follow searchF = await sqlORM.Queryable<Follow>().Where(it=>it.follower_id == follow.follower_id && it.follow_id==follow.follow_id).FirstAsync();
                 int count = 0;
                 if (searchF != null)
                 {
@@ -1060,7 +1235,7 @@ namespace DBwebAPI.Controllers
                         return Ok(new CustomResponse { ok = "no", value = "fail" });
                     }
                 }
-
+                
             }
             catch (Exception ex)
             {
@@ -1081,50 +1256,50 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("���ݿ�����ʧ��");
-                    return BadRequest("���ݿ�����ʧ��");
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                int follow_id = 1;
+                int follow_id=1;
                 if (json != null)
                 {
-                    Console.WriteLine("Json not null " + json.follow_id);
+                    Console.WriteLine("Json not null "+ json.follow_id);
                     follow_id = json.follow_id;
                 }
                 else
                 {
                     Console.WriteLine("Json null");
                 }
-
-                // ������ͷ�л�ȡ���ݵ�JWT����
+               
+                // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //��֤ Authorization ����ͷ�Ƿ���� JWT ����
+                //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
                     Console.WriteLine("error JWT");
-                    return BadRequest(new { ok = "no", value = "δ�ṩ��Ч��JWT" });
+                    return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ��֤������JWT����
+                // 验证并解析JWT令牌
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // ��ȡJWT�����е�claims��Ϣ
+                // 获取JWT令牌中的claims信息
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //�ж��û��Ƿ����
+                //判断用户是否存在
                 if (tempUsr.Count() == 0)
                 {
                     Console.WriteLine("error account");
-                    return Ok(new CustomResponse { ok = "no", value = "������û���Ϣ" });//�û��˻����������
+                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
 
                 int user_id = tempUsr.FirstOrDefault().user_id;
-                /*          int user_id = 12;*/
-
-                //�ҵ�����ע��
+       /*          int user_id = 12;*/
+                
+                //找到被关注人
                 Follow follow = new Follow();
                 follow.follow_id = follow_id;
                 follow.follower_id = user_id;
