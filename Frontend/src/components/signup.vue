@@ -112,6 +112,7 @@ export default {
         <my-carousel />
       </el-aside>
       <el-main>
+        <el-page-header @back="$router.push('/')"></el-page-header>
         <img src="../assets/img/recover_logo.png" class="imgR">
         <!-- 注册 -->
         <div style="bottom:3vh">

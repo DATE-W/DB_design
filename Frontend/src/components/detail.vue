@@ -30,7 +30,7 @@ export default {
 
             //帖子信息相关
             title:"",
-            uImg:"这是头像",
+            avatar:"",
             uName:"",
             uText:"",
             date:"",
@@ -52,7 +52,7 @@ export default {
                 const headers = {
                     Authorization: `Bearer ${token}`,
                 };
-                response = await axios.post('/api/UserToken', {}, { headers })
+                response = await axios.post('/api/UserToken/UserToken', {}, { headers })
             } catch (err) {
                 if (err.response.data.result == 'fail') {
                     ElMessage({
@@ -115,10 +115,10 @@ export default {
             }
             if(response.data.ok=='no')
             {
-                ElMessage.error(response.data.value);
+                ElMessage.error("获取帖子信息失败");
             }else{
                 this.title = response.data.title ;
-                //uImg
+                this.avatar = response.data.avatar;
                 this.uName = response.data.name;
                 this.uText = response.data.contains;
                 
@@ -177,9 +177,9 @@ export default {
             }
             if(response.data.ok == 'yes')
             {
-                ElMessage.success(response.data.value);
+                ElMessage.success("点赞成功");
             }else{
-                ElMessage.error(response.data.value);
+                ElMessage.error("点赞失败");
             }
             this.isApproved = !this.isApproved;
             if(this.isApproved==false){
@@ -252,14 +252,15 @@ export default {
             }
             if(response.data.ok == 'yes')
             {
-                ElMessage.success(response.data.value);
+                ElMessage.success("收藏成功");
                 this.isCollected = !this.isCollected;
             }else{
-                ElMessage.error(response.data.value);
+                ElMessage.error("收藏失败");
             }
         },
         async reportPost()
         {
+            console.log("send report request")
             const token = localStorage.getItem('token');
             let response
             try {
@@ -268,7 +269,7 @@ export default {
                 };
                 response = await axios.post('/api/Forum/report',  {
                     post_id: this.$route.query.clickedPostID,
-                    descriptions:this.report_descriptions,
+                    descriptions:String(this.report_descriptions),
                 }, { headers });
             } catch (err) {
                 if (err.response.data.result == 'fail') {
@@ -286,14 +287,16 @@ export default {
                 }
                 return
             }
+            console.log(response.data.ok)
             if(response.data.ok == 'yes')
             {
-                ElMessage.success(response.data.value);
+                ElMessage.success("举报成功");
                 this.isFollowed = !this.isFollowed;
-            }else{
-                ElMessage.error(response.data.value);
+            }else if(response.data.ok == 'no'){
+                ElMessage.error("举报失败");
             }
             this.report_descriptions="";
+            //this.goBack();
         },
         async follow()
         {
@@ -324,10 +327,10 @@ export default {
             }
             if(response.data.ok == 'yes')
             {
-                ElMessage.success(response.data.value);
+                ElMessage.success("关注成功");
                 this.isFollowed = !this.isFollowed;
             }else{
-                ElMessage.error(response.data.value);
+                ElMessage.error("关注失败");
             }
         },
         goBack()
@@ -388,8 +391,7 @@ export default {
             </el-header>
             <el-container style="border: 1px solid #ccc;">
                 <el-aside>
-                        <!-- <img class="rooter-img" src=""> -->
-                    <div class="rooter-img">{{ uImg }}</div>
+                    <img class="rooter-img" src={{avatar}}>
                     <div class="rooter-name">
                         <p class="rooter-name-typography">{{ uName }}</p>
                     </div>
@@ -484,8 +486,7 @@ export default {
     height:6vw;
     top:2vw;
     bottom:2vw;
-    left:4vw;
-    background-color: bisque;
+    left:0vw;
 }
 .rooter-name{
     position: relative;

@@ -1,4 +1,6 @@
 <script>
+import axios from 'axios';
+import { ElMessage } from 'element-plus';
     export default {
     components:{
       
@@ -13,9 +15,40 @@
         {
             this.announcement='';
         },
-        subbmitAnnouncement()
+        async subbmitAnnouncement()
         {
-
+            console.log("subbmitAnnouncement "+ this.announcement)
+            let response
+            try {
+                response = await axios.post('api/notice/createNotice',  {
+                    admin_id:0,
+                    text:String(this.announcement),
+                });
+                console.log(JSON.stringify(response.data))
+            } catch (err) {
+                if (err.response.data.result == 'fail') {
+                    ElMessage({
+                        message: err.response.data.msg,
+                        grouping: false,
+                        type: 'error',
+                    })
+                } else {
+                    ElMessage({
+                        message: '未知错误',
+                        grouping: false,
+                        type: 'error',
+                    })
+                }
+                return
+            }
+            console.log(response);
+            if (response.data.ok == 'yes') {
+                ElMessage.success("发布成功");
+            }
+            else {
+               ElMessage.error("发布失败");
+            }
+            this.announcement='';
         }
     }
 }
@@ -35,10 +68,10 @@
             />
         </el-container>
         <el-container style="height:30%;width:100%;position: absolute;top:40vh;">
-            <el-button class="announcement-btn" style="margin-left:1vw;" @click=" clearAnnouncementInput()">
+            <el-button class="announcement-btn" style="margin-left:1vw;" @click=" clearAnnouncementInput">
                 <span class="announcement-btn-text">清空</span>
             </el-button>
-            <el-button class="announcement-btn" >
+            <el-button class="announcement-btn" @click="subbmitAnnouncement">
                 <span class="announcement-btn-text">发布</span>
             </el-button>
         </el-container>
