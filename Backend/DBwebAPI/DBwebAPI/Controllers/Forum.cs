@@ -1360,8 +1360,8 @@ namespace DBwebAPI.Controllers
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("���ݿ�����ʧ��");
-                    return BadRequest("���ݿ�����ʧ��");
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
 
@@ -1373,7 +1373,7 @@ namespace DBwebAPI.Controllers
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
                     Console.WriteLine("error JWT");
-                    return BadRequest(new { ok = "no", value = "δ�ṩ��Ч��JWT" });
+                    return BadRequest(new { ok = "no", value = "error JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
@@ -1418,7 +1418,7 @@ namespace DBwebAPI.Controllers
                 reports.post_id = post_id;
                 //reports.reportee_id = PostUsr.FirstOrDefault().user_id;
                 reports.report_time = DateTime.Now;
-                reports.status = "handled";
+                reports.status = "unhandled";
                 reports.descriptions = descriptions;
                 int count = await sqlORM.Insertable(reports).ExecuteCommandAsync();
                 if (count > 0)
