@@ -1,55 +1,143 @@
 <template>
   <div class="my-posts-container">
-      <div class="posts-section">
+    <div class="posts-section">
       <h2>我的帖子</h2>
       <div class="post-list">
-        <div v-for="post in posts" :key="post.id" class="post-item" @mouseover="handleMouseOver" @mouseout="handleMouseOut">
-          <div class="post-title">{{ post.title }}</div>
-          <div class="post-content">{{ post.content }}</div>
+        <div v-for="(post, index) in post_id" :key="post.id" class="post-item">
+          <div class="post-title">{{ post_title[index] }}</div>
+          <div class="post-content">{{ post_content[index] }}</div>
+          <div class="info-group">
+            <span class="like-container">
+              <el-icon size="medium"><Pointer /></el-icon>
+              <span class="like-number">{{ post_likes[index] }}</span>
+            </span>
+            <span class="space-between"></span>
+            <span class="star-container">
+              <el-icon size="medium"><Star /></el-icon>
+              <span class="star-number">{{ post_stars[index] }}</span>
+            </span>
+          </div>
         </div>
       </div>
-      </div>
-      <div class="points-section">
+    </div>
+    <div class="points-section">
       <div class="points-box">
-          <h3 style="color: aliceblue;">我的积分</h3>
-          <div class="points">{{ myPoints }}</div>
+        <h3 style="color: aliceblue;">我的积分</h3>
+        <div class="points">{{ myPoints }}</div>
       </div>
-      </div>
+    </div>
   </div>
-  </template>
+</template>
 
-  <script>
-  export default {
-    data() {
-      return {
-        posts: [
-          { id: 1, title: "第一个帖子", content: "我太爱wh了!!!" },
-          { id: 2, title: "第二个帖子", content: "我可太爱wh了!!!" },
-          { id: 3, title: "第三个帖子", content: "我可太太爱wh了!!!" },
-          { id: 4, title: "第四个帖子", content: "我可太太太爱wh了!!!" },
-          { id: 5, title: "第五个帖子", content: "我可太太太太爱wh了!!!" },
-          { id: 6, title: "第六个帖子", content: "我可太太太太太爱wh了!!!" },
-          { id: 7, title: "第七个帖子", content: "我可太太太太太太爱wh了!!!" },
-          { id: 8, title: "第八个帖子", content: "我可太太太太太太太爱wh了!!!" },
-          { id: 9, title: "第九个帖子", content: "我可太太太太太太太太爱wh了!!!" },
-          { id: 10, title: "第十个帖子", content: "我可太太太太·········太太太爱wh了!!!" },
-          // ...其他帖子数据
-        ],
-        myPoints: 491 // 假设我的积分为491
-      };
+
+<script>
+import axios from 'axios';
+import { ElIcon, ElMessage } from 'element-plus';
+
+export default {
+  data() {
+    return {
+      myPoints: 0,
+      currentPage: 1,
+      pageSize: 4,  //每页4项
+      totalPosts: 0,
+      showPage: false, //初始为false 向后端请求完数据后变为true 更换tag页面暂时变为false
+      post_id: [],  //存储返回的帖子id
+      post_title: [],  //存储返回的帖子标题
+      post_content:[],
+      post_likes:[],
+      post_stars:[],
+      currentTag: 'ALL',  //向后端传递当前页面的帖子类型 初始为全部 不受tag影响
+    };
+  },
+  mounted() {
+    this.getPosts();
+    this.getPoint(); 
+  },
+  methods: {
+    async getPosts() {
+      const token = localStorage.getItem('token');
+            let response
+            try {
+              response = await axios({
+                  method: 'GET',
+                  url: '/api/User/GetMyPost',
+                  headers: {
+                      Authorization: `Bearer ${token}`, 
+                  },
+                })
+
+            } catch (err) {
+                ElMessage({
+                    message: '获取帖子失败',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+            //console.log('response:', response.data);
+            this.post_id = [];
+            this.post_title = [];
+            this.post_content=[];
+            this.post_likes=[];
+            this.post_stars=[];
+            if ( Array.isArray(response.data)) {
+                response.data.forEach((postInfo) => {
+                    this.post_id.push(postInfo.post_id);
+                    this.post_title.push(postInfo.title);
+                    this.post_content.push(postInfo.contains);
+                    this.post_likes.push(postInfo.approvalNum);
+                    this.post_stars.push(postInfo.collectNum);
+                });
+            }
+            else {
+                ElMessage({
+                    message: '后端返回的帖子数据格式错误',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+            
+        },
+    async getPoint(){
+        const token = localStorage.getItem('token');
+        let response
+        try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+            response = await axios.post('/api/User/userPoint', {}, { headers });
+            //在这里获取到用户的积分数和积分明细
+            // this.myPoints = response.data.myPoints;
+            // this.usertitle = this.getUserTitle(this.myPoints);
+            this.myPoints = response.data.userpoint;
+        } catch (err) {
+            if (err.response.data.result == 'fail') {
+                ElMessage({
+                    message: err.response.data.msg,
+                    grouping: false,
+                    type: 'error',
+                })
+            } else {
+                ElMessage({
+                    message: '未知错误',
+                    grouping: false,
+                    type: 'error',
+                })
+            }
+        }
     },
-    methods: {
-    handleMouseOver(event) {
-      const postItem = event.currentTarget;
-      postItem.classList.add("hovered");
+    getUserTitle(myPoints) {
+      if (myPoints >= 0 && myPoints <= 9) return '平平无奇';
+      if (myPoints >= 10 && myPoints <= 49) return '普通用户';
+      if (myPoints >= 50 && myPoints <= 99) return '一贴成名';
+      if (myPoints >= 100 && myPoints <= 499) return '球场金童';
+      if (myPoints >= 500 && myPoints <= 999) return '明日之星';
+      if (myPoints >= 1000) return '名人堂';
     },
-    handleMouseOut(event) {
-      const postItem = event.currentTarget;
-      postItem.classList.remove("hovered");
-    },
-  }
-  };
-  </script>
+  },
+};
+</script>
+
   
 <style scoped>
 .my-posts-container {
@@ -95,12 +183,34 @@
 }
 
 .post-item:nth-child(odd) {
-      background: linear-gradient(45deg, #B3E0FF, #66CCFF);
-    }
+  background: linear-gradient(45deg, #B3E0FF, #66CCFF);
+}
 
-    .post-item:nth-child(even) {
-      background: linear-gradient(45deg, #66CCFF, #33B5FF);
-    }
+.post-item:nth-child(even) {
+  background: linear-gradient(45deg, #66CCFF, #33B5FF);
+}
+
+.info-group {
+  display: flex;
+  align-items: center; 
+  margin-top: 10px; 
+}
+
+.space-between {
+  width: 20px; 
+}
+
+.like-container,
+.star-container {
+  display: flex; /* Display icon and number in the same line */
+  align-items: center;
+  gap: 5px; /* Adjust the gap between icon and number */
+}
+
+.like-number,
+.star-number {
+  font-size: 14px; /* Adjust the font size as needed */
+}
 
 /* 积分 */
 

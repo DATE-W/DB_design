@@ -80,7 +80,7 @@
           <!-- 赛事信息卡片 -->
           <el-row class="Game-col-container">
             <el-card shadow="hover" class="Game-card" v-for="item in getLimitedGames()" :key=item.index
-            style="border-radius: 10px; border: none; margin: 5px;background-color: #edebeb;">
+            style="border-radius: 10px; border: none; margin: 5px;background-color: #d7ecffca;">
               <div class="Game-content">
                 <div class="column-status">{{ item.status }}</div>
                 <div class="column-team1">{{ item.team1 }} {{ item.score1 }}</div>
@@ -96,23 +96,29 @@
           <div class="news-container">
             <div class="hot-news">热点资讯</div>
             <div class="news-row">
-              <div v-for="(news, index) in getLimitedNews()" :key="index" class="news-item">
+              <div v-for="(news, index) in getLimitedNews()" :key="index" 
+                class="news-item" :class="{ 'two-columns': (index + 2) % 5 === 0 }">
                 <a :href="news.link" target="_blank" class="news-link">
-                  <el-row align="middle"  @click="goToLink(news.link)">
+                  <el-row align="middle" @click="goToLink(news.link)">
                     <el-col :span="24" style="display: flex; align-items: center;">
                       <!-- Image -->
-                      <div class="news-item-wrapper">
+                      <div class="news-item-wrapper" style="position: relative;">
                         <img :src="news.image" alt="News Image" class="news-image">
                         <!-- News Content -->
-                        <div class="news-content">
+                        <div class="news-content-overlay" v-if="(index + 2) % 5 === 0"
+                            style="position: absolute; top: 70%; left: 0; width: 100%; text-align: center; color: white; background-color: rgba(0, 0, 0, 0.281); padding: 10px;">
                           <h4 class="news-title">{{ news.title }}</h4>
-                          <p class="news-summary">{{ truncateText(news.summary, 50) }}</p>
+                          <p class="news-summary">{{ truncateText(news.summary, 26) }}</p>
+                        </div>
+                        <div v-else class="news-content" style="text-align: center;">
+                          <h4 class="news-title">{{ news.title }}</h4>
+                          <p class="news-summary">{{ truncateText(news.summary, 26) }}</p>
                         </div>
                       </div>
                     </el-col>
                   </el-row>
                 </a>
-            </div>
+              </div>
             </div>
           </div>
 
@@ -121,54 +127,69 @@
 
           <!-- 右侧社区板块 -->
           <div class="forum-container">
-            <div class="hot-posts">热门帖子</div>
+            <div class="hot-posts">精选热帖</div>
             <div class="posts-column">
-              <div v-for="(posts, index) in getLimitedPosts()" :key="index" class="posts-item">
-              <a :href="posts.link" target="_blank" class="posts-link">
-                <el-row align="middle" class="posts-row" @click="goToLink(posts.link)">
+              <div v-for="(post, index) in post_id" :key="post.id" class="posts-item">
+                <el-row align="middle" class="posts-row" @click="goToLink(post.link)">
                   <el-col :span="24" style="display: flex; align-items: center;height: 100px;">
-                    <!-- Image -->
                     <div class="posts-item-wrapper">
-                      <img :src="posts.image" alt="Posts Image" class="posts-image">
                       <!-- News Content -->
-                      <div class="posts-content">
-                        <h4 class="posts-title">{{ posts.title }}</h4>
-                        <p class="posts-summary">{{ truncateText(posts.summary, 50) }}</p>
-                      </div>
+                      <!-- <a :href="post.link" target="_blank" class="posts-link"> -->
+                        <div class="posts-content" >
+                          <p :class="['posts-summary', { 'hovered-summary': hoveredIndex === index }]"
+                            @mouseenter="hoveredIndex = index"
+                            @mouseleave="hoveredIndex = -1">
+                            <span :class="['post-number', getColorClass(index)]">
+                              {{ index + 1 }}.
+                            </span>
+                            {{ truncateText(post_content[index] , 50) }}
+                          </p>
+                          <div class="info-group">
+                            <span class="like-container">
+                              <el-icon size="medium"><Pointer /></el-icon>
+                              <span class="like-number">{{ post_likes[index] }}</span>
+                            </span>
+                            <span class="space-between"></span> <!-- Add a spacer with desired gap -->
+                            <span class="star-container">
+                              <el-icon size="medium"><Star /></el-icon>
+                              <span class="star-number">{{ post_stars[index] }}</span>
+                            </span>
+                          </div>
+                        </div>
+                      <!-- </a> -->
                     </div>
                   </el-col>
                 </el-row>
-              </a>
-            </div>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- 下半部分 -->
         <div class="bottom-section">
-            <div class="module" @click="redirectToNews" @mouseover="hideContent" @mouseout="showContent">
-                <p class="module-text">致力于分享最有价值的新闻</p>
-                <div class="circle">N</div>
-                <div class="overlay-background">
-                  <p class="overlay-text">一览足球热讯<br>->新闻</p>
-                </div>
-            </div>
+          <div class="module" @click="redirectToNews" @mouseover="hideContent" @mouseout="showContent">
+              <p class="module-text">致 力 于 分 享<br>最 有 价 值 的 新闻</p>
+              <el-icon class="news-icon" ><VideoCamera /></el-icon>
+              <div class="overlay-background">
+                <p class="overlay-text">一览足球热讯<br>->新闻</p>
+              </div>
+          </div>
 
-            <div class="module" @click="redirectToGames" @mouseover="hideContent" @mouseout="showContent">
-                <p class="module-text">一场场足球的视觉盛宴</p>
-                <div class="circle">G</div>
-                <div class="overlay-background">
-                  <p class="overlay-text">享受足球魅力<br>->赛事</p>
-                </div>
-            </div>
+          <div class="module" @click="redirectToGames" @mouseover="hideContent" @mouseout="showContent">
+              <p class="module-text">一 场 场 足 球<br>视 觉 盛 宴</p>
+              <el-icon class="football-icon" ><Football /></el-icon>
+              <div class="overlay-background">
+                <p class="overlay-text">享受足球魅力<br>->赛事</p>
+              </div>
+          </div>
 
-            <div class="module" @click="redirectToForum" @mouseover="hideContent" @mouseout="showContent">
-                <p class="module-text">一个充满热情的思想空间</p>
-                <div class="circle">F</div>
-                <div class="overlay-background">
-                  <p class="overlay-text">表达真挚热爱<br>->论坛</p>
-                </div>
-            </div>
+          <div class="module" @click="redirectToForum" @mouseover="hideContent" @mouseout="showContent">
+              <p class="module-text">一 个 充 满 热 情<br>的 思 想 空 间</p>
+              <el-icon class="posts-icon" ><ChatDotSquare /></el-icon>
+              <div class="overlay-background">
+                <p class="overlay-text">表达真挚热爱<br>->论坛</p>
+              </div>
+          </div>
         </div>
       </div>
     </el-main>
@@ -177,17 +198,45 @@
   
 <script>
 import MyNav from './nav.vue';
+import axios from 'axios';
+import { ElIcon, ElMessage } from 'element-plus';
 import carousel1 from '../assets/img/home_slider1.jpg';
 import carousel2 from '../assets/img/home_slider2.jpg';
 import carousel3 from '../assets/img/home_slider3.jpg';
 
+
 export default {
   data() {
     return {
+      hoveredIndex: -1, //帖子内容变色
       line1: '回到',
       line2: '顶部',
       newsList: [
         {
+          title: "wyh好帅",
+          summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
+          image: "../src/assets/img/carousel3.png",
+          link: "https://sse.tongji.edu.cn/"
+        },
+        {
+          title: "王晗天天拉屎",
+          summary: "有消息人士称301寝室的wh一天能拉三泡屎，请跟随小编一起来看看吧",
+          image: "../src/assets/img/carousel1.png",
+          link: "https://sse.tongji.edu.cn/"
+        },
+        {
+          title: "lll今天又睡过头了",
+          summary: "猪王lll今天无故缺席，斩立决",
+          image: "../src/assets/img/carousel2.png",
+          link: "https://sse.tongji.edu.cn/"
+        },
+        {
+          title: "wyh好帅",
+          summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
+          image: "../src/assets/img/carousel3.png",
+          link: "https://sse.tongji.edu.cn/"
+        },
+        {
           title: "王晗天天拉屎",
           summary: "有消息人士称301寝室的wh一天能拉三泡屎，请跟随小编一起来看看吧",
           image: "../src/assets/img/carousel1.png",
@@ -221,47 +270,28 @@ export default {
           title: "wyh好帅",
           summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
           image: "../src/assets/img/carousel3.png",
+          link: "https://sse.tongji.edu.cn/"
+        },
+        {
+          title: "lll今天又睡过头了",
+          summary: "猪王lll今天无故缺席，斩立决",
+          image: "../src/assets/img/carousel2.png",
+          link: "https://sse.tongji.edu.cn/"
+        },
+        {
+          title: "wyh好帅",
+          summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
+          image: "../src/assets/img/carousel3.png",
+          link: "https://sse.tongji.edu.cn/"
+        },
+        {
+          title: "王晗天天拉屎",
+          summary: "有消息人士称301寝室的wh一天能拉三泡屎，请跟随小编一起来看看吧",
+          image: "../src/assets/img/carousel1.png",
           link: "https://sse.tongji.edu.cn/"
         }
       ],
-      postsList: [
-        {
-          title: "王晗天天拉屎",
-          summary: "有消息人士称301寝室的wh一天能拉三泡屎，请跟随小编一起来看看吧",
-          image: "../src/assets/img/carousel1.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "lll今天又睡过头了",
-          summary: "猪王lll今天无故缺席，斩立决",
-          image: "../src/assets/img/carousel2.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "wyh好帅",
-          summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
-          image: "../src/assets/img/carousel3.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "王晗天天拉屎",
-          summary: "有消息人士称301寝室的wh一天能拉三泡屎，请跟随小编一起来看看吧",
-          image: "../src/assets/img/carousel1.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "lll今天又睡过头了",
-          summary: "猪王lll今天无故缺席，斩立决",
-          image: "../src/assets/img/carousel2.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "wyh好帅",
-          summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
-          image: "../src/assets/img/carousel3.png",
-          link: "https://sse.tongji.edu.cn/"
-        }
-      ],
+      
       GamesMsg: [
         { Game: "中超", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
         { Game: "英超", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
@@ -277,16 +307,80 @@ export default {
         { Game: "中超", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 }
       ],
       maxGamesItems: 8,
-      maxNewsItems: 6,
-      maxPostsItems: 6,
+      maxNewsItems: 13,
+      maxPostsItems: 10,
       maxNewsLength: 30,
-      GameSelect: "ALL"
+      GameSelect: "ALL",
+      activeName: 'second',
+      pageNumber: 1,
+      pageSize: 10,  
+      totalPosts: 0,
+      showPage: false, //初始为false 向后端请求完数据后变为true 更换tag页面暂时变为false
+      post_id: [],  //存储返回的帖子id
+      post_title: [],  //存储返回的帖子标题
+      post_content:[],
+      post_likes:[],
+      post_stars:[],
+      currentTag: 'ALL',  //向后端传递当前页面的帖子类型 初始为全部 不受tag影响
     }
   },
   components: {
     'my-nav': MyNav
   },
+  mounted() {
+    this.getPosts(1, this.pageSize, this.currentTag);
+  },
   methods: {
+    async getPosts(pageNumber, pageSize, currentTag) {
+            let response
+            try {
+                response = await axios.post('/api/Forum/GetPostbyLike', {
+                    page: pageNumber,
+                    count: pageSize,
+                    tag: String(currentTag),
+                }, {})
+            } catch (err) {
+                ElMessage({
+                    message: '获取帖子失败',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+
+            console.log('response:', response.data);
+            this.post_id = [];
+            this.post_title = [];
+            this.post_content=[];
+            this.post_likes=[];
+            this.post_stars=[];
+            if ( response.data.postInfoJsons) {
+                response.data.postInfoJsons.forEach((postInfo) => {
+                    this.post_id.push(postInfo.post_id);
+                    this.post_title.push(postInfo.title);
+                    this.post_content.push(postInfo.contains);
+                    this.post_likes.push(postInfo.approvalNum);
+                    this.post_stars.push(postInfo.collectNum);
+                });
+            }
+            else {
+                ElMessage({
+                    message: '后端返回的帖子数据格式错误',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+            
+            //console.log('得到的帖子id为:', this.post_id);
+            //console.log('得到的帖子title为:', this.post_title);
+        },
+    getColorClass(index) {    //设置热帖序号颜色
+      if (index < 3) {
+        const colors = ['color-red', 'color-green', 'color-blue']; // Add your desired colors here
+        return colors[index];
+      } else {
+        return 'color-gray'; // Default gray color for other numbers
+      }
+    },
     scrollToTop() {
       // Scroll to top logic
       window.scrollTo({
@@ -325,9 +419,9 @@ export default {
     getLimitedNews() {
       return this.newsList.slice(0, this.maxNewsItems);
     },
-    getLimitedPosts() {
-      return this.postsList.slice(0, this.maxPostsItems);
-    },
+    // getLimitedPosts() {
+    //   return this.postsList.slice(0, this.maxPostsItems);
+    // },
     truncateText(text, limit) {
       if (text.length <= limit) {
         return text;
@@ -441,11 +535,12 @@ export default {
 
 .bottom-middle-section {
   display: flex;
-  flex: 2;
   padding-top: 10px;
   justify-content: space-between;
   width: 86vw;
+  align-items: flex-start; /* Align items at the top */
 }
+
 /* 论坛模块 */
 /* Center the forum container and set some spacing */
 .forum-container {
@@ -457,82 +552,122 @@ export default {
   justify-content: center;
   gap: 20px;
   margin-top: 20px;
+  overflow: hidden; /* Hide overflow content */
 }
 
 .posts-column {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+}
+
+.post-number {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.color-red {
+  color: #e74c3c; /* Your desired color for the first number */
+}
+
+.color-green {
+  color: #27ae60; /* Your desired color for the second number */
+}
+
+.color-blue {
+  color: #3498db; /* Your desired color for the third number */
+}
+
+.color-gray {
+  color: #8e8e8e; /* Default gray color for other numbers */
+}
+
+
 .posts-item {
+  margin-bottom: 10px;
   width: 100%;
-  background-color: #f9f9f9;
   border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform 0.2s ease;
-  height: 150px;
+  background-color: #fff;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  border-radius:10px;
 }
 
 .posts-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.posts-image {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  margin-right: 10px;
-  border-radius: 50%; /* Add this line to make the element circular */
+.posts-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+  color: #333;
 }
 
 .posts-item-wrapper {
   display: flex;
-  align-items: center;
-  width: 100%;
-  margin: 0; /* Remove default margin */
-  padding: 0; /* Remove default padding */
+  align-items: stretch;
+  padding: 10px;
 }
 
 .posts-content {
-  padding: 10px;
-  max-width: 400px;
-  flex: 1; /* Make the content take the remaining width */
-}
-
-.posts-item-wrapper:hover {
-  background-color: #f2f2f2; /* Light gray background color on hover */
-}
-
-.posts-link {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  color: #333;
-}
-
-.posts-row {
-  padding: 10px;
+  flex-grow: 1;
 }
 
 .posts-title {
   font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 5px;
+  margin: 0;
 }
 
 .posts-summary {
-  font-size: 14px;
-  color: #666;
+  margin: 10px 0;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.posts-summary.hovered-summary {
+  color: #3498db; /* Light blue color when hovered */
+}
+
+.info-group {
+  display: flex;
+  align-items: center; 
+  margin-top: 10px; 
+}
+
+.space-between {
+  width: 20px; 
+}
+
+.like-container,
+.star-container {
+  display: flex; /* Display icon and number in the same line */
+  align-items: center;
+  gap: 5px; /* Adjust the gap between icon and number */
+}
+
+.like-number,
+.star-number {
+  font-size: 14px; /* Adjust the font size as needed */
 }
 
 .hot-posts {
   font-size: 36px;
   font-weight: bold;
-  color: #ffd64f;
+  color: #4fb3ffc7;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   text-align: center;
   display: flex;
@@ -541,16 +676,20 @@ export default {
 }
 
 /* 新闻模块 */
-.news-container{
+
+.news-container {
   width: 60%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+  justify-content: center;
 }
+
 .hot-news {
   font-size: 36px;
   font-weight: bold;
-  color: #fc9069;
+  color: #4fb3ffc7;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   text-align: center;
   display: flex;
@@ -558,65 +697,86 @@ export default {
   align-items: center;
 }
 
+
 .news-row {
-  /* Add styles for the row of news items */
+  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  gap: 10px;
 }
 
 .news-item {
-  width: calc(50% - 10px);
-  margin-bottom: 20px;
-
+  width: calc(33% - 10px);
+  border: 1px solid #ccc;
+  overflow: hidden;
+  background-color: #fff;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  margin-bottom: 10px;
+  border-radius:10px;
+  box-sizing: border-box;
 }
 
-/* 调整一行中的新闻模块间距 */
-.news-row.adjusted {
-  justify-content: space-between; /* 居中并减少中间间距 */
+.news-item.two-columns {
+  flex-basis: calc(66.66% - 10px);
+}
+
+.news-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .news-link {
-  /* Add styles for the news link */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   text-decoration: none;
-  color: inherit;
+  color: #333;
 }
 
 .news-item-wrapper {
-  /* Add styles for the news item wrapper */
-  border-radius: 10px;
-  background-color: #f0f0f0;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
   display: flex;
   flex-direction: column;
-}
-
-.news-image {
-  /* Add styles for the news image */
-  width: 100%;
-  height: 200px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  align-items: center;
+  height: 100%;
 }
 
 .news-content {
-  /* Add styles for the news content */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  height: 100%;
+}
+
+.news-image-wrapper {
+  width: 100%;
   padding: 10px;
 }
 
+.news-image {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
 .news-title {
-  /* Add styles for the news title */
-  margin-top: 0;
+  font-size: 18px;
+  margin: 0;
 }
 
 .news-summary {
-  /* Add styles for the news summary */
-  margin-bottom: 0;
+  
+  margin: 10px 0;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Number of lines to show */
+  -webkit-box-orient: vertical;
 }
-
-/* 轮播图 */
-
 
 /* 右下组件——回到顶部 */
 .scroll-to-top-btn {
@@ -679,10 +839,11 @@ export default {
   position: relative;
   text-align: center;
   padding: 20px;
-  background-color: #fff;
+  background-color: rgb(241, 204, 253);
   border: 1px solid #ccc;
   border-radius: 10px;
   width: 30%;
+  height: 120px;
   cursor: pointer; /* 添加交互：将鼠标光标变为手型 */
   transition: transform 0.3s ease;
 }
@@ -690,22 +851,20 @@ export default {
 .module:hover {
     transform: scale(1.05);
 }
-
-.module .circle {
-  width: 80px;
-  height: 80px;
-  line-height: 80px;
-  border-radius: 50%;
-  background-color: #007bff;
-  color: #fff;
-  font-size: 36px;
-  margin: 0 auto 10px;
-}
-
 .module .module-text {
-  font-size: 16px;
-  color: #777;
+  font-size: 18px;
+  color: rgba(0, 123, 255, 0.7);
+  margin-top:1%;
 }
+
+.news-icon,
+.posts-icon,
+.football-icon {
+  font-size: 40px; /* Adjust the size of the icon as needed */
+  margin-bottom: 10px; /* Add margin between icon and text */
+  color: rgba(0, 123, 255, 0.7);
+}
+
 
 .overlay-background {
   position: absolute;
@@ -731,11 +890,13 @@ export default {
   color: #fff;
 }
 
-.module .module-text, .module .circle {
+.module .module-text, .module .football-icon,
+.module .news-icon,.module .posts-icon{
   visibility: visible;
 }
 
-.module:hover .module-text, .module:hover .circle {
+.module:hover .module-text, .module:hover .football-icon,
+.module:hover .news-icon,.module:hover .posts-icon{
   visibility: hidden;
 }
 </style>
