@@ -484,7 +484,7 @@ namespace DBwebAPI.Controllers
             public string? gameDate { get;set; }
             public int? homeTeam { get; set; }
             public int? opponentTeam { get; set; }
-            public string? oppoentName { get; set; }
+            public string? opponentName { get; set; }
             public int? homeScore { get; set;}
             public int? opponentScore { get; set;}
             public string? opponentLogo { get; set; }
@@ -518,7 +518,7 @@ namespace DBwebAPI.Controllers
                         gameDate=g.startTime.Value.ToString("yyyy-MM-dd"),
                         homeTeam= (home.chinesename == teamName ? home.team_id : guest.team_id),
                         opponentTeam = (home.chinesename == teamName ? guest.team_id : home.team_id),
-                        oppoentName = (home.chinesename == teamName ? guest.chinesename : home.chinesename),
+                        opponentName = (home.chinesename == teamName ? guest.chinesename : home.chinesename),
                         opponentLogo = (home.chinesename == teamName ? guest.logo : home.logo),
                         gameUid = g.game_id.ToString()
 

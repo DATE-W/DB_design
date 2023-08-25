@@ -16,6 +16,7 @@ using System.ComponentModel;
 using System.Xml.Linq;
 using System.Drawing;
 using static DBwebAPI.Models.NoticeModel;
+using System.Drawing.Text;
 
 namespace DBwebAPI.Controllers
 {
@@ -685,6 +686,7 @@ namespace DBwebAPI.Controllers
         {
             public string ok { get; set; }
             public string name { get; set; }
+            public int author_id { get; set; }
             public string title { get; set; }
             public string avatar { get;set; }
             public string contains { get; set; }
@@ -785,6 +787,7 @@ namespace DBwebAPI.Controllers
                 sentpostinfo.approvalNum = (int)tempPosts.FirstOrDefault().approvalNum;//int
                 sentpostinfo.comments = new Comment[0];
                 sentpostinfo.avatar = PostUsr.FirstOrDefault().avatar;
+                sentpostinfo.author_id = PostUsr.FirstOrDefault().user_id;
                 List <Comment> commentsList = new List<Comment>();
                 foreach (var comment in PostComments)
                 {
@@ -812,6 +815,76 @@ namespace DBwebAPI.Controllers
                 Console.WriteLine("Like: " + sentpostinfo.islike);
                 Console.WriteLine("Collect: " + sentpostinfo.iscollect);
                 return Ok(sentpostinfo);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("errorResponse: " + ex.Message);
+                return Ok(new CustomResponse { ok = "no", value = "数据库连接错误" });//用户账户或密码错误
+            }
+        }
+        public class UserJson
+        {
+            public string name { get; set; }
+            public string avatar { get; set; }
+            public string uft { get; set; }
+            public string signature { get; set; }
+            public int follownum { get;set; }
+            public int followednum { get; set; }
+            public int likenum { get;set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> UserInfo([FromBody] int author_id)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get UserInfo--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+
+                //找到发帖人
+
+                Usr User = await sqlORM.Queryable<Usr>().SingleAsync(it => it.user_id == author_id);
+                if(User == null)
+                {
+                    return BadRequest();
+                }
+                UserJson response = new UserJson();
+                response.signature = User.signature;
+                response.name = User.userName;
+                response.avatar = User.avatar;
+                response.followednum = User.followednumber;
+                response.follownum = User.follownumber;
+                //点赞数
+                List<PublishPost> tmpPP = new List<PublishPost>();
+                tmpPP = await sqlORM.Queryable<PublishPost>().Where(it => it.user_id == author_id)
+                    .ToListAsync();
+                int approvalNum = 0;
+                foreach (var pp in tmpPP)
+                {
+                    List<Posts> tmpPost = new List<Posts>();
+                    tmpPost = await sqlORM.Queryable<Posts>().Where(it => it.post_id == pp.post_id)
+                        .ToListAsync();
+                    approvalNum += tmpPost.Count() != 0 ? tmpPost.FirstOrDefault().approvalNum : 0;
+                }
+                response.likenum = approvalNum;
+                //主队
+                UserFavouriteTeam uft = await sqlORM.Queryable<UserFavouriteTeam>().SingleAsync(it => it.user_id == author_id);
+                if (uft == null)
+                    response.uft = "暂无主队";
+                else
+                {
+                    Team team =await sqlORM.Queryable<Team>().SingleAsync(it=>it.team_id == uft.team_id);
+                    if (team != null)
+                        response.uft = team.chinesename;
+                    else
+                        response.uft = "暂无主队";
+                }
+                return Ok(response);
             }
             catch (Exception ex)
             {
