@@ -18,7 +18,8 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu v-slot: dropdown>
-              <el-dropdown-item @click="redirectToLogin" v-if="!this.islog">登录</el-dropdown-item>
+              <el-dropdown-item @click="redirectToLogin(0)" v-if="!this.islog">用户登录</el-dropdown-item>
+              <el-dropdown-item @click="redirectToLogin(1)" v-if="!this.islog">管理员登录</el-dropdown-item>
               <el-dropdown-item @click="redirectToRegister" v-if="!this.islog">注册</el-dropdown-item>
               <el-dropdown-item @click="redirectToPersonal" v-if="this.islog">个人中心</el-dropdown-item>
               <el-dropdown-item @click="logout" v-if="this.islog">登出</el-dropdown-item>
@@ -89,9 +90,14 @@ export default {
         this.islog = false;
       }
     },
-    redirectToLogin() {
+    redirectToLogin(isAdmin) {
       // 跳转到登录页面的逻辑
-      this.$router.push('/signin');
+      this.$router.push({
+                path: '/signin',
+                query: { 
+                  isAdmin: isAdmin 
+                }
+          });
     },
     redirectToRegister() {
       // 跳转到注册页面的逻辑
