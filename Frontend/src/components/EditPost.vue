@@ -150,7 +150,7 @@ export default {
         const headers = {
           Authorization: `Bearer ${token}`,
         };
-        response = await axios.post('/api/Forum/NewPost',  {
+        response = await axios.post('/api/Forum/NewPost', {
           title: String(this.postTitle),
           contains: String(this.postText),
           tags: this.selectedTags,
