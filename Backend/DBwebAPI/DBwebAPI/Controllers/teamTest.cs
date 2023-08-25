@@ -15,7 +15,6 @@ namespace DBwebAPI.Controllers
             Console.WriteLine("received!");
         
             return testStr;
-
                 
 
         }

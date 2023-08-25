@@ -2,7 +2,7 @@
 import MyNav from './nav.vue';
 import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { ArrowLeft } from '@element-plus/icons-vue';
+
 export default {
     components:{
         'my-nav': MyNav
@@ -17,16 +17,26 @@ export default {
 
             isAccount:false,
 
+            //用来判断几个按钮的初始情况
             isApproved:false,
             isCollected:false,
             isReported:false,
+            isFollowed:false,
+
+            //举报相关
+            dialogFormVisible : false,
+            formLabelWidth : '140px',
+            report_descriptions:"",
+
+            //帖子信息相关
             title:"",
-            uImg:"这是头像",
+            avatar:"",
             uName:"",
             uText:"",
             date:"",
             approvalNum:0,
 
+            //评论相关
             jNames:[],
             jTexts:[],
             jDates:[],
@@ -42,7 +52,7 @@ export default {
                 const headers = {
                     Authorization: `Bearer ${token}`,
                 };
-                response = await axios.post('/api/UserToken', {}, { headers })
+                response = await axios.post('/api/UserToken/UserToken', {}, { headers })
             } catch (err) {
                 if (err.response.data.result == 'fail') {
                     ElMessage({
@@ -64,6 +74,17 @@ export default {
                 this.isAccount = true;  
             }
             console.log("isAccount = " + this.isAccount);
+        },
+        analyse_date(date){
+            // 创建一个 Date 对象来解析时间字符串
+            const dateObject = new Date(date);
+            // 提取年、月和日
+            const year = dateObject.getFullYear();
+            const month = String(dateObject.getMonth() + 1).padStart(2, "0"); // 月份是从 0 开始的，需要加1
+            const day = String(dateObject.getDate()).padStart(2, "0");
+            // 构建目标格式的日期字符串
+            const formattedDate = `${year}-${month}-${day}`;
+            return formattedDate;
         },
         async GetPostDetail()
         {
@@ -94,13 +115,14 @@ export default {
             }
             if(response.data.ok=='no')
             {
-                ElMessage.error(response.data.value);
+                ElMessage.error("获取帖子信息失败");
             }else{
                 this.title = response.data.title ;
-                //uImg
+                this.avatar = response.data.avatar;
                 this.uName = response.data.name;
                 this.uText = response.data.contains;
-                this.date = response.data.publishDateTime;
+                
+                this.date = this.analyse_date(response.data.publishDateTime);
                 if(response.data.islike == 1)
                 {
                     this.isApproved = true
@@ -109,21 +131,22 @@ export default {
                 {
                     this.isCollected = true
                 }
+                if(response.data.isfollow == 1)
+                {
+                    this.isFollowed = true
+                }
                 this.approvalNum = response.data.approvalNum;
                 //this.judgers.jText.push()
             }
             console.log("response.data.islike = " + response.data.islike);
             console.log("response.data.iscollect = " + response.data.iscollect);
+            console.log("response.data.isfollow = " + response.data.isfollow);
             console.log("response.data.approvalNum = " + response.data.approvalNum);
             response.data.comments.forEach(jInfo => {
                 this.jNames.push(jInfo.userName);
                 this.jTexts.push(jInfo.contains);
-                this.jDates.push(jInfo.publishDateTime);
-                console.log("response.data.comments.userName = " + jInfo.userName);
-                console.log("response.data.comments.contains = " + jInfo.contains);
-                console.log("response.data.comments.publishDateTime = " + jInfo.publishDateTime); 
+                this.jDates.push(this.analyse_date(jInfo.publishDateTime));
             });
-            console.log("isApproved1 = " + this.isApproved);
         },
         async approvePost()
         {
@@ -154,9 +177,9 @@ export default {
             }
             if(response.data.ok == 'yes')
             {
-                ElMessage.success(response.data.value);
+                ElMessage.success("点赞成功");
             }else{
-                ElMessage.error(response.data.value);
+                ElMessage.error("点赞失败");
             }
             this.isApproved = !this.isApproved;
             if(this.isApproved==false){
@@ -229,19 +252,94 @@ export default {
             }
             if(response.data.ok == 'yes')
             {
-                ElMessage.success(response.data.value);
+                ElMessage.success("收藏成功");
+                this.isCollected = !this.isCollected;
             }else{
-                ElMessage.error(response.data.value);
+                ElMessage.error("收藏失败");
             }
-            this.isCollected = !this.isCollected;
         },
         async reportPost()
         {
-
+            console.log("send report request")
+            const token = localStorage.getItem('token');
+            let response
+            try {
+                const headers = {
+                     Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/Forum/report',  {
+                    post_id: this.$route.query.clickedPostID,
+                    descriptions:String(this.report_descriptions),
+                }, { headers });
+            } catch (err) {
+                if (err.response.data.result == 'fail') {
+                    ElMessage({
+                        message: err.response.data.msg,
+                        grouping: false,
+                        type: 'error',
+                    })
+                } else {
+                    ElMessage({
+                        message: '未知错误',
+                        grouping: false,
+                        type: 'error',
+                    })
+                }
+                return
+            }
+            console.log(response.data.ok)
+            if(response.data.ok == 'yes')
+            {
+                ElMessage.success("举报成功");
+                this.isFollowed = !this.isFollowed;
+            }else if(response.data.ok == 'no'){
+                ElMessage.error("举报失败");
+            }
+            this.report_descriptions="";
+            //this.goBack();
+        },
+        async follow()
+        {
+            const token = localStorage.getItem('token');
+            let response
+            try {
+                const headers = {
+                     Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/Forum/follow',  {
+                    post_id: this.$route.query.clickedPostID,
+                }, { headers });
+            } catch (err) {
+                if (err.response.data.result == 'fail') {
+                    ElMessage({
+                        message: err.response.data.msg,
+                        grouping: false,
+                        type: 'error',
+                    })
+                } else {
+                    ElMessage({
+                        message: '未知错误',
+                        grouping: false,
+                        type: 'error',
+                    })
+                }
+                return
+            }
+            if(response.data.ok == 'yes')
+            {
+                ElMessage.success("关注成功");
+                this.isFollowed = !this.isFollowed;
+            }else{
+                ElMessage.error("关注失败");
+            }
         },
         goBack()
         {
-            this.$router.push('/forum');
+            if(this.$route.query.fromAdmin == 1){
+                this.$router.push('/AdminMain');    
+            }else{
+                this.$router.push('/forum');
+            }
         }
     }
 }
@@ -252,28 +350,57 @@ export default {
         <my-nav/>
         <el-container class="post-container">
             <el-header>
-                <el-page-header :icon="ArrowLeft" @back="goBack"></el-page-header>
+                <el-dialog v-model="this.dialogFormVisible" title="举报详情">
+                <el-form :model="form">
+                <el-form-item label="请填写举报理由" :label-width="formLabelWidth">
+                    <el-input v-model="report_descriptions" autocomplete="off" />
+                </el-form-item>
+                </el-form>
+                <template #footer>
+                    <span class="dialog-footer">
+                        <el-button @click="dialogFormVisible = false">
+                            放弃举报
+                        </el-button>
+                        <el-button type="primary" @click="dialogFormVisible = false;reportPost()">
+                            确认举报
+                        </el-button>
+                    </span>
+                </template>
+            </el-dialog>
+                <el-page-header @back="goBack"></el-page-header>
                     <span class="header-text" >{{ title }}</span>
-                    <el-button class="header-respond-btn" style="right:8.3vw" @click="collectPost()">
+                    <div v-if="this.$route.query.fromAdmin == 1">
+                        <el-button class="header-respond-btn" style="right:2vw" @click="collectPost()">
+                            <span>删除帖子</span>
+                        </el-button>
+                    </div>
+                    <div v-else>
+                        <el-button class="header-respond-btn" style="right:12.3vw" @click="collectPost()">
                         <span v-if="isCollected == false">收藏</span>
                         <span v-if="isCollected == true">已收藏</span>
-                    </el-button>
-                    <el-button :class="isApproved == false?'header-respond-btn':'header-respond-btn-active'" id="approveBtn" @click="approvePost()">
-                    <img style="height:2vh;width: 1vw;margin-right: 0.5vw;" src="../assets/img/approve.png">
-                        点赞 {{ approvalNum }}
-                    </el-button>
-                    <el-button class="header-respond-btn" style="right:8.3vw" @click="reportPost()">
-                        <span v-if="isReported == false">举报</span>
-                        <span v-if="isReported == true">已举报</span>
-                    </el-button>
+                        </el-button>
+                        <el-button :class="isApproved == false?'header-respond-btn':'header-respond-btn-active'" id="approveBtn" @click="approvePost()">
+                        <img style="height:2vh;width: 1vw;margin-right: 0.5vw;" src="../assets/img/approve.png">
+                            点赞 {{ approvalNum }}
+                        </el-button>
+                        <el-button class="header-respond-btn" style="right:8.3vw" @click="this.dialogFormVisible = true">
+                            <span v-if="isReported == false">举报</span>
+                            <span v-if="isReported == true">已举报</span>
+                        </el-button>
+                    </div>
             </el-header>
             <el-container style="border: 1px solid #ccc;">
                 <el-aside>
-                    <!-- <img class="rooter-img" src=""> -->
-                    <div class="rooter-img">{{ uImg }}</div>
+                    <img class="rooter-img" src={{avatar}}>
                     <div class="rooter-name">
                         <p class="rooter-name-typography">{{ uName }}</p>
                     </div>
+                    <el-container>
+                        <el-button class="aside-follow-btn" @click="follow()">
+                            <span v-if="isFollowed == false">关注</span>
+                            <span v-if="isFollowed == true">已关注</span>
+                        </el-button>
+                    </el-container>
                 </el-aside>
                 <el-main>
                     <!-- 主帖 -->
@@ -317,7 +444,7 @@ export default {
 	position: absolute;
 	left: 20%;top: 30%;
 	margin-left: -5vw;
-	margin-top: -5vw;
+	margin-top: -10vw;
 }
 /*头部帖子标题+收藏/回复按钮*/
 .el-header{
@@ -359,8 +486,7 @@ export default {
     height:6vw;
     top:2vw;
     bottom:2vw;
-    left:4vw;
-    background-color: bisque;
+    left:0vw;
 }
 .rooter-name{
     position: relative;
@@ -374,6 +500,13 @@ export default {
     font-family: KaiTi;
     font-size:1.25rem;
     color:rgb(41, 93, 151);
+}
+
+.aside-follow-btn{
+    text-align: center;
+    background-color: aliceblue;
+    position: relative;
+    left:5vw;
 }
 
 /*主信息板块*/
@@ -413,5 +546,18 @@ export default {
 .el-page-header{
     position: relative;
     top:1.2vw;
+}
+
+.el-button--text {
+  margin-right: 15px;
+}
+.el-select {
+  width: 300px;
+}
+.el-input {
+  width: 300px;
+}
+.dialog-footer button:first-child {
+  margin-right: 10px;
 }
 </style>

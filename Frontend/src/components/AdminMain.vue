@@ -15,18 +15,11 @@ export default {
     },
     data() {
         return {
-           announcement:'',
+           
         };
     },
     methods:{
-        clearAnnouncementInput()
-        {
-            this.announcement='';
-        },
-        subbmitAnnouncement()
-        {
-
-        }
+       
     }
 }
 </script>

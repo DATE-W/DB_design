@@ -46,8 +46,12 @@
 <script>
 import { ElMessage, ElMessageBox } from 'element-plus';
 import axios from 'axios';
+import { useRoute } from 'vue-router';
 
 export default {
+    mounted() {
+        this.JudgeAccount();
+    },
     data() {
         return {
             avatarUrl: "./src/assets/img/carousel1.png", // 头像url
@@ -61,6 +65,38 @@ export default {
         };
     },
     methods: {
+        async JudgeAccount() {
+            const token = localStorage.getItem('token');
+            let response
+            try {
+                const headers = {
+                    Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/User/profile', {}, { headers })
+            } catch (err) {
+                ElMessage({
+                    message: '未知错误',
+                    grouping: false,
+                    type: 'error',
+                })
+                return
+            }
+            console.log(response);
+            //有账号
+            if (response.data.ok == 'yes') {
+                this.avatarUrl = response.data.value.avatar;
+                this.userName = response.data.value.username;
+                this.account = response.data.value.account;
+            }
+            else {
+                ElMessage({
+                    message: '登录过期，请重新登录！',
+                    grouping: false,
+                    type: 'error',
+                })
+                this.$router.push('/signin');
+            }
+        },
         uploadAvatar() {
             this.$refs.fileInput.click(); // 触发选择文件的对话框
         },
@@ -120,9 +156,54 @@ export default {
                 // 用户点击了“取消”，不执行任何操作
             });
         },
-        submitData() {
+        async submitData() {
+            const userName = this.userName;
+            const sign = this.personalSign;
+            const avatar = this.avatarUrl;
+            console.log(sign)
+            console.log(userName)
+
             //这里加后端交互代码，然后刷新当前页面
             // 延迟刷新页面
+            const token = localStorage.getItem('token');
+            let response
+            try {
+                const headers = {
+                    Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/User/modifyprofile',
+                    {
+                        username: String(userName),
+                        signature: String(sign),
+                        avatar: String(avatar),
+                    },
+                    { headers })
+            } catch (err) {
+                console.log(err);
+                ElMessage({
+                    message: '未知错误',
+                    grouping: false,
+                    type: 'error',
+                })
+                return
+            }
+            console.log(response);
+            //有账号
+            if (response.data.ok == 'yes') {
+                ElMessage({
+                    message: '修改成功！',
+                    grouping: false,
+                    type: 'success',
+                })
+            }
+            else {
+                ElMessage({
+                    message: '登录过期，请重新登录！',
+                    grouping: false,
+                    type: 'error',
+                })
+                this.$router.push('/signin');
+            }
             setTimeout(() => {
                 window.location.reload(); // 刷新当前页面
             }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间

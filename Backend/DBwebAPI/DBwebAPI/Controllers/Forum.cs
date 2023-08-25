@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+ï»¿using Microsoft.AspNetCore.Mvc;
 using SqlSugar;
 using DBwebAPI.Models;
 using DBwebAPI.Controllers;
@@ -14,6 +14,8 @@ using System.Diagnostics;
 using static DBwebAPI.Controllers.ForumController;
 using System.ComponentModel;
 using System.Xml.Linq;
+using System.Drawing;
+using static DBwebAPI.Models.NoticeModel;
 
 namespace DBwebAPI.Controllers
 {
@@ -37,6 +39,11 @@ namespace DBwebAPI.Controllers
         {
             public int post_id { get; set; }
             public string title { get; set; }
+            public string contains { get; set; }
+            public int approvalNum { get; set; }
+            public int collectNum { get; set; }
+            public string author { get; set; }
+
         }
         public class PostsJson
         {
@@ -53,46 +60,47 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get NewPost--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
-                if (!ORACLEConnectTry.getConn()) {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                    return BadRequest("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("Get NewPost");
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ğ»ï¿½È¡ï¿½ï¿½ï¿½İµï¿½JWTï¿½ï¿½ï¿½ï¿½
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //ï¿½ï¿½Ö¤ Authorization ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ JWT ï¿½ï¿½ï¿½ï¿½
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT");
+                    return BadRequest(new { ok = "Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½JWTï¿½ï¿½ï¿½ï¿½
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // ï¿½ï¿½È¡JWTï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½claimsï¿½ï¿½Ï¢
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //ï¿½Ğ¶ï¿½ï¿½Ã»ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                    return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢" });//ï¿½Ã»ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 }
-                Console.WriteLine("ÓÃ»§ĞÅÏ¢ÕıÈ·");
-                //»ñÈ¡ĞÂµÄPost_id
+                //ï¿½ï¿½È¡ï¿½Âµï¿½Post_id
                 int post_id = sqlORM.Queryable<Posts>().Max(it => it.post_id) + 1;
-                //½âÎöjsonÎÄ¼ş
+                //ï¿½ï¿½ï¿½ï¿½jsonï¿½Ä¼ï¿½
                 String title = json.title;
                 String contains = json.contains;
                 string[] tags = json.tags;
 
-                //ĞÂ½¨post
+                //ï¿½Â½ï¿½post
                 Posts post = new Posts
                 {
                     post_id = post_id,
@@ -104,7 +112,7 @@ namespace DBwebAPI.Controllers
                     disapprovalNum = 0,
                     favouriteNum = 0
                 };
-                //ĞÂ½¨PublishPost
+                //ï¿½Â½ï¿½PublishPost
                 PublishPost publishPost = new PublishPost
                 {
                     user_id = tempUsr.FirstOrDefault().user_id,
@@ -115,11 +123,11 @@ namespace DBwebAPI.Controllers
                 int count2 = await sqlORM.Insertable(publishPost).ExecuteCommandAsync();
                 // Update the point
                 var updateResult = await sqlORM.Updateable<Usr>()
-                    .SetColumns(u => new Usr { userPoint = u.userPoint+10 })
+                    .SetColumns(u => new Usr { userPoint = u.userPoint + 10 })
                     .Where(u => u.userAccount == account)
                     .ExecuteCommandAsync();
-                Console.WriteLine("·¢Ìû »ı·Ö+10");
-                //ĞÂ½¨tag
+                Console.WriteLine("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½+10");
+                //ï¿½Â½ï¿½tag
                 foreach (string tagstr in tags)
                 {
                     Console.WriteLine("tag= " + tagstr);
@@ -132,7 +140,7 @@ namespace DBwebAPI.Controllers
                 }
                 if (count1 == 1 && count2 == 1)
                 {
-                    Console.WriteLine("Ìû×Ó·¢²¼³É¹¦");
+                    Console.WriteLine("ï¿½ï¿½ï¿½Ó·ï¿½ï¿½ï¿½ï¿½É¹ï¿½");
                     Console.WriteLine("post_id= " + post.post_id);
                     Console.WriteLine("publishDateTime= " + post.publishDateTime);
                     Console.WriteLine("title= " + post.title);
@@ -146,19 +154,19 @@ namespace DBwebAPI.Controllers
                 else
                 {
                     if (count1 == 0)
-                        Console.WriteLine("Ìû×Ó·¢²¼Ê§°Ü");
+                        Console.WriteLine("ï¿½ï¿½ï¿½Ó·ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
                     else if (count2 == 0)
-                        Console.WriteLine("publishPost·¢²¼Ê§°Ü");
+                        Console.WriteLine("publishPostï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
                     //else if (count3 == 0)
-                    //    Console.WriteLine("Tag·¢²¼Ê§°Ü");
+                    //    Console.WriteLine("Tagï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
                     return Ok(new CustomResponse { ok = "no", value = "Fail" });
                 }
             }
             catch (Exception ex)
             {
-                // Èç¹ûÔÚÁîÅÆÌáÈ¡¹ı³ÌÖĞ³öÏÖÈÎºÎÒì³££¬·µ»ØÒ»¸ö´íÎóÏìÓ¦¡£
-                Console.WriteLine("ÌáÈ¡ÁîÅÆÊ±·¢Éú´íÎó£º" + ex.Message);
-                return BadRequest(new { ok = "ÌáÈ¡ÁîÅÆÊ±·¢Éú´íÎó£º" + ex.Message });
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ğ³ï¿½ï¿½ï¿½ï¿½Îºï¿½ï¿½ì³£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½
+                Console.WriteLine("ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" + ex.Message);
+                return BadRequest(new { ok = "ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" + ex.Message });
             }
         }
         [HttpGet]
@@ -166,23 +174,24 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get GetPostNum--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                    return BadRequest("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("Get GetPostNum");
+
                 // Get the total count of posts from the database using SqlSugar's Queryable.Count method.
                 int totalCount = await sqlORM.Queryable<Posts>().CountAsync();
-                Console.WriteLine("PostsNum£º" + totalCount);
+                Console.WriteLine("PostsNumï¿½ï¿½" + totalCount);
                 // Return the total count as a JSON response.
                 return Ok(new { totalPostsCount = totalCount });
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An error occurred while retrieving the total count of posts£º" + ex.Message);
+                Console.WriteLine("An error occurred while retrieving the total count of postsï¿½ï¿½" + ex.Message);
                 return BadRequest(new { error = "An error occurred while retrieving the total count of posts." });
             }
         }
@@ -192,14 +201,15 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get GetPostbyOrder--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                    return BadRequest("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("Get GetPostbyPages");
+
                 int count = json.count;
                 int page = json.page;
                 string tag = json.tag;
@@ -223,11 +233,23 @@ namespace DBwebAPI.Controllers
                     filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id))
                             .OrderByDescending(post => post.publishDateTime).ToListAsync();
                     IEnumerable<Posts> postsForPage = filteredPosts.Skip(startIndex).Take(count);
-                    postInfoJsons = postsForPage.Select(post => new PostInfoJson
+                    IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
-                        post_id = post.post_id,
-                        title = post.title
-                    }).ToList();
+                        int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
+                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+
+                        return new PostInfoJson
+                        {
+                            post_id = post.post_id,
+                            title = post.title,
+                            contains = post.contains,
+                            approvalNum = post.approvalNum,
+                            collectNum = post.favouriteNum,
+                            author = author // Add the author property here
+                        };
+                    });
+                    PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
+                    postInfoJsons = postInfoJsonsArray.ToList();
                 }
                 else
                 {
@@ -235,12 +257,226 @@ namespace DBwebAPI.Controllers
                     // Retrieve the posts for the current page
                     IEnumerable<Posts> postsForPage = allPosts.Skip(startIndex).Take(count);
                     // Map the posts to the desired PostInfoJson format
-                    postInfoJsons = postsForPage.Select(post => new PostInfoJson
+                    IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
-                        post_id = post.post_id,
-                        title = post.title
-                    }).ToList();
+                        int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
+                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+
+                        return new PostInfoJson
+                        {
+                            post_id = post.post_id,
+                            title = post.title,
+                            contains = post.contains,
+                            approvalNum = post.approvalNum,
+                            collectNum = post.favouriteNum,
+                            author = author // Add the author property here
+                        };
+                    });
+                    PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
+                    postInfoJsons = postInfoJsonsArray.ToList();
                 }
+
+
+                PostsJson response = new PostsJson
+                {
+                    ok = "yes",
+                    postInfoJsons = postInfoJsons.ToArray()
+                };
+                Console.WriteLine("success");
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("errorResponse: " + ex.Message);
+                PostsJson errorResponse = new PostsJson
+                {
+                    ok = "no",
+                    postInfoJsons = new PostInfoJson[0]
+                };
+                return Ok(errorResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetPostbydeOrder([FromBody] GetPostInfo json)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get GetPostbyOrder--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                    return BadRequest("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+
+                int count = json.count;
+                int page = json.page;
+                string tag = json.tag;
+                int startIndex = (page - 1) * count;
+                int endIndex = startIndex + count;
+
+                Console.WriteLine("page: " + page);
+                Console.WriteLine("count: " + count);
+                List<Posts> allPosts = new List<Posts>();
+                List<Posts> filteredPosts = new List<Posts>();
+                List<Posts> posts = new List<Posts>();
+                List<PostInfoJson> postInfoJsons = new List<PostInfoJson>();
+                if (!tag.Equals("ALL"))
+                {
+                    List<Tag> allTags = await sqlORM.Queryable<Tag>().Where(it => true).ToListAsync();
+                    foreach (Tag t in allTags)
+                    {
+                        Console.WriteLine("Post_id: " + t.post_id + "   Tag: " + t.tagName);
+                    }
+                    List<int> matchingPostIds = allTags.Where(t => t.tagName.Equals(tag)).Select(t => t.post_id).ToList();
+                    filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id))
+                            .OrderBy(post => post.publishDateTime).ToListAsync();
+                    IEnumerable<Posts> postsForPage = filteredPosts.Skip(startIndex).Take(count);
+                    IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
+                    {
+                        int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
+                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+
+                        return new PostInfoJson
+                        {
+                            post_id = post.post_id,
+                            title = post.title,
+                            contains = post.contains,
+                            approvalNum = post.approvalNum,
+                            collectNum = post.favouriteNum,
+                            author = author // Add the author property here
+                        };
+                    });
+                    PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
+                    postInfoJsons = postInfoJsonsArray.ToList();
+                }
+                else
+                {
+                    allPosts = await sqlORM.Queryable<Posts>().Where(it => true).OrderBy(post => post.publishDateTime).ToListAsync();
+                    // Retrieve the posts for the current page
+                    IEnumerable<Posts> postsForPage = allPosts.Skip(startIndex).Take(count);
+                    // Map the posts to the desired PostInfoJson format
+                    IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
+                    {
+                        int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
+                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+
+                        return new PostInfoJson
+                        {
+                            post_id = post.post_id,
+                            title = post.title,
+                            contains = post.contains,
+                            approvalNum = post.approvalNum,
+                            collectNum = post.favouriteNum,
+                            author = author // Add the author property here
+                        };
+                    });
+                    PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
+                    postInfoJsons = postInfoJsonsArray.ToList();
+                }
+
+
+                PostsJson response = new PostsJson
+                {
+                    ok = "yes",
+                    postInfoJsons = postInfoJsons.ToArray()
+                };
+                Console.WriteLine("success");
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("errorResponse: " + ex.Message);
+                PostsJson errorResponse = new PostsJson
+                {
+                    ok = "no",
+                    postInfoJsons = new PostInfoJson[0]
+                };
+                return Ok(errorResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetPostbyLike([FromBody] GetPostInfo json)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get GetPostbyLike--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                    return BadRequest("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+
+                int count = json.count;
+                int page = json.page;
+                string tag = json.tag;
+                int startIndex = (page - 1) * count;
+                int endIndex = startIndex + count;
+
+                Console.WriteLine("page: " + page);
+                Console.WriteLine("count: " + count);
+                List<Posts> allPosts = new List<Posts>();
+                List<Posts> filteredPosts = new List<Posts>();
+                List<Posts> posts = new List<Posts>();
+                List<PostInfoJson> postInfoJsons = new List<PostInfoJson>();
+                if (!tag.Equals("ALL"))
+                {
+                    List<Tag> allTags = await sqlORM.Queryable<Tag>().Where(it => true).ToListAsync();
+                    foreach (Tag t in allTags)
+                    {
+                        Console.WriteLine("Post_id: " + t.post_id + "   Tag: " + t.tagName);
+                    }
+                    List<int> matchingPostIds = allTags.Where(t => t.tagName.Equals(tag)).Select(t => t.post_id).ToList();
+                    filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id))
+                            .OrderByDescending(post => post.approvalNum).ToListAsync();
+                    IEnumerable<Posts> postsForPage = filteredPosts.Skip(startIndex).Take(count);
+                    IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
+                    {
+                        int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
+                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+
+                        return new PostInfoJson
+                        {
+                            post_id = post.post_id,
+                            title = post.title,
+                            contains = post.contains,
+                            approvalNum = post.approvalNum,
+                            collectNum = post.favouriteNum,
+                            author = author // Add the author property here
+                        };
+                    });
+                    PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
+                    postInfoJsons = postInfoJsonsArray.ToList();
+                }
+                else
+                {
+                    allPosts = await sqlORM.Queryable<Posts>().Where(it => true).OrderByDescending(post => post.approvalNum).ToListAsync();
+                    // Retrieve the posts for the current page
+                    IEnumerable<Posts> postsForPage = allPosts.Skip(startIndex).Take(count);
+                    // Map the posts to the desired PostInfoJson format
+                    IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
+                    {
+                        int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
+                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+
+                        return new PostInfoJson
+                        {
+                            post_id = post.post_id,
+                            title = post.title,
+                            contains = post.contains,
+                            approvalNum = post.approvalNum,
+                            collectNum = post.favouriteNum,
+                            author = author // Add the author property here
+                        };
+                    });
+                    PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
+                    postInfoJsons = postInfoJsonsArray.ToList();
+                }
+
+
                 PostsJson response = new PostsJson
                 {
                     ok = "yes",
@@ -275,89 +511,97 @@ namespace DBwebAPI.Controllers
             public string ok { get; set; }
             public string name { get; set; }
             public string title { get; set; }
+            public string avatar { get; set; }
             public string contains { get; set; }
             public DateTime publishDateTime { get; set; }
             public int approvalNum { get; set; }
             public Comment[] comments { get; set; }
             public int islike { get; set; }
             public int iscollect { get; set; }
+            public int isfollow { get; set; }
         }
         [HttpPost]
         public async Task<IActionResult> PostInfo([FromBody] needpostinfo json)
         {
             try
             {
+                Console.WriteLine("--------------------------Get PostInfo--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                    return BadRequest("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("Get PostInfo");
+
                 int post_id = json.post_id;
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ğ»ï¿½È¡ï¿½ï¿½ï¿½İµï¿½JWTï¿½ï¿½ï¿½ï¿½
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //ï¿½ï¿½Ö¤ Authorization ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ JWT ï¿½ï¿½ï¿½ï¿½
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT");
+                    return BadRequest(new { ok = "no", value = "Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½JWTï¿½ï¿½ï¿½ï¿½
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // ï¿½ï¿½È¡JWTï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½claimsï¿½ï¿½Ï¢
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //ï¿½Ğ¶ï¿½ï¿½Ã»ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                    return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢" });//ï¿½Ã»ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 }
-                Console.WriteLine("ÓÃ»§ĞÅÏ¢ÕıÈ·");
 
                 Console.WriteLine("post_id: " + post_id);
                 Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
-                //ÕÒµ½post
+                int user_id = tempUsr.FirstOrDefault().user_id;
+                //ï¿½Òµï¿½post
                 List<Posts> tempPosts = new List<Posts>();
                 tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //ÅĞ¶ÏÌû×ÓÊÇ·ñ´æÔÚ
+                //ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
                 if (tempPosts.Count() == 0)
                 {
-                    Console.WriteLine("Ìû×Ó²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "Ìû×Ó²»´æÔÚ" });
+                    Console.WriteLine("ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½");
+                    return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½" });
                 }
-                //ÕÒµ½·¢ÌûÈËID
+                //ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ID
                 List<PublishPost> tempPublicshPosts = new List<PublishPost>();
                 tempPublicshPosts = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //ÕÒµ½·¢ÌûÈË
+                //ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 List<Usr> PostUsr = new List<Usr>();
                 PostUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tempPublicshPosts.FirstOrDefault().user_id)
                     .ToListAsync();
-                //ÕÒµ½ÆÀÂÛ
+                //ï¿½Òµï¿½ï¿½ï¿½×¢
+                List<Follow> follow = new List<Follow>();
+                follow = await sqlORM.Queryable<Follow>().Where(it => it.follow_id == PostUsr.FirstOrDefault().user_id && it.follower_id == user_id)
+                    .ToListAsync();
+                //ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½
                 List<Comments> PostComments = new List<Comments>();
                 PostComments = await sqlORM.Queryable<Comments>().Where(it => it.post_id == post_id)
                     .ToListAsync();
 
                 Sentpostinfo sentpostinfo = new Sentpostinfo();
-                //ÕÒµ½Like
-                List<UsrLikePost> tempLike = new List<UsrLikePost>();
-                tempLike = await sqlORM.Queryable<UsrLikePost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
+                //ï¿½Òµï¿½Like
+                List<LikePost> tempLike = new List<LikePost>();
+                tempLike = await sqlORM.Queryable<LikePost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
                     .ToListAsync();
-                //ÕÒµ½collect
-                List<Collect> tempCollect = new List<Collect>();
-                tempCollect = await sqlORM.Queryable<Collect>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
+                //ï¿½Òµï¿½collect
+                List<CollectPost> tempCollect = new List<CollectPost>();
+                tempCollect = await sqlORM.Queryable<CollectPost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
                     .ToListAsync();
-                sentpostinfo.iscollect= tempCollect.Count!=0? 1 : 0;
-                sentpostinfo.islike = tempLike.Count != 0? 1: 0;
+                sentpostinfo.iscollect = tempCollect.Count != 0 ? 1 : 0;
+                sentpostinfo.islike = tempLike.Count != 0 ? 1 : 0;
+                sentpostinfo.isfollow = follow.Count != 0 ? 1 : 0;
                 sentpostinfo.ok = "yes";
                 sentpostinfo.name = PostUsr.FirstOrDefault().userName;//string
                 sentpostinfo.title = tempPosts.FirstOrDefault().title;//string
@@ -365,10 +609,11 @@ namespace DBwebAPI.Controllers
                 sentpostinfo.publishDateTime = tempPosts.FirstOrDefault().publishDateTime;//DataTime
                 sentpostinfo.approvalNum = (int)tempPosts.FirstOrDefault().approvalNum;//int
                 sentpostinfo.comments = new Comment[0];
+                sentpostinfo.avatar = PostUsr.FirstOrDefault().avatar;
                 List<Comment> commentsList = new List<Comment>();
                 foreach (var comment in PostComments)
                 {
-                    //ÕÒµ½ÆÀÂÛÈËusername
+                    //ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½username
                     List<Usr> ComUsr = new List<Usr>();
                     ComUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == comment.user_id)
                         .ToListAsync();
@@ -396,7 +641,7 @@ namespace DBwebAPI.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine("errorResponse: " + ex.Message);
-                return Ok(new CustomResponse { ok = "no", value = "Êı¾İ¿âÁ¬½Ó´íÎó" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½" });//ï¿½Ã»ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             }
         }
         public class newComment
@@ -409,63 +654,63 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get NewComment--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                    return BadRequest("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("Get NewComment");
+
                 int post_id = json.post_id;
                 string contains = json.contains;
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ğ»ï¿½È¡ï¿½ï¿½ï¿½İµï¿½JWTï¿½ï¿½ï¿½ï¿½
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //ï¿½ï¿½Ö¤ Authorization ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ JWT ï¿½ï¿½ï¿½ï¿½
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT");
+                    return BadRequest(new { ok = "no", value = "Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½JWTï¿½ï¿½ï¿½ï¿½
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // ï¿½ï¿½È¡JWTï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½claimsï¿½ï¿½Ï¢
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //ï¿½Ğ¶ï¿½ï¿½Ã»ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                    return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢" });//ï¿½Ã»ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 }
-                Console.WriteLine("ÓÃ»§ĞÅÏ¢ÕıÈ·");
 
                 Console.WriteLine("post_id: " + post_id);
                 Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
                 Console.WriteLine("contains: " + contains);
-                //ÕÒµ½post
+                //ï¿½Òµï¿½post
                 List<Posts> tempPosts = new List<Posts>();
                 tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //ÅĞ¶ÏÌû×ÓÊÇ·ñ´æÔÚ
+                //ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
                 if (tempPosts.Count() == 0)
                 {
-                    Console.WriteLine("Ìû×Ó²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "Ìû×Ó²»´æÔÚ" });
+                    Console.WriteLine("ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½");
+                    return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½" });
                 }
-                //ÕÒµ½ÆÀÂÛÈËID
+                //ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ID
                 List<PublishPost> tempPublicshPosts = new List<PublishPost>();
                 tempPublicshPosts = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //»ñÈ¡ĞÂµÄcomment_id
+                //ï¿½ï¿½È¡ï¿½Âµï¿½comment_id
                 int comment_id = sqlORM.Queryable<Comments>().Max(it => it.comment_id) + 1;
-                //½âÎöjsonÎÄ¼ş
-                //ĞÂ½¨post
+                //ï¿½ï¿½ï¿½ï¿½jsonï¿½Ä¼ï¿½
+                //ï¿½Â½ï¿½post
                 Comments comment = new Comments
                 {
                     comment_id = comment_id,
@@ -479,118 +724,127 @@ namespace DBwebAPI.Controllers
                     .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
                     .Where(u => u.userAccount == account)
                     .ExecuteCommandAsync();
-                Console.WriteLine("ÆÀÂÛ »ı·Ö+3");
+                Console.WriteLine("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½+3");
                 int count = await sqlORM.Insertable(comment).ExecuteCommandAsync();
-                if(count > 0) { return Ok(new CustomResponse { ok = "yes", value = "·¢²¼³É¹¦" }); }
-                else {  return Ok(new CustomResponse { ok="no", value = "·¢²¼Ê§°Ü" }); }
+                if (count > 0) { return Ok(new CustomResponse { ok = "yes", value = "ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½" }); }
+                else { return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½" }); }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("errorResponse: " + ex.Message);
-                return Ok(new CustomResponse { ok = "no", value = "Êı¾İ¿âÁ¬½Ó´íÎó" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½" });//ï¿½Ã»ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             }
         }
         public class LikeJson
         {
             public int post_id { get; set; }
         }
-       
+
         [HttpPost]
         public async Task<IActionResult> Like([FromBody] LikeJson json)
         {
             try
             {
+                Console.WriteLine("--------------------------Get Like--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                    return BadRequest("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("Get Like");
                 int post_id = json.post_id;
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+
+
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ğ»ï¿½È¡ï¿½ï¿½ï¿½İµï¿½JWTï¿½ï¿½ï¿½ï¿½
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //ï¿½ï¿½Ö¤ Authorization ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ JWT ï¿½ï¿½ï¿½ï¿½
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT");
+                    return BadRequest(new { ok = "no", value = "Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½JWTï¿½ï¿½ï¿½ï¿½
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // ï¿½ï¿½È¡JWTï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½claimsï¿½ï¿½Ï¢
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //ï¿½Ğ¶ï¿½ï¿½Ã»ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                    return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢" });//ï¿½Ã»ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 }
-                Console.WriteLine("ÓÃ»§ĞÅÏ¢ÕıÈ·");
-
-                Console.WriteLine("post_id: " + post_id);
-                Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
-                //ÕÒµ½post
+                /*
+ int user_id = 12;
+ List<Usr> tempUsr = new List<Usr>();
+ tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
+     .ToListAsync();
+ String account = tempUsr.FirstOrDefault().userAccount;
+*/
+                //ï¿½Òµï¿½post
                 List<Posts> tempPosts = new List<Posts>();
                 tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //ÅĞ¶ÏÌû×ÓÊÇ·ñ´æÔÚ
+                //ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
                 if (tempPosts.Count() == 0)
                 {
-                    Console.WriteLine("Ìû×Ó²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "Ìû×Ó²»´æÔÚ" });
+                    Console.WriteLine("ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½");
+                    return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½" });
                 }
-                //ÕÒµ½Like
-                List<UsrLikePost> tempLike = new List<UsrLikePost>();
-                tempLike = await sqlORM.Queryable<UsrLikePost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
+
+                //ï¿½Òµï¿½Like
+                List<LikePost> tempLike = new List<LikePost>();
+                tempLike = await sqlORM.Queryable<LikePost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
                     .ToListAsync();
-                //Î´µãÔŞ
+                //Î´ï¿½ï¿½ï¿½ï¿½
                 if (tempLike.Count == 0)
                 {
-                    UsrLikePost like = new UsrLikePost();
+                    LikePost like = new LikePost();
                     like.user_id = tempUsr.FirstOrDefault().user_id;
-                    like.post_id=post_id;
+                    like.post_id = post_id;
+                    like.createDateTime = DateTime.Now;
                     int count = await sqlORM.Insertable(like).ExecuteCommandAsync();
-                    tempPosts.FirstOrDefault().approvalNum++;
+                    //tempPosts.FirstOrDefault().approvalNum++;
                     // Update the point
                     var updateResult = await sqlORM.Updateable<Usr>()
                         .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
                         .Where(u => u.userAccount == account)
                         .ExecuteCommandAsync();
-                    Console.WriteLine("µãÔŞ »ı·Ö+1");
-                    int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
-                    if (count* updateCount > 0) { Console.WriteLine("like success"); return Ok(new CustomResponse { ok = "yes", value = "µãÔŞ³É¹¦" }); }
-                    else { Console.WriteLine("like fail"); return Ok(new CustomResponse { ok = "no", value = "µãÔŞÊ§°Ü" });  }
+                    Console.WriteLine("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½+1");
+                    //int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
+                    if (count > 0) { Console.WriteLine("like success"); return Ok(new CustomResponse { ok = "yes", value = "ï¿½ï¿½ï¿½Ş³É¹ï¿½" }); }
+                    else { Console.WriteLine("like fail"); return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½" }); }
                 }
                 else
                 {
-                    // ÒÑµãÔŞ£¬Ö´ĞĞÈ¡ÏûµãÔŞÂß¼­
-                    tempPosts.FirstOrDefault().approvalNum--;
-                    int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
-                    int deletedCount = await sqlORM.Deleteable<UsrLikePost>(tempLike.FirstOrDefault()).ExecuteCommandAsync();
-                    if (deletedCount* updateCount > 0)
+                    // ï¿½Ñµï¿½ï¿½Ş£ï¿½Ö´ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½
+                    //tempPosts.FirstOrDefault().approvalNum--;
+                    //int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
+                    int deletedCount = await sqlORM.Deleteable<LikePost>()
+                        .Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
+                        .ExecuteCommandAsync();
+                    if (deletedCount > 0)
                     {
                         Console.WriteLine("delike success");
-                        return Ok(new CustomResponse { ok = "yes", value = "È¡ÏûµãÔŞ³É¹¦" });
+                        return Ok(new CustomResponse { ok = "yes", value = "È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ş³É¹ï¿½" });
                     }
                     else
                     {
                         Console.WriteLine("delike fail");
-                        return Ok(new CustomResponse { ok = "no", value = "È¡ÏûµãÔŞÊ§°Ü" });
+                        return Ok(new CustomResponse { ok = "no", value = "È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½" });
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("errorResponse: " + ex.Message);
-                return Ok(new CustomResponse { ok = "no", value = "Êı¾İ¿âÁ¬½Ó´íÎó" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½" });//ï¿½Ã»ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             }
         }
         public class CollectJson
@@ -603,98 +857,416 @@ namespace DBwebAPI.Controllers
         {
             try
             {
+                Console.WriteLine("--------------------------Get collect--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
-                    Console.WriteLine("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
-                    return BadRequest("Êı¾İ¿âÁ¬½ÓÊ§°Ü");
+                    Console.WriteLine("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                    return BadRequest("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                Console.WriteLine("Get collect");
                 int post_id = json.post_id;
-                // ´ÓÇëÇóÍ·ÖĞ»ñÈ¡´«µİµÄJWTÁîÅÆ
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ğ»ï¿½È¡ï¿½ï¿½ï¿½İµï¿½JWTï¿½ï¿½ï¿½ï¿½
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //ÑéÖ¤ Authorization ÇëÇóÍ·ÊÇ·ñ°üº¬ JWT ÁîÅÆ
+                //ï¿½ï¿½Ö¤ Authorization ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ JWT ï¿½ï¿½ï¿½ï¿½
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
-                    Console.WriteLine("Î´Ìá¹©ÓĞĞ§µÄJWT");
-                    return BadRequest(new { ok = "no", value = "Î´Ìá¹©ÓĞĞ§µÄJWT" });
+                    Console.WriteLine("Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT");
+                    return BadRequest(new { ok = "no", value = "Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT" });
                 }
                 //
                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // ÑéÖ¤²¢½âÎöJWTÁîÅÆ
+                // ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½JWTï¿½ï¿½ï¿½ï¿½
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
-                // »ñÈ¡JWTÁîÅÆÖĞµÄclaimsĞÅÏ¢
+                // ï¿½ï¿½È¡JWTï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½claimsï¿½ï¿½Ï¢
                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                //ÅĞ¶ÏÓÃ»§ÊÇ·ñ´æÔÚ
+                //ï¿½Ğ¶ï¿½ï¿½Ã»ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
                 if (tempUsr.Count() == 0)
                 {
-                    Console.WriteLine("ÓÃ»§²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "´íÎóµÄÓÃ»§ĞÅÏ¢" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                    Console.WriteLine("ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                    return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢" });//ï¿½Ã»ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 }
-                Console.WriteLine("ÓÃ»§ĞÅÏ¢ÕıÈ·");
-
-                Console.WriteLine("post_id: " + post_id);
-                Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
-                //ÕÒµ½post
+                /*
+                int post_id = json.post_id;
+                int user_id = 12;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
+                    .ToListAsync();
+                string account = tempUsr.FirstOrDefault().userAccount;
+                Usr usr = tempUsr.FirstOrDefault();
+                */
+                //ï¿½Òµï¿½post
                 List<Posts> tempPosts = new List<Posts>();
                 tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //ÅĞ¶ÏÌû×ÓÊÇ·ñ´æÔÚ
+                //ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
                 if (tempPosts.Count() == 0)
                 {
-                    Console.WriteLine("Ìû×Ó²»´æÔÚ");
-                    return Ok(new CustomResponse { ok = "no", value = "Ìû×Ó²»´æÔÚ" });
+                    Console.WriteLine("ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½");
+                    return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½" });
                 }
-                //ÕÒµ½Collect
-                List<Collect> tempCollect = new List<Collect>();
-                tempCollect = await sqlORM.Queryable<Collect>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
+                //ï¿½Òµï¿½Collect
+                List<CollectPost> tempCollect = new List<CollectPost>();
+                tempCollect = await sqlORM.Queryable<CollectPost>().Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
                     .ToListAsync();
-                //Î´ÊÕ²Ø
+                //Î´ï¿½Õ²ï¿½
                 if (tempCollect.Count == 0)
                 {
-                    Collect like = new Collect();
+                    CollectPost like = new CollectPost();
                     like.user_id = tempUsr.FirstOrDefault().user_id;
                     like.post_id = post_id;
+                    like.createDateTime = DateTime.Now;
                     int count = await sqlORM.Insertable(like).ExecuteCommandAsync();
-                    tempPosts.FirstOrDefault().favouriteNum++;
+                    //tempPosts.FirstOrDefault().favouriteNum++;
                     // Update the point
                     var updateResult = await sqlORM.Updateable<Usr>()
                         .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
                         .Where(u => u.userAccount == account)
                         .ExecuteCommandAsync();
-                    Console.WriteLine("ÊÕ²Ø »ı·Ö+1");
-                    int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
-                    if (count * updateCount > 0) { Console.WriteLine("collect success"); return Ok(new CustomResponse { ok = "yes", value = "ÊÕ²Ø³É¹¦" }); }
-                    else { Console.WriteLine("collect fail"); return Ok(new CustomResponse { ok = "no", value = "ÊÕ²ØÊ§°Ü" }); }
+                    Console.WriteLine("ï¿½Õ²ï¿½ ï¿½ï¿½ï¿½ï¿½+1");
+                    //int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
+                    if (count > 0) { Console.WriteLine("collect success"); return Ok(new CustomResponse { ok = "yes", value = "ï¿½Õ²Ø³É¹ï¿½" }); }
+                    else { Console.WriteLine("collect fail"); return Ok(new CustomResponse { ok = "no", value = "ï¿½Õ²ï¿½Ê§ï¿½ï¿½" }); }
                 }
                 else
                 {
-                    // ÒÑµãÔŞ£¬Ö´ĞĞÈ¡ÏûµãÔŞÂß¼­
-                    tempPosts.FirstOrDefault().favouriteNum--;
+                    // ï¿½ï¿½ï¿½Õ²Ø£ï¿½Ö´ï¿½ï¿½È¡ï¿½ï¿½ï¿½Õ²ï¿½ï¿½ß¼ï¿½
+                    //tempPosts.FirstOrDefault().favouriteNum--;
                     int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
-                    int deletedCount = await sqlORM.Deleteable<Collect>(tempCollect.FirstOrDefault()).ExecuteCommandAsync();
-                    if (deletedCount * updateCount > 0)
+                    //int deletedCount = await sqlORM.Deleteable<CollectPost>(tempCollect.FirstOrDefault()).ExecuteCommandAsync();
+                    int deletedCount = await sqlORM.Deleteable<CollectPost>()
+                        .Where(it => it.post_id == post_id && it.user_id == tempUsr.FirstOrDefault().user_id)
+                        .ExecuteCommandAsync();
+                    if (deletedCount > 0)
                     {
                         Console.WriteLine("decollect success");
-                        return Ok(new CustomResponse { ok = "yes", value = "È¡ÏûÊÕ²Ø³É¹¦" });
+                        return Ok(new CustomResponse { ok = "yes", value = "È¡ï¿½ï¿½ï¿½Õ²Ø³É¹ï¿½" });
                     }
                     else
                     {
                         Console.WriteLine("decollect fail");
-                        return Ok(new CustomResponse { ok = "no", value = "È¡ÏûÊÕ²ØÊ§°Ü" });
+                        return Ok(new CustomResponse { ok = "no", value = "È¡ï¿½ï¿½ï¿½Õ²ï¿½Ê§ï¿½ï¿½" });
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("errorResponse: " + ex.Message);
-                return Ok(new CustomResponse { ok = "no", value = "Êı¾İ¿âÁ¬½Ó´íÎó" });//ÓÃ»§ÕË»§»òÃÜÂë´íÎó
+                return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½" });//ï¿½Ã»ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            }
+        }
+        public class followJosn
+        {
+            public int post_id { get; set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> follow([FromBody] followJosn json)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get Follow--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                    return BadRequest("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                int post_id = json.post_id;
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ğ»ï¿½È¡ï¿½ï¿½ï¿½İµï¿½JWTï¿½ï¿½ï¿½ï¿½
+                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                //ï¿½ï¿½Ö¤ Authorization ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ JWT ï¿½ï¿½ï¿½ï¿½
+                if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
+                {
+                    Console.WriteLine("error JWT");
+                    return BadRequest(new { ok = "no", value = "Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT" });
+                }
+                //
+                string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
+                // ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½JWTï¿½ï¿½ï¿½ï¿½
+                var handler = new JwtSecurityTokenHandler();
+                var tokenS = handler.ReadJwtToken(jwtToken);
+                // ï¿½ï¿½È¡JWTï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½claimsï¿½ï¿½Ï¢
+                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
+                    .ToListAsync();
+                //ï¿½Ğ¶ï¿½ï¿½Ã»ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
+                if (tempUsr.Count() == 0)
+                {
+                    Console.WriteLine("error account");
+                    return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢" });//ï¿½Ã»ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                }
+
+                Console.WriteLine("post_id: " + post_id);
+                Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
+                int user_id = tempUsr.FirstOrDefault().user_id;
+                //ï¿½Òµï¿½post
+                List<Posts> tempPosts = new List<Posts>();
+                tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
+                    .ToListAsync();
+                //ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
+                if (tempPosts.Count() == 0)
+                {
+                    Console.WriteLine("no such post");
+                    return Ok(new CustomResponse { ok = "no", value = "no such post" });
+                }
+                //ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ID
+                List<PublishPost> tempPublicshPosts = new List<PublishPost>();
+                tempPublicshPosts = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == post_id)
+                    .ToListAsync();
+                //ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                List<Usr> PostUsr = new List<Usr>();
+                PostUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tempPublicshPosts.FirstOrDefault().user_id)
+                    .ToListAsync();
+                Follow follow = new Follow();
+                follow.follow_id = PostUsr.FirstOrDefault().user_id;
+                follow.follower_id = user_id;
+                follow.createDateTime = DateTime.Now;
+
+                Follow searchF = await sqlORM.Queryable<Follow>().Where(it => it.follower_id == follow.follower_id && it.follow_id == follow.follow_id).FirstAsync();
+                int count = 0;
+                if (searchF != null)
+                {
+                    count = await sqlORM.Deleteable<Follow>()
+                        .Where(it => it.follower_id == follow.follower_id && it.follow_id == follow.follow_id)
+                        .ExecuteCommandAsync();
+                    if (count > 0)
+                    {
+                        Console.WriteLine("defollow success");
+                        return Ok(new CustomResponse { ok = "yes", value = "success" });
+                    }
+                    else
+                    {
+                        Console.WriteLine("defollow success");
+                        return Ok(new CustomResponse { ok = "no", value = "fail" });
+                    }
+                }
+                else
+                {
+                    count = await sqlORM.Insertable(follow).ExecuteCommandAsync();
+                    if (count > 0)
+                    {
+                        Console.WriteLine("follow success");
+                        return Ok(new CustomResponse { ok = "yes", value = "success" });
+                    }
+                    else
+                    {
+                        Console.WriteLine("follow success");
+                        return Ok(new CustomResponse { ok = "no", value = "fail" });
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("errorResponse: " + ex.Message);
+                return Ok(new CustomResponse { ok = "no", value = "DB connect fail" });
+            }
+        }
+        public class followbyuseridJosn
+        {
+            public int follow_id { get; set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> FollowbyUserid([FromBody] followbyuseridJosn json)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get FollowbyUserid--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                    return BadRequest("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                int follow_id = 1;
+                if (json != null)
+                {
+                    Console.WriteLine("Json not null " + json.follow_id);
+                    follow_id = json.follow_id;
+                }
+                else
+                {
+                    Console.WriteLine("Json null");
+                }
+
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ğ»ï¿½È¡ï¿½ï¿½ï¿½İµï¿½JWTï¿½ï¿½ï¿½ï¿½
+                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                //ï¿½ï¿½Ö¤ Authorization ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ JWT ï¿½ï¿½ï¿½ï¿½
+                if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
+                {
+                    Console.WriteLine("error JWT");
+                    return BadRequest(new { ok = "no", value = "Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT" });
+                }
+                //
+                string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
+                // ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½JWTï¿½ï¿½ï¿½ï¿½
+                var handler = new JwtSecurityTokenHandler();
+                var tokenS = handler.ReadJwtToken(jwtToken);
+                // ï¿½ï¿½È¡JWTï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½claimsï¿½ï¿½Ï¢
+                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
+                    .ToListAsync();
+                //ï¿½Ğ¶ï¿½ï¿½Ã»ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
+                if (tempUsr.Count() == 0)
+                {
+                    Console.WriteLine("error account");
+                    return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢" });//ï¿½Ã»ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                }
+
+                int user_id = tempUsr.FirstOrDefault().user_id;
+                /*          int user_id = 12;*/
+
+                //ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½
+                Follow follow = new Follow();
+                follow.follow_id = follow_id;
+                follow.follower_id = user_id;
+                follow.createDateTime = DateTime.Now;
+                Follow searchF = new Follow();
+                searchF = await sqlORM.Queryable<Follow>()
+                    .SingleAsync(it => it.follower_id == follow.follower_id && it.follow_id == follow_id);
+                int count = 0;
+                if (searchF != null)
+                {
+                    count = await sqlORM.Deleteable<Follow>()
+                        .Where(it => it.follower_id == follow.follower_id && it.follow_id == follow_id)
+                        .ExecuteCommandAsync();
+                    if (count > 0)
+                    {
+                        Console.WriteLine("defollow success");
+                        return Ok(new CustomResponse { ok = "yes", value = "success" });
+                    }
+                    else
+                    {
+                        Console.WriteLine("defollow success");
+                        return Ok(new CustomResponse { ok = "no", value = "fail" });
+                    }
+                }
+                else
+                {
+                    count = await sqlORM.Insertable(follow).ExecuteCommandAsync();
+                    if (count > 0)
+                    {
+                        Console.WriteLine("follow success");
+                        return Ok(new CustomResponse { ok = "yes", value = "success" });
+                    }
+                    else
+                    {
+                        Console.WriteLine("follow success");
+                        return Ok(new CustomResponse { ok = "no", value = "fail" });
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("errorResponse: " + ex.Message);
+                return Ok(new CustomResponse { ok = "no", value = "DB connect fail" });
+            }
+        }
+        public class reportJson
+        {
+            public int post_id { get; set; }
+            public string descriptions { get; set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> report([FromBody] reportJson json)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get reports--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                    return BadRequest("ï¿½ï¿½ï¿½İ¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+
+                int post_id = json.post_id;
+                String descriptions = json.descriptions;
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ğ»ï¿½È¡ï¿½ï¿½ï¿½İµï¿½JWTï¿½ï¿½ï¿½ï¿½
+                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                //ï¿½ï¿½Ö¤ Authorization ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ JWT ï¿½ï¿½ï¿½ï¿½
+                if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
+                {
+                    Console.WriteLine("error JWT");
+                    return BadRequest(new { ok = "no", value = "Î´ï¿½á¹©ï¿½ï¿½Ğ§ï¿½ï¿½JWT" });
+                }
+                //
+                string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
+                // ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½JWTï¿½ï¿½ï¿½ï¿½
+                var handler = new JwtSecurityTokenHandler();
+                var tokenS = handler.ReadJwtToken(jwtToken);
+                // ï¿½ï¿½È¡JWTï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½claimsï¿½ï¿½Ï¢
+                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
+                    .ToListAsync();
+                //ï¿½Ğ¶ï¿½ï¿½Ã»ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
+                if (tempUsr.Count() == 0)
+                {
+                    Console.WriteLine("error account");
+                    return Ok(new CustomResponse { ok = "no", value = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢" });//ï¿½Ã»ï¿½ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                }
+
+                Console.WriteLine("post_id: " + post_id);
+                Console.WriteLine("user_id: " + tempUsr.FirstOrDefault().user_id);
+                int user_id = tempUsr.FirstOrDefault().user_id;
+                //ï¿½Òµï¿½post
+                List<Posts> tempPosts = new List<Posts>();
+                tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
+                    .ToListAsync();
+                //ï¿½Ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
+                if (tempPosts.Count() == 0)
+                {
+                    Console.WriteLine("no such post");
+                    return Ok(new CustomResponse { ok = "no", value = "no such post" });
+                }
+                //ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ID
+                List<PublishPost> tempPublicshPosts = new List<PublishPost>();
+                tempPublicshPosts = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == post_id)
+                    .ToListAsync();
+                //ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                List<Usr> PostUsr = new List<Usr>();
+                PostUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tempPublicshPosts.FirstOrDefault().user_id)
+                    .ToListAsync();
+                Reports reports = new Reports();
+                reports.reporter_id = user_id;
+                reports.post_id = post_id;
+                //reports.reportee_id = PostUsr.FirstOrDefault().user_id;
+                reports.report_time = DateTime.Now;
+                reports.status = "handled";
+                reports.descriptions = descriptions;
+                int count = await sqlORM.Insertable(reports).ExecuteCommandAsync();
+                if (count > 0)
+                {
+                    Console.WriteLine("reporter_id:" + reports.reporter_id);
+                    Console.WriteLine("post_id:" + post_id);
+                    //Console.WriteLine("reportee_id:" + reports.reportee_id);
+                    Console.WriteLine("descriptions:" + descriptions);
+                    Console.WriteLine("reports success");
+                    return Ok(new CustomResponse { ok = "yes", value = "success" });
+                }
+                else
+                {
+                    Console.WriteLine("ä¸¾æŠ¥å¤±è´¥ï¼Œå¯èƒ½æœ‰ä¸¾æŠ¥æ­£åœ¨å¤„ç†ä¸­");
+                    return Ok(new CustomResponse { ok = "no", value = "fail" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("errorResponse: " + ex.Message);
+                return Ok(new CustomResponse { ok = "no", value = "DB connect fail" });
             }
         }
     }
+
 }

@@ -20,18 +20,9 @@
                 <span class="header-tittle-text">足球系统管理员界面</span>
             </div>
             <div class="nav-right">
-                <el-dropdown trigger="hover">
-                    <span class="user-avatar" @click="redirectToPersonal">
-                        <img src="../../assets/img/football_logo.png" alt="Avatar" />
-                    </span>
-                    <template #dropdown>
-                        <el-dropdown-menu v-slot: dropdown>
-                        <el-dropdown-item @click="redirectToLogin">登录</el-dropdown-item>
-                        <el-dropdown-item @click="redirectToRegister">注册</el-dropdown-item>
-                        <el-dropdown-item @click="redirectToPersonal">个人中心</el-dropdown-item>
-                        </el-dropdown-menu>
-                    </template>
-                </el-dropdown>
+                <span class="user-avatar" @click="redirectToPersonal">
+                    <img src="../../assets/img/football_logo.png" alt="Avatar" />
+                </span>
                 <span class="user-nickname">user-nickname</span>
             </div>
     </el-container>

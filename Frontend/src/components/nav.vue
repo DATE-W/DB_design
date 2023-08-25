@@ -18,7 +18,8 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu v-slot: dropdown>
-              <el-dropdown-item @click="redirectToLogin">登录</el-dropdown-item>
+              <el-dropdown-item @click="redirectToLogin(0)">用户登录</el-dropdown-item>
+              <el-dropdown-item @click="redirectToLogin(1)">管理员登录</el-dropdown-item>
               <el-dropdown-item @click="redirectToRegister">注册</el-dropdown-item>
               <el-dropdown-item @click="redirectToPersonal">个人中心</el-dropdown-item>
             </el-dropdown-menu>
@@ -34,9 +35,20 @@
 <script>
 export default {
   methods: {
-    redirectToLogin() {
+    redirectToLogin(mode) {
       // 跳转到登录页面的逻辑
-      this.$router.push('/signin');
+      if(mode==0){
+        this.$router.push({
+                path: '/signin',
+                query: { isAdmin: 0 }
+          });
+      }
+      else if(mode==1){
+        this.$router.push({
+                path: '/signin',
+                query: { isAdmin: 1 }
+          });
+      }
     },
     redirectToRegister() {
       // 跳转到注册页面的逻辑
