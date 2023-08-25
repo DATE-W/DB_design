@@ -15,11 +15,14 @@ export default {
     },
     data() {
         return {
-           
+          isAccount:false,
         };
     },
+    mounted(){
+      
+    },
     methods:{
-       
+      
     }
 }
 </script>
