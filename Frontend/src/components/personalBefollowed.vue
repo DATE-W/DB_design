@@ -1,7 +1,7 @@
 <template>
     <div class="follow-list">
         <div class="follow-container">
-            <el-card class="follow-card" v-for="(user, index) in followList" :key="index">
+            <el-card class="follow-card" v-for="(user, index) in followedList" :key="index">
                 <div class="user-info" @click="showUserInfo(index)">
                     <img :src="user.avatar" alt="User Avatar" class="avatar" />
                     <div class="user-details">
@@ -11,9 +11,9 @@
                     </div>
                 </div>
                 <div class="follow-button">
-                    <el-button type="primary" size="small" @click="followOnclick(index)"
+                    <el-button type="primary" size="small" @click="followedOnclick(index)"
                         v-if="user.isfollowed == 1">取消关注</el-button>
-                    <el-button type="primary" size="small" @click="followOnclick(index)" v-else>关注</el-button>
+                    <el-button type="primary" size="small" @click="followedOnclick(index)" v-else>关注</el-button>
                 </div>
             </el-card>
         </div>
@@ -26,26 +26,26 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 export default {
     data() {
         return {
-            followList: [],  // 用户数据...
+            followedList: [],  // 用户数据...
         };
     },
     mounted() {
-        this.getfollowList();
+        this.getfollowedList();
     },
     methods: {
-        async getfollowList() {
+        async getfollowedList() {
             const token = localStorage.getItem('token');
             let response
             try {
                 const headers = {
                     Authorization: `Bearer ${token}`,
                 };
-                response = await axios.post('/api/User/followList', {}, { headers });
+                response = await axios.post('/api/User/fansList', {}, { headers });
             } catch (err) {
                 console.log(err);
             }
             console.log(response);
-            this.followList = response.data;
+            this.followedList = response.data;
         },
         truncateText(text, limit) {
             if (text.length <= limit) {
@@ -56,24 +56,24 @@ export default {
             }
         },
         showUserInfo(index) {
-            const confirmText = this.followList[index].isfollowed ? '取消关注' : '关注';
+            const confirmText = this.followedList[index].isfollowed ? '取消关注' : '关注';
             // 构建用户信息的 HTML 字符串
             const userInfoHTML = `
     <div style="padding: 10px;">
       <div style="display: flex; align-items: center;">
         <div style="margin-right: 10px;">
-          <img src="${this.followList[index].avatar}" alt="User Avatar" style="width: 50px; height: 50px; border-radius: 50%;" />
+          <img src="${this.followedList[index].avatar}" alt="User Avatar" style="width: 50px; height: 50px; border-radius: 50%;" />
         </div>
         <div>
-          <p style="font-weight: bold; margin-bottom: 5px;">用户名：${this.followList[index].userName}</p>
-          <p style="color: #666; margin-bottom: 5px;">喜欢的主队：${this.followList[index].uft}</p>
-          <p style="color: #666; margin-bottom: 5px;">个性签名：${this.followList[index].signature || '未填写'}</p>
+          <p style="font-weight: bold; margin-bottom: 5px;">用户名：${this.followedList[index].userName}</p>
+          <p style="color: #666; margin-bottom: 5px;">喜欢的主队：${this.followedList[index].uft}</p>
+          <p style="color: #666; margin-bottom: 5px;">个性签名：${this.followedList[index].signature || '未填写'}</p>
         </div>
       </div>
       <div style="margin-top: 10px;">
-        <p style="color: #666;">关注数：${this.followList[index].follownum}</p>
-        <p style="color: #666;">粉丝数：${this.followList[index].fansnum}</p>
-        <p style="color: #666;">点赞数：${this.followList[index].likenum}</p>
+        <p style="color: #666;">关注数：${this.followedList[index].follownum}</p>
+        <p style="color: #666;">粉丝数：${this.followedList[index].fansnum}</p>
+        <p style="color: #666;">点赞数：${this.followedList[index].likenum}</p>
       </div>
     </div>
     `;
@@ -88,16 +88,16 @@ export default {
             }).catch(() => {
             });
         },
-        // 点击 关注/取消关注
-        async followOnclick(index) {
+        async followedOnclick(index) {
             const token = localStorage.getItem('token');
             let response
+            const userID = this.followedList[index].user_id;
+            console.log(userID)
+            this.followedList[index].isfollowed = this.followedList[index].isfollowed === 1 ? 0 : 1;
             try {
                 const headers = {
                     Authorization: `Bearer ${token}`,
                 };
-                const userID = this.followList[index].user_id;
-                this.followList[index].isfollowed = this.followList[index].isfollowed === 1 ? 0 : 1;
                 response = await axios.post('/api/Forum/FollowbyUserid', { follow_id: userID }, { headers })
             } catch (err) {
                 console.log(err);
@@ -117,14 +117,12 @@ export default {
                 }
                 return
             }
-            console.log(response);
-            if (this.followList[index].isfollowed) {
+            if (this.followedList[index].isfollowed) {
                 this.$emit('follow-event', 'follow');
             }
             else {
                 this.$emit('follow-event', 'unfollow');
             }
-
         }
     }
 };

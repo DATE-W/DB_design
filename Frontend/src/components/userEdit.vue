@@ -46,7 +46,6 @@
 <script>
 import { ElMessage, ElMessageBox } from 'element-plus';
 import axios from 'axios';
-import { useRoute } from 'vue-router';
 
 export default {
     mounted() {
@@ -87,6 +86,7 @@ export default {
                 this.avatarUrl = response.data.value.avatar;
                 this.userName = response.data.value.username;
                 this.account = response.data.value.account;
+                this.personalSign = response.data.value.signature;
             }
             else {
                 ElMessage({
