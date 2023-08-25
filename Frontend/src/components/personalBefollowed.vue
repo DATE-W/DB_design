@@ -85,6 +85,7 @@ export default {
                 cancelButtonText: '取消',
                 dangerouslyUseHTMLString: true // 允许使用 HTML 字符串
             }).then(() => {
+                this.followedOnclick(index)
             }).catch(() => {
             });
         },
