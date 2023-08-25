@@ -51,7 +51,7 @@ namespace DBwebAPI.Controllers
             var valid = new ValidateToken();
             try
             {
-                bool pass = valid.ValidateJwtToken(token, ValidTokenAuthority.Normal);
+                bool pass = valid.ValidateJwtToken(token, ValidTokenAuthority.Admin);
                 if (pass)
                 {
                     return Ok(new { ok = "yes" });

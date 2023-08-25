@@ -69,13 +69,13 @@ namespace DBwebAPI
                 case ValidTokenAuthority.Normal:
                     if(aut != "Normal")
                     {
-                        throw (new Exception($"指定的身份为普通用户，但实际验证得到的是aut"));
+                        throw (new Exception($"指定的身份为普通用户，但实际验证得到的是{aut}"));
                     }
                     break;
                 case ValidTokenAuthority.Admin:
-                    if (aut != "Normal")
+                    if (aut != "Admin")
                     {
-                        throw (new Exception($"指定的身份为管理员，但实际验证得到的是aut"));
+                        throw (new Exception($"指定的身份为管理员，但实际验证得到的是{aut}"));
                     }
                     break;
                 case ValidTokenAuthority.None:

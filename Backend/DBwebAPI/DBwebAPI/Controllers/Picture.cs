@@ -37,8 +37,9 @@ namespace DBwebAPI.Controllers
             {
                 Stream stream = file.OpenReadStream();
                 MD5 md5 = MD5.Create();
+                SHA256 sha256 = SHA256.Create();
                 string fileName;
-                var hash = md5.ComputeHash(stream);
+                var hash = sha256.ComputeHash(stream);
                 if (hash == null)
                 {
                     Console.WriteLine("哈希错了，怪");

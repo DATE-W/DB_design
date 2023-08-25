@@ -62,6 +62,11 @@ namespace DBwebAPI.Controllers
                 try
                 {
                     SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                    int sum = sqlORM.Queryable<Video>().Count();
+                    if (num == -1 || num > sum)
+                    {
+                        num = sum;
+                    }
                     //List<News> news = await sqlORM.Queryable<News>().OrderBy(it => it.publishDateTime).Take(num).ToListAsync();
                     //List<NewsWithPicture> newsWithPictures = new List<NewsWithPicture>();
                     //for(int i = 0; i < news.Count; i++)
@@ -139,42 +144,60 @@ namespace DBwebAPI.Controllers
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    return Ok(new CustomResponse { ok = "no", value = "Internal Error" }); // Internal server error
+                    return Ok(new CustomResponse { ok = "no", value = "服务器内部错误" }); // Internal server error
                 }
             }
-            else { return Ok(new CustomResponse { ok = "no", value = "ConnectionFailed" }); };
+            else { return Ok(new CustomResponse { ok = "no", value = "数据库连接失败！" }); };
         }
-        //[HttpPost]
-        //public async Task<IActionResult> SearchNews([FromBody] SearchNewsRequest json)
-        //{
-        //    ORACLEconn ORACLEConnectTry = new ORACLEconn();
-        //    string keyword = json.keyword;
-        //    if (ORACLEConnectTry.getConn() == true)
-        //    {
-        //        try
-        //        {
-        //            SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-        //            //Expression<Func<News, bool>> exp = Expressionable.Create<News>() //创建表达式
-        //            //    .AndIF(p > 0, it => it.Id == p)
-        //            //    .AndIF(name != null, it => it.Name == name && it.Sex == 1)
-        //            //    .ToExpression();//注意 这一句 不能少
-        //            List<News> news = await sqlORM.Queryable<News>().OrderBy(it => { 
-        //                int num = 0;
-        //                if (it.title.Contains(keyword)) num += 4;
-        //                if (it.summary.Contains(keyword)) num += 2;
-        //                if (it.contains.Contains(keyword)) num += 1;
-        //                
-        //            }).ToListAsync();
-        //        }
-        //        catch
-        //        {
-        //            return new InternalError(new CustomResponse { ok = "no", value = "Internal Error" });
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return new ServiceUnavailable(new CustomResponse { ok = "no", value = "ConnectionFailed" });
-        //    }
-        //}
+        [HttpPost]
+        public async Task<IActionResult> SearchNews([FromBody] SearchNewsRequest json)
+        {
+            ORACLEconn ORACLEConnectTry = new ORACLEconn();
+            string keyword = json.keyword;
+            if (ORACLEConnectTry.getConn() == true)
+            {
+                try
+                {
+                    SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                    //Expression<Func<News, bool>> exp = Expressionable.Create<News>() //创建表达式
+                    //    .AndIF(p > 0, it => it.Id == p)
+                    //    .AndIF(name != null, it => it.Name == name && it.Sex == 1)
+                    //    .ToExpression();//注意 这一句 不能少
+                    List<News> news = await sqlORM.Queryable<News>().Where(it => (it.title.Contains(keyword) || it.summary.Contains(keyword) || it.contains.Contains(keyword))).ToListAsync();
+                    Func<News, int> evaluate = x =>
+                    {
+                        int num = 0;
+                        if (x.title.Contains(keyword))
+                        {
+                            num += 4;
+                        }
+                        if (x.summary.Contains(keyword))
+                        {
+                            num += 2;
+                        }
+                        if (x.contains.Contains(keyword))
+                        {
+                            num += 1;
+                        }
+                        return num;
+                    };
+                    
+                    news.Sort((a, b) => 
+                    { 
+                        int na = evaluate(a), nb = evaluate(b);
+                        return (na == nb ? 0 : (na > nb ? -1 : 1));
+                    });
+                    return Ok(new CustomResponse { ok = "yes", value = news});
+                }
+                catch
+                {
+                    return new InternalError(new CustomResponse { ok = "no", value = "Internal Error" });
+                }
+            }
+            else
+            {
+                return new ServiceUnavailable(new CustomResponse { ok = "no", value = "ConnectionFailed" });
+            }
+        }
     }
 }
