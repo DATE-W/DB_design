@@ -1,9 +1,9 @@
-<!-- 论坛界面v2.0 -->
+<!-- 论坛界面v2.2 -->
 <template>
     <div class="common-layout">
         <el-container class="bkBox">
             <my-nav></my-nav>
-            <el-header>
+            <el-header class="nav-header">
                 <!-- 点击了某个联赛 -->
                 <div :class="['forum-header', selectedColor]" v-if="isButtonClicked">
                     <p class="subTittle">{{ selectedTopic }}</p>
@@ -33,18 +33,33 @@
                 </el-aside>
                 <!-- 左侧选择话题 -->
                 <el-main class="main-container">
-                    <!-- <div class="search-container">
+                    <div class="up-container">
                         <el-icon class="search-icon">
                             <Search />
                         </el-icon>
                         <el-input class="search-input" v-model="searchKeyword" placeholder="请输入关键词"
-                            @keyup.enter.native="handleSearch"></el-input>
-                    </div> -->
+                            @keyup.enter.native="SearchForPosts(1, this.pageSize, this.currentTag, this.searchKeyword)"></el-input>
+                        <el-button v-if="ShowReturnButton" icon="ArrowLeft" @click="ReturnToBegin"></el-button>
+                        <div class="sort-container">
+                            <el-button v-if="ShowSortButtons" :class="{ 'sort-button': sortbytime }"
+                                @click="changeSort('time')">按时间排序</el-button>
+                            <el-button v-if="ShowSortButtons" :class="{ 'sort-button': sortbylike }"
+                                @click="changeSort('like')">按热度排序</el-button>
+                        </div>
+                    </div>
                     <div class="post-list">
                         <template v-for="(title, index) in post_title">
                             <hr v-if="index == 0" class="separator">
-                            <div :class="['post-title', 'normal-post-title']" @click="goToDetail(post_id[index])">{{
-                                title }}</div>
+                            <div :class="['post-box', 'normal-post-box']" @click="goToDetail(post_id[index])">
+                                <div class="post-title">{{ title }}</div>
+                                <div class="post-contain">{{ post_contains[index] }}</div>
+                                <div class="post-author">
+                                    <el-icon>
+                                        <Avatar />
+                                    </el-icon>
+                                    {{ post_author[index] }}
+                                </div>
+                            </div>
                             <hr v-if="index <= post_title.length - 1" :key="`separator-${index}`" class="separator">
                         </template>
                     </div>
@@ -85,12 +100,19 @@ export default {
                 { type: 'L1', text: '法甲', color: 'L1', description: '法甲联赛是法国的顶级足球联赛' },
                 { type: 'CSL', text: '中超', color: 'CSL', description: '中超联赛是中国建立的足球联赛，拥有武磊等顶级球员' },
             ],
+            sortbytime: true,
+            sortbylike: false,
+            ShowReturnButton: false,
+            ShowSortButtons: true,
             currentPage: 1,
             pageSize: 4,  //每页4项
             totalPosts: 0,
             showPage: false, //初始为false 向后端请求完数据后变为true 更换tag页面暂时变为false
             post_id: [],  //存储返回的帖子id
             post_title: [],  //存储返回的帖子标题
+            post_contains: [],  //存储返回的帖子内容
+            post_author: [],  //存储返回的帖子作者
+            post_time: [],  //存储返回的发帖时间
             currentTag: 'ALL',  //向后端传递当前页面的帖子类型 初始为全部 不受tag影响
         };
     },
@@ -107,8 +129,8 @@ export default {
     },
     mounted() {
         this.JudgeAccount();
-        this.getPosts(1, this.pageSize, this.currentTag);
-        this.getPostNum();
+        this.getPostsbyTime(1, this.pageSize, this.currentTag);
+        this.getPostNum();//获取所有的帖子的总数
     },
     methods: {
         selectTopic(button) {
@@ -116,8 +138,11 @@ export default {
             this.selectedTopic = button.text;
             this.selectedColor = button.color;
             this.selectedDescription = button.description;
-            this.currentTag = button.text;
-            this.getPosts(1, this.pageSize, this.currentTag);
+            this.currentTag = button.type === 'ALL' ? 'ALL' : button.text;
+            if (this.sortbytime)
+                this.getPostsbyTime(1, this.pageSize, this.currentTag);
+            else
+                this.getPostsbyLike(1, this.pageSize, this.currentTag);
         },
         //选择对应的标签 同时修改论坛上方的展示内容
         redirectToEditPost() {
@@ -129,7 +154,10 @@ export default {
         },
         handlePageChange(currentPage) {
             this.currentPage = currentPage;
-            this.getPosts(this.currentPage, this.pageSize, this.currentTag);
+            if (this.sortbytime)
+                this.getPostsbyTime(this.currentPage, this.pageSize, this.currentTag);
+            else
+                this.getPostsbyLike(this.currentPage, this.pageSize, this.currentTag);
         },
         goToDetail(postId) {
             console.log(postId);
@@ -138,11 +166,20 @@ export default {
                 query: { clickedPostID: postId }
             });
         },
-        /* handleSearch() {
-            // 处理搜索逻辑，可以根据searchKeyword进行搜索操作
-            // 示例：输出搜索关键词
-            console.log('搜索关键词:', this.searchKeyword);
-        }, */
+        changeSort(button) {
+            if (button === 'time') {
+                if (this.sortbylike)
+                    this.getPostsbyTime(1, this.pageSize, this.currentTag);
+                this.sortbytime = true;
+                this.sortbylike = false;
+            }
+            else if (button === 'like') {
+                if (this.sortbytime)
+                    this.getPostsbyLike(1, this.pageSize, this.currentTag);
+                this.sortbytime = false;
+                this.sortbylike = true;
+            }
+        },
         async JudgeAccount() {
             const token = localStorage.getItem('token');
             let response
@@ -150,7 +187,7 @@ export default {
                 const headers = {
                     Authorization: `Bearer ${token}`,
                 };
-                response = await axios.post('/api/UserToken', {}, { headers })
+                response = await axios.post('/api/UserToken/UserToken', {}, { headers })
             } catch (err) {
                 if (err.response.data.result == 'fail') {
                     ElMessage({
@@ -170,11 +207,9 @@ export default {
             }
             if (response.data.ok == 'yes') {
                 this.isAccount = true;
-                //没账号  把按钮调成登录
             }
             else {
                 this.isAccount = false;
-                //有账号且合法  把按钮调成按此发帖
             }
         },
         async getPostNum() {
@@ -203,7 +238,7 @@ export default {
                 });
             }
         },
-        async getPosts(pageNumber, pageSize, currentTag) {
+        async getPostsbyTime(pageNumber, pageSize, currentTag) {
             let response
             try {
                 response = await axios.post('/api/Forum/GetPostbyOrder', {
@@ -221,10 +256,15 @@ export default {
             //console.log('response:', response);
             this.post_id = [];
             this.post_title = [];
+            this.post_contains = [];
+            this.post_author = [];
+            this.totalPosts = response.data.count;
             if (response.data.postInfoJsons && Array.isArray(response.data.postInfoJsons)) {
                 response.data.postInfoJsons.forEach((postInfo) => {
                     this.post_id.push(postInfo.post_id);
                     this.post_title.push(postInfo.title);
+                    this.post_contains.push(postInfo.contains);
+                    this.post_author.push(postInfo.author);
                 });
             }
             else {
@@ -234,8 +274,91 @@ export default {
                     type: 'error',
                 });
             }
-            //console.log('得到的帖子id为:', this.post_id);
-            //console.log('得到的帖子title为:', this.post_title);
+        },
+        async getPostsbyLike(pageNumber, pageSize, currentTag) {
+            let response
+            try {
+                response = await axios.post('/api/Forum/GetPostbyLike', {
+                    page: pageNumber,
+                    count: pageSize,
+                    tag: String(currentTag),
+                }, {})
+            } catch (err) {
+                ElMessage({
+                    message: '获取帖子失败',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+            this.post_id = [];
+            this.post_title = [];
+            this.post_contains = [];
+            this.post_author = [];
+            this.totalPosts = response.data.count;
+            if (response.data.postInfoJsons && Array.isArray(response.data.postInfoJsons)) {
+                response.data.postInfoJsons.forEach((postInfo) => {
+                    this.post_id.push(postInfo.post_id);
+                    this.post_title.push(postInfo.title);
+                    this.post_contains.push(postInfo.contains);
+                    this.post_author.push(postInfo.author);
+                });
+            }
+            else {
+                ElMessage({
+                    message: '后端返回的帖子数据格式错误',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+        },
+        async SearchForPosts(pageNumber, pageSize, currentTag, keyword) {
+            this.ShowReturnButton = true;
+            this.ShowSortButtons = false;
+            let response
+            try {
+                response = await axios.post('/api/Forum/GetPostbySearch', {
+                    page: pageNumber,
+                    count: pageSize,
+                    tag: String(currentTag),
+                    key: String(keyword),
+                }, {})
+            } catch (err) {
+                ElMessage({
+                    message: '获取帖子失败',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+            this.post_id = [];
+            this.post_title = [];
+            this.post_contains = [];
+            this.post_author = [];
+            this.totalPosts = response.data.count;
+            if (response.data.postInfoJsons && Array.isArray(response.data.postInfoJsons)) {
+                response.data.postInfoJsons.forEach((postInfo) => {
+                    this.post_id.push(postInfo.post_id);
+                    this.post_title.push(postInfo.title);
+                    this.post_contains.push(postInfo.contains);
+                    this.post_author.push(postInfo.author);
+                });
+            }
+            else {
+                ElMessage({
+                    message: '后端返回的帖子数据格式错误',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+            console.log('搜索关键词:', this.searchKeyword);
+        },
+        ReturnToBegin() {
+            this.ShowReturnButton = false;
+            this.ShowSortButtons = true;
+            if (this.sortbytime) {
+                this.getPostsbyTime(1, this.pageSize, this.currentTag);
+            } else {
+                this.getPostsbyLike(1, this.pageSize, this.currentTag);
+            }
         }
     },
 };
@@ -249,6 +372,10 @@ export default {
     background-color: #F5F7FA;
 }
 
+.nav-header {
+    margin-top: -20px;
+}
+
 .forum-header {
     text-align: center;
     height: 5.2vw;
@@ -259,7 +386,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 20%;
+    margin-top: 18%;
 }
 
 .content-container {
@@ -340,8 +467,8 @@ export default {
     letter-spacing: 0.8px;
 }
 
-.search-container {
-    margin-top: 50px;
+.up-container {
+    margin-top: 40px;
     display: flex;
     align-items: center;
 }
@@ -354,7 +481,13 @@ export default {
     font-size: 24px;
 }
 
-/* icon大小 */
+.sort-container {
+    margin-left: 575px;
+}
+
+.sort-button {
+    color: orange;
+}
 
 .page-container {
     position: absolute;
@@ -371,30 +504,52 @@ export default {
 }
 
 .post-list {
-    margin-top: 20px;
+    margin-top: 10px;
     margin-bottom: 25px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
-.post-title {
-    font-size: 1.3rem;
-    font-style: normal;
-    font-weight: 400;
+.post-box {
     line-height: normal;
     height: 25%;
     align-items: left;
     transition: background-color 0.2s ease;
+    position: relative;
+    justify-content: space-between;
+    flex-direction: column;
+    display: flex;
 }
 
-.normal-post-title {
-    background-color: #fff;
+.post-title {
+    font-size: 1.3rem;
+    font-style: normal;
+    font-weight: 400;
+    color: #005ce6;
+}
+
+.post-contain {
+    font-size: 1.0rem;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.post-author {
+    align-self: flex-end;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 2px;
+}
+
+.normal-post-box {
+    background-color: #F5F7FA;
     /* 默认状态的背景颜色 */
 }
 
-.post-title:hover {
-    background-color: #F5F7FA;
+.post-box:hover {
+    background-color: #fff;
     /* 鼠标悬浮状态的背景颜色 */
 }
 

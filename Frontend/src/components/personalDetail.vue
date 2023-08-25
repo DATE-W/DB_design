@@ -1,4 +1,4 @@
-<!-- 我的动态 v1.0 -->
+<!-- 我的动态 v1.2 -->
 <template>
     <div class="overflow-container">
         <div class="bg-theme">
@@ -16,12 +16,12 @@
                             <!-- 添加 contain 元素 -->
                             <!-- 第一行：用户行为 -->
                             <div class="action-text">{{ getActionText(dynamic) }}</div>
-                            <div
-                                :class="{ 'title-contain-author': dynamic.object.type !== 'user', 'user-section': dynamic.object.type === 'user' }">
+                            <div @click="ClickToDetail(dynamic)"
+                                :class="{ 'title-contain-author': dynamic.type !== 'follow', 'user-section': dynamic.type === 'follow' }">
                                 <!-- 如果是用户则不用title-contain-author的样式 -->
-                                <!-- 第二行：用户名+头像或帖子名 -->
+                                <!-- 第二行：头像+用户名 或 帖子名 -->
                                 <div class="avatar-and-username">
-                                    <el-avatar v-if="dynamic.object.type === 'user'" :src="getUserAvatar(dynamic)"
+                                    <el-avatar v-if="dynamic.type === 'follow'" :src="getUserAvatar(dynamic)"
                                         class="user-avatar"></el-avatar>
                                     <div class="name-text">{{ getNameText(dynamic) }}</div>
                                 </div>
@@ -36,7 +36,7 @@
                             </div>
                             <!-- 显示动态的时间 -->
                             <div class="dynamic-time">
-                                {{ dynamic.time }}
+                                {{ FormatDate(dynamic.time) }}
                             </div>
                         </div>
                     </div>
@@ -51,48 +51,12 @@
 </template>
 
 <script>
+import { ElMessage, ElMessageBox } from 'element-plus';
+import axios from 'axios';
 export default {
     data() {
         return {
             dynamics: [
-                {
-                    type: 'like',
-                    time: '2023-08-10',
-                    object: {
-                        type: 'post',
-                        title: '介绍一下新一期深渊的配队',
-                        contain: '原神电脑端的画风，真的完美符合我对二次元的影响，开服玩的手机端，两天就卸载了，一年后游戏荒，又在电脑下了...',
-                        author: '门酱'
-                    }
-                },
-                {
-                    type: 'like',
-                    time: '2023-08-10',
-                    object: {
-                        type: 'post',
-                        title: '会玩的界孙权薄纱神甘宁',
-                        contain: '曾经有教育家做了一个实验，给魏蜀国孩子和吴国孩子一手牌，让他们不用制冷器就让水结成冰。吴国孩子玩界孙权...',
-                        author: '我直接大制衡'
-                    }
-                },
-                {
-                    type: 'follow',
-                    time: '2023-08-09',
-                    object: {
-                        type: 'user',
-                        username: 'tilitili直播'
-                    }
-                },
-                {
-                    type: 'comment',
-                    time: '2023-08-08',
-                    object: {
-                        type: 'comment',
-                        title: '帖子',
-                        contain: '我三岁练枪，那一年枪一上手就人枪合一😎爱不释手，九岁悟出夺命十三枪😤于九天之上我斩杀花果山妖猴😠...',
-                        author: 'superwh'
-                    }
-                },
             ]
         };
     },
@@ -101,13 +65,17 @@ export default {
         groupedDynamics() {
             const groups = {};
             this.dynamics.forEach(dynamic => {
-                if (!groups[dynamic.time]) {
-                    groups[dynamic.time] = [];
+                const date = dynamic.time.split('T')[0]; // 获取日期部分，格式：YYYY-MM-DD
+                if (!groups[date]) {
+                    groups[date] = [];
                 }
-                groups[dynamic.time].push(dynamic);
+                groups[date].push(dynamic);
             });
             return Object.values(groups);
-        }
+        },
+    },
+    mounted() {
+        this.ShowAction();
     },
     methods: {
         // 根据动态类型返回相应的文本内容
@@ -119,6 +87,10 @@ export default {
                     return `您关注了用户`;
                 case 'comment':
                     return `您评论了帖子`;
+                case 'collect':
+                    return `您收藏了帖子`;
+                case 'publish':
+                    return '您发布了帖子';
                 default:
                     return '未知操作';
             }
@@ -128,7 +100,7 @@ export default {
             return dynamic.object.username || dynamic.object.title;
         },
         getUserAvatar(dynamic) {
-            if (dynamic.object.type === 'user') {
+            if (dynamic.type === 'follow') {
                 // 根据需要设置用户头像的 URL
                 return './src/assets/img/carousel1.png';
             }
@@ -140,6 +112,55 @@ export default {
                 return './src/assets/img/carousel1.png';
             }
             return null;
+        },
+        FormatDate(datetime) {
+            const date = new Date(datetime);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        },
+        ClickToDetail(dynamic) {
+            if (dynamic.type !== 'follow') {
+                this.goToDetail(dynamic.object.post_id);
+            }
+        },
+        goToDetail(postId) {
+            console.log(postId);
+            this.$router.push({
+                path: '/detail',
+                query: { clickedPostID: postId }
+            });
+        },
+        async ShowAction() {
+            const token = localStorage.getItem('token');
+            let response
+            try {
+                const headers = {
+                    Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/User/userAction', {}, { headers });
+                console.log(response);
+                this.dynamics = response.data.actions.map(action => {
+                    return {
+                        type: action.type,
+                        time: action.datetime,
+                        object: {
+                            title: action.title,
+                            contain: action.contains,
+                            username: action.name,
+                            author: action.author,
+                            post_id: action.post_id,
+                        }
+                    };
+                });
+            } catch (err) {
+                ElMessage({
+                    message: '失败',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
         }
     }
 };
@@ -230,7 +251,7 @@ export default {
     color: #999;
 }
 
-.avatar-and-author{
+.avatar-and-author {
     display: flex;
     justify-content: flex-end;
 }
@@ -239,5 +260,7 @@ export default {
     width: 25px;
     height: 25px;
     margin-right: 5px;
-}/* author头像 */
+}
+
+/* author头像 */
 </style>
