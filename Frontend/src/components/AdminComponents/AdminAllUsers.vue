@@ -19,9 +19,14 @@ import { ElMessage, ElMessageBox } from 'element-plus';
         async getAllUsers()
         {
             console.log("start get all users")
+            const token = localStorage.getItem('token');
+            console.log("token = " + token)
             let response
             try {
-                response = await axios.get('api/report/getUsrInfo');
+                const headers = {
+                     Authorization: `Bearer ${token}`,
+                };
+                response = await axios.get('api/report/getUsrInfo',{},{headers});
             } catch (err) {
                 console.error(err);
                 if (err.response.data.result == 'fail') {
@@ -31,13 +36,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
                 }
                 return
             }
-            console.log("response = "+response)
-            console.log("JSON.stringify(response) = "+JSON.stringify(response, null, 2))
-            console.log("JSON.stringify(response.data) = "+JSON.stringify(response.data, null, 2))
-            console.log("response.data = "+response.data)
-            console.log("response.data.ok = "+response.data.ok)
-            console.log("response.data.value = "+response.data.value)
-
+            console.log("AllUsers - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
             if(response.data.ok=='no')
             {
                 ElMessage.error("获取用户列表失败");
@@ -63,7 +62,8 @@ import { ElMessage, ElMessageBox } from 'element-plus';
             let response
             try {
                 response = await axios.post('api/report/banUsr',  {
-                    user_id:this.Users[index].user_id,
+                    // user_id:this.Users[index].user_id,
+                    user_id:5,
                 });
             } catch (err) {
                 if (err.response.data.result == 'fail') {
@@ -98,8 +98,8 @@ import { ElMessage, ElMessageBox } from 'element-plus';
     <el-container class="main-lower-box">
         <el-table :data="Users" border height="300" style="width: 100%;border-radius: 10px;">
             <el-table-row label="111"/>
-            <el-table-column align="center" prop="user_id" label="Id" width="100" />
-            <el-table-column prop="userName" label="昵称" width="150" />
+            <el-table-column align="center" prop="user_id" label="用户Id" width="100" />
+            <el-table-column prop="userName" label="用户昵称" width="150" />
             <el-table-column align="center" prop="regDate" label="注册时间" width="200" />
             <el-table-column align="center" prop="userPoint" label="积分" width="150" />
             <el-table-column align="center" prop="followedNumber" label="粉丝数" width="150" />
