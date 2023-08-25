@@ -1,7 +1,3 @@
-<!-- 2154314_郑楷_个人主页 2023.07.20 02:00 v1.1.0
- v1.0.0 画出页面的基本模板，未填充具体内容，只做了组件定位
- v1.1.0 填充了模版内的具体内容，设置了文字与图片，未编写逻辑-->
-
 <template>
   <el-container style="height: 100vh; display: flex; flex-direction: column;">
     <el-header>
@@ -84,7 +80,7 @@
 
 
       </el-aside>
-      <el-main>
+      <el-main v-if="isAccount">
         <div v-if="showtabs">
           <el-tabs type="border-card" tab-position="top" class="maintabs">
             <el-tab-pane label="我的动态">
@@ -109,10 +105,10 @@
         </div>
         <div v-else>
           <div v-if="showfollow">
-            <following />
+            <following @follow-event="func_follow" />
           </div>
           <div v-else>
-
+            <befollowed @follow-event="func_follow" />
           </div>
         </div>
       </el-main>
@@ -132,6 +128,7 @@ import pCheckin from './personalCheckin.vue';
 import pPost from './personalPost.vue';
 
 import pFollowing from './personalFollowing.vue';
+import pBefollowed from './personalBefollowed.vue';
 
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
@@ -144,7 +141,8 @@ export default {
     'credits': pCredits,
     'checkin': pCheckin,
     'post': pPost,
-    'following': pFollowing
+    'following': pFollowing,
+    'befollowed': pBefollowed,
   },
   data() {
     return {
@@ -183,6 +181,15 @@ export default {
       this.showtabs = false;
       this.showfollow = false;
     },
+    func_follow(data) {
+      // this.JudgeAccount();
+      if (data == 'follow') {
+        this.followCnt += 1;
+      }
+      else if (data == 'unfollow') {
+        this.followCnt -= 1;
+      }
+    },
     async JudgeAccount() {
       const token = localStorage.getItem('token');
       if (token == null) {
@@ -214,13 +221,19 @@ export default {
         }
         return
       }
-      console.log(response);
+      console.log('judgeaccount');
       //有账号
       if (response.data.ok == 'yes') {
         this.isAccount = true;
         console.log(this.isAccount);
+        this.avatarUrl = response.data.value.avatar;
         this.userName = response.data.value.username;
-        this.homeTeam = response.data.value.uft;
+        if (response.data.value.uft == '查无此队') {
+          this.homeTeam = '暂无主队';
+        }
+        else {
+          this.homeTeam = response.data.value.uft;
+        }
         this.followCnt = response.data.value.follower_num;
         this.befollowCnt = response.data.value.follow_num;
         this.likeCnt = response.data.value.approval_num;
@@ -323,7 +336,7 @@ export default {
 .userNameLayout {
   position: absolute;
   display: flex;
-  width: 6vw;
+  width: 12vw;
   left: 7vw;
   flex-direction: column;
   flex-shrink: 0;

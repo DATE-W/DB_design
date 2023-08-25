@@ -287,16 +287,15 @@ export default {
                 }
                 return
             }
-            console.log(response.data.ok)
+            console.log(response.data.value)
             if(response.data.ok == 'yes')
             {
                 ElMessage.success("举报成功");
-                this.isFollowed = !this.isFollowed;
             }else if(response.data.ok == 'no'){
                 ElMessage.error("举报失败");
             }
             this.report_descriptions="";
-            //this.goBack();
+            this.goBack();
         },
         async follow()
         {
@@ -370,7 +369,7 @@ export default {
                 <el-page-header @back="goBack"></el-page-header>
                     <span class="header-text" >{{ title }}</span>
                     <div v-if="this.$route.query.fromAdmin == 1">
-                        <el-button class="header-respond-btn" style="right:2vw" @click="collectPost()">
+                        <el-button class="header-respond-btn" style="right:2vw">
                             <span>删除帖子</span>
                         </el-button>
                     </div>
