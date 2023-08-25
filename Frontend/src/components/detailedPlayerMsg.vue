@@ -1,6 +1,6 @@
 <template>
   <my-nav></my-nav>
-  <div class="basicinfoContainer">
+  <el-card class="basicinfoContainer">
     <img class="playerPic" :src="playerPhoto">
     <div class="basicInfo">
       <p class="header">
@@ -9,13 +9,13 @@
 
       <div class="firstBar">
         <div class="firstBlock">
-          俱乐部：{{ this.club }}
+          年龄：{{ this.age }}
         </div>
         <div class="secondBlock">
           位置：{{ this.position }}
         </div>
         <div class="thirdBlock">
-          号码：{{ this.no }}号
+          号码：{{ this.number }}
         </div>
       </div>
 
@@ -24,27 +24,21 @@
           国籍：{{ this.nationality }}
         </div>
         <div class="secondBlock">
-          年龄：{{ this.age }}岁
-        </div>
-        <div class="thirdBlock">
-          生日：{{ this.birthday }}
-        </div>
-      </div>
-
-      <div class="thirdBar">
-        <div class="firstBlock">
-          身高：{{ this.height }}CM
-        </div>
-        <div class="secondBlock">
-          体重：{{ this.weight }}KG
+          身高：{{ this.height }}
         </div>
         <div class="thirdBlock">
           惯用脚：{{ this.dominantFoot }}
         </div>
       </div>
 
+      <div class="thirdBar">
+        <div class="firstBlock">
+          俱乐部：{{ this.club }}
+        </div>
+      </div>
+
     </div>
-  </div>
+  </el-card>
 
   <div class="eventInfo">
     <div style="font-size: 2vw;margin-left: 42%;">
@@ -57,21 +51,21 @@
       </p>
     </div>
 
-    <div class="clubInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        俱乐部
-      </p>
-    </div>
-
-    <div class="playedTimeInfo">
+    <div class="appearanceInfo">
       <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
         上场
       </p>
     </div>
 
-    <div class="startTimeInfo">
+    <div class="passInfo">
       <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        首发
+        过人
+      </p>
+    </div>
+
+    <div class="shootInfo">
+      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
+        射门
       </p>
     </div>
 
@@ -81,19 +75,19 @@
       </p>
     </div>
 
-    <div class="assistsInfo">
+    <div class="assistInfo">
       <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
         助攻
       </p>
     </div>
 
-    <div class="yellowCardInfo">
+    <div class="yellowInfo">
       <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
         黄牌
       </p>
     </div>
 
-    <div class="redCardInfo">
+    <div class="redInfo">
       <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
         红牌
       </p>
@@ -101,29 +95,29 @@
 
   </div>
 
-  <div class="eventData" v-for="(event, index) in eventData" :key="index" :style="{
-    top: `${index * 1.9 + 31}rem`,background: ((index % 2 === 0) ? 'wheat' : 'aqua')}">
+  <div class="detailedEventData" v-for="(event, index) in eventData" :key="index"
+    :style="{ top: `${index * 2.5 + 31.5}rem` }">
     <div class="seasonInfo">
       <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.season }}
+        {{ event.seasonName }}
       </p>
     </div>
 
-    <div class="clubInfo">
+    <div class="appearanceInfo">
       <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.club }}
+        {{ event.appearance }}
       </p>
     </div>
 
-    <div class="playedTimeInfo">
+    <div class="passInfo">
       <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.playedTime }}
+        {{ event.pass }}
       </p>
     </div>
 
-    <div class="startTimeInfo">
+    <div class="shootInfo">
       <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.startTime }}
+        {{ event.shoot }}
       </p>
     </div>
 
@@ -133,47 +127,51 @@
       </p>
     </div>
 
-    <div class="assistsInfo">
+    <div class="assistInfo">
       <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.assists }}
+        {{ event.assist }}
       </p>
     </div>
 
-    <div class="yellowCardInfo">
+    <div class="yellowInfo">
       <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.yellowCard }}
+        {{ event.yellow }}
       </p>
     </div>
 
-    <div class="redCardInfo">
+    <div class="redInfo">
       <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.redCard }}
+        {{ event.red }}
       </p>
     </div>
   </div>
 
-  <div class="honorHeader">
-    <p class="header">荣誉记录</p>
+  <div class="relatedPlayerHeader">
+    <p class="header">相关队员</p>
   </div>
 
-  <div class="honorData" v-for="(honor,index) in honors" :key="index" :style="{top:`${index*3+8}rem`}">
-    <div class="honorName">
-      <p style="position: absolute;left: 50%; transform: translate(-50%, -50%);">
-        {{ honor.detailedHonor }}
-      </p>
+  <div class="relatedPlayerData" v-for="(relatedPlayer, index) in relatedPlayers" :key="index" :style="{ top: `${index * 3 + 8.5}rem` }">
+    <div class="relatedPlayerPhotoContainer" ><!--:class="{ oddIndex: index % 2 === 1, evenIndex: index % 2 === 0 }"-->
+      <img class="relatedPlayerPhoto" :src="relatedPlayer.playerPhoto">
     </div>
 
-    <div class="honorSeason">
-      <p style="position: absolute;left: 50%; transform: translate(-50%, -50%);">
-        {{ honor.season }}
-      </p>
+    <div class="relatedPlayerNameContainer">
+        {{ relatedPlayer.playerName }}
     </div>
+
+    <div class="relatedPlayerPositionContainer" >
+        {{ relatedPlayer.type }}
+    </div>
+
+
   </div>
-
 </template>
 
 <script>
+import { ref } from 'vue';
 import MyNav from './nav.vue';
+import { ElMessage } from 'element-plus';
+import axios from 'axios';
 
 export default {
   components: {
@@ -185,31 +183,75 @@ export default {
   },
 
   mounted() {
+    this.getPlayerMsg(this.playerName);
+  },
+
+  methods: {
+    async getPlayerMsg(playerName) {
+      let response;
+      try {
+        response = await axios.post('/api/updateTeam/getPlayerDetail', {
+          playerName: playerName,
+        });
+
+        console.log(response);
+
+        this.relatedPlayers = [];
+        this.eventData = [];
+
+        this.enName = response.data.enName;
+        this.playerPhoto = response.data.photo;
+        this.club = response.data.club;
+        this.position = response.data.position;
+        this.number = response.data.number;
+        this.nationality = response.data.nationality;
+        this.age = response.data.age;
+        this.height = response.data.height;
+        this.dominantFoot = response.data.dominantFoot;
+        this.shoot = response.data.shoot;
+        this.pass = response.data.pass;
+
+        this.relatedPlayers = response.data.relatedPlayer;
+        this.eventData = response.data.eventData;
+
+      } catch (err) {
+        ElMessage({
+          message: '获取球员信息失败',
+          type: 'error',
+        });
+      }
+
+    },
 
   },
 
   data() {
     return {
       playerName: 'mhy',
+      enName: '114',
       playerPhoto: '/src/assets/img/wyh.png',
       club: '罗德岛',
       position: '后端',
-      no: 1,
+      number: '1',
       nationality: '蒙德',
-      age: 114,
-      birthday: '1919-8-10',
-      height: 150,
-      weight: 150,
+      age: '114',
+      height: '150',
       dominantFoot: '轮椅',
-      eventData: [
-        { "season": '1-2', "club": '301', "playedTime": 3, "startTime": 4, "goal": 5, "assists": 6, "yellowCard": 7, "redCard": 8 },
-        { "season": '1-2', "club": '301', "playedTime": 3, "startTime": 4, "goal": 5, "assists": 6, "yellowCard": 7, "redCard": 8 },
+      shoot: '1',
+      pass:'2',
 
-      ],
-      honors: [
-        { "detailedHonor": '上wyh的床', "season": '7-4' },
-        { "detailedHonor": '上wrb的床', "season": '7-5' },
-      ],
+      eventData: ref([
+        { "seasonName": '1-2',  "appearance": 3, "goal": 5, "assist": 6, "yellow": 7, "red": 8 },
+        { "seasonName": '1-2',  "appearance": 3, "goal": 5, "assist": 6, "yellow": 7, "red": 8 },
+
+      ]),
+
+      relatedPlayers: ref([
+        { "playerPhoto": '/src/assets/img/wyh.png', "playerName": 'wyh', "type": '前端' },
+        { "playerPhoto": '/src/assets/img/wyh.png', "playerName": 'wyh', "type": '前端' },
+
+      ]),
+
     }
   }
 
@@ -235,7 +277,8 @@ export default {
   left: 25%;
   width: 40vw;
   height: 15vw;
-  flex-shrink: 0;  /* 
+  flex-shrink: 0;
+  /* 
 
   background: rgb(221, 245, 251);*/
 
@@ -243,9 +286,9 @@ export default {
 
 .playerPic {
   margin-top: 30px;
-  margin-left: 40px;
-  width: 160px;
-  height: 240px;
+  margin-left: 30px;
+  width: 200px;
+  height: 220px;
 }
 
 .eventInfo {
@@ -257,15 +300,16 @@ export default {
   background: rgb(240, 240, 240);
 }
 
-.eventData {
+.detailedEventData {
   position: absolute;
   left: 10vw;
+  background: wheat;
 }
 
 /* 信息第一行 */
 .firstBar {
   position: absolute;
-  left: 3vw;
+  left: 5vw;
   top: 9vh;
   height: 4vh;
   width: 36vw;
@@ -276,10 +320,11 @@ export default {
 /* 信息第二行 */
 .secondBar {
   position: absolute;
-  left: 3vw;
+  left: 5vw;
   top: 15vh;
   height: 4vh;
-  width: 36vw;  /* 
+  width: 36vw;
+  /* 
 
   background: rgb(0, 240, 249);*/
 }
@@ -287,10 +332,11 @@ export default {
 /* 信息第三行 */
 .thirdBar {
   position: absolute;
-  left: 3vw;
+  left: 5vw;
   top: 22vh;
   height: 4vh;
-  width: 36vw;  /*
+  width: 36vw;
+  /*
 
   background: rgb(0, 240, 249); */
 }
@@ -298,7 +344,8 @@ export default {
 /* 横向第一条 */
 .firstBlock {
   position: absolute;
-  left: 1vw;  /* 
+  left: 1vw;
+  /* 
 
   background: rgb(255, 255, 255);*/
 }
@@ -306,7 +353,8 @@ export default {
 /* 横向第二条 */
 .secondBlock {
   position: absolute;
-  left: 13vw;  /* 
+  left: 13vw;
+  /* 
 
   background: rgb(255, 255, 255);*/
 }
@@ -314,63 +362,64 @@ export default {
 /* 横向第三条 */
 .thirdBlock {
   position: absolute;
-  left: 25vw;  /* 
+  left: 25vw;
+  /* 
 
   background: rgb(255, 255, 255);*/
 }
 
 .seasonInfo {
   position: absolute;
-  width: 12vw;
+  width: 11vw;
   height: 4vh;
 }
 
-.clubInfo {
+.appearanceInfo {
   position: absolute;
-  left: 12vw;
-  width: 12vw;
+  left: 11vw;
+  width: 7vw;
   height: 4vh;
 }
 
-.playedTimeInfo {
+.passInfo {
   position: absolute;
-  left: 24vw;
-  width: 6vw;
+  left: 18vw;
+  width: 7vw;
   height: 4vh;
 }
 
-.startTimeInfo {
+.shootInfo {
   position: absolute;
-  left: 30vw;
-  width: 6vw;
+  left: 25vw;
+  width: 7vw;
   height: 4vh;
 }
 
 .goalInfo {
   position: absolute;
-  left: 36vw;
-  width: 6vw;
+  left: 32vw;
+  width: 7vw;
   height: 4vh;
 }
 
-.assistsInfo {
+.assistInfo {
   position: absolute;
-  left: 42vw;
-  width: 6vw;
+  left: 39vw;
+  width: 7vw;
   height: 4vh;
 }
 
-.yellowCardInfo {
+.yellowInfo {
   position: absolute;
-  left: 48vw;
-  width: 6vw;
+  left: 46vw;
+  width: 7vw;
   height: 4vh;
 }
 
-.redCardInfo {
+.redInfo {
   position: absolute;
-  left: 54vw;
-  width: 6vw;
+  left: 53vw;
+  width: 7vw;
   height: 4vh;
 }
 
@@ -381,30 +430,71 @@ export default {
   transform: translate(-50%, -50%);
 }
 
-.honorHeader {
+.relatedPlayerHeader {
   position: absolute;
   left: 75%;
-  width: 16vw;
+  width: 18vw;
   height: 8vh;
   background: rgb(240, 240, 240);
 }
 
-.honorData {
+.relatedPlayerData {
   position: absolute;
   left: 75%;
 }
 
-.honorName {
+.relatedPlayerPhotoContainer {
   position: absolute;
-  width: 11vw;
-  left: -2vw;
-  height: 6vh;
+  width: 3vw;
+  height: 4vh;
 }
 
-.honorSeason {
+.relatedPlayerPhoto {
   position: absolute;
-  width: 9vw;
-  left: 9vw;
-  height: 6vh;
+  width: 1.5vw;
+  height: 3vh;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.relatedPlayerNameContainer {
+  position: absolute;
+  left: 3vw;
+  width: 10vw;
+  height: 4vh;
+}
+
+.relatedPlayerName {
+  position: absolute;
+  color: var(--colors-text-dark-172239100, #172239);
+  left: 20%;
+  top: -5%;
+  transform: translate(-50%, -50%);
+}
+
+.relatedPlayerPositionContainer {
+  position: absolute;
+  left: 15vw;
+  width: 5vw;
+  height: 4vh;
+}
+
+.relatedPlayerName {
+  position: absolute;
+  color: var(--colors-text-dark-172239100, #172239);
+  left: 20%;
+  top: -5%;
+  transform: translate(-50%, -50%);
+}
+
+.oddIndex {
+  background-color: lightblue;
+  /* 奇数行的背景色 */
+}
+
+.evenIndex {
+  background-color: lightpink;
+  /* 偶数行的背景色 */
 }
 </style>

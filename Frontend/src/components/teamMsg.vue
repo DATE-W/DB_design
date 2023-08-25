@@ -1,15 +1,24 @@
 <template>
   <my-nav></my-nav>
-  <div class="topContainer">
-    <img class="teamIcon" alt="This is team icon" :src="this.teamLogo">
+  <el-card class="topContainer">
+    <img class="teamIcon" alt="This is team icon" :src="this.logo">
     <div class="teamInfo">
-      <p class="header">
-        {{ this.teamName }}
-      </p>
+
+      <div class="name">
+        <p class="headerText" style="left: 50%; transform: translate(-50%, -50%); font-size: 2vw;">
+          {{ this.teamName }}
+        </p>
+
+      </div>
+      <div class="enName">
+        <p class="headerText" style="top: -40%; left: 50%; transform: translate(-50%, -50%); font-size: 1.2vw;">
+          {{ this.enName }}
+        </p>
+      </div>
 
       <div class="firstBar">
         <div class="firstBlock">
-          成立：{{ this.establishmentTime }}
+          成立：{{ this.foundYear }}
         </div>
         <div class="secondBlock">
           国家：{{ this.country }}
@@ -18,13 +27,13 @@
           城市：{{ this.city }}
         </div>
       </div>
-
+      
       <div class="secondBar">
         <div class="firstBlock">
-          主场：{{ this.homeCourt }}
+          主场：{{ this.venueName }}
         </div>
         <div class="secondBlock">
-          容纳：{{ this.containerNum }}人
+          容纳：{{ this.venueCapacity }}人
         </div>
       </div>
 
@@ -42,24 +51,27 @@
           地址：{{ this.address }}
         </div>
       </div>
-
+<!-- -->
     </div>
-  </div>
+  </el-card>
 
-  <div class="playerInfo" v-for="(teamMember, index) in teamMembers" :key="index"
-    :style="{ top: `${Math.floor(index / 4) * 18 + 26}rem`, left: `${index % 4 * 16 + 16}rem` }"
-    @click="direct2detailedPlayerMsg(teamMember.playerName)">
-    <img class="playerPic" :src="teamMember.playerPhoto">
-    <p class="playerName">
-      {{ teamMember.playerName }}
+  <el-card class="playerInfo" v-for="(singleteamMember, index) in teamMember" :key="index"
+    :style="{ top: `${Math.floor(index / 4) * 19 + 26}rem`, left: `${index % 4 * 16 + 16}rem` }"
+    @click="direct2detailedPlayerMsg(singleteamMember.playerName)">
+    <img class="playerPic" :src="singleteamMember.playerPhoto">
+    <p class="playerName" style="left: 50%; transform: translate(-50%, -50%); font-size: 1.2vw;">
+      {{ singleteamMember.playerName }}
     </p>
-  </div>
+  </el-card>
 </template>
 
 
 
 <script>
+import { ref } from 'vue';
 import MyNav from './nav.vue';
+import { ElMessage } from 'element-plus';
+import axios from 'axios';
 
 export default {
   components: {
@@ -72,6 +84,7 @@ export default {
 
   mounted() {
     this.getTeamMsg(this.teamName);
+
   },
 
   methods: {
@@ -90,9 +103,27 @@ export default {
     async getTeamMsg(teamName) {
       let response;
       try {
-        response = await axios.post('api', {
+        response = await axios.post('/api/updateTeam/getTeamInfoByName', {
           teamName: teamName,
         });
+
+//        console.log(response);
+        this.recentGames = [];
+        this.teamMember = [];
+
+        this.city = response.data[0].city;
+        this.foundYear = response.data[0].foundYear;
+        this.enName = response.data[0].enName;
+        this.logo = response.data[0].logo;
+        this.country = response.data[0].country;
+        this.venueName = response.data[0].venue_name;
+        this.tel = response.data[0].telephone;
+        this.address = response.data[0].address;
+        this.venueCapacity = response.data[0].venue_capacity;
+        this.email = response.data[0].email;
+
+        this.recentGames = response.data[0].recentGames;
+        this.teamMember = response.data[0].teamMember;
 
       } catch (err) {
         ElMessage({
@@ -100,17 +131,6 @@ export default {
           type: 'error',
         });
       }
-      this.teamMembers = [];
-      this.address = response.data.address;
-      this.country = response.data.country;
-      this.city = response.data.city;
-      this.homeCourt = response.data.homeCourt;
-      this.containerNum = response.data.containerNum;
-      this.establishmentTime = response.data.establishmentTime;
-      this.tel = response.data.tel;
-      this.email = response.data.email;
-      this.teamMembers = response.data.teamMember;
-
     },
 
 
@@ -119,23 +139,36 @@ export default {
   data() {
     return {
       teamName: '不要挂ysj挑战',
-      teamLogo: '/src/assets/img/pmlogo.png',
+      enName: 'isafnjnjds',
+      logo: '/src/assets/img/pmlogo.png',
+      coach: 'wjl',
+      foundYear: '2023',
+      city: '龙门',
       address: '须弥城114弄514号',
       country: '璃月',
-      city: '龙门',
-      homeCourt: '301',
-      containerNum: 114514,
-      establishmentTime: '2023',
+      venueName: '301',
+      venueCapacity: 114514,
       tel: '+86 12345678901',
-      email: 'wjl@qq.com',
-      teamMembers: [
+      email: '111',
+
+      teamMember: ref([
         { "playerName": "wjl", "playerPhoto": "/src/assets/img/otto.png" },
         { "playerName": "wyh", "playerPhoto": "/src/assets/img/otto.png" },
         { "playerName": "wyh", "playerPhoto": "/src/assets/img/otto.png" },
         { "playerName": "wyhwyhwyh", "playerPhoto": "/src/assets/img/otto.png" },
         { "playerName": "wyh", "playerPhoto": "/src/assets/img/otto.png" },
 
-      ]
+      ]),
+      recentGames: ref([
+        { "gameDate": "1", "opponentName": "2", "homeScore": 0, "opponentScore": 1 },
+        { "gameDate": "1", "opponentName": "2", "homeScore": 0, "opponentScore": 1 },
+        { "gameDate": "1", "opponentName": "2", "homeScore": 0, "opponentScore": 1 },
+
+      ]),
+      /* /*        
+      
+      */
+
 
 
     }
@@ -172,9 +205,10 @@ export default {
   top: 10%;
   width: 70%;
   height: 80%;
-  flex-shrink: 0;  /*
+  flex-shrink: 0;
+  /*
 
-  background: rgb(194, 249, 249); */
+  background: rgb(194, 249, 249);*/
 
 }
 
@@ -182,9 +216,10 @@ export default {
 .firstBar {
   position: absolute;
   left: 3vw;
-  top: 8vh;
+  top: 12vh;
   height: 4vh;
-  width: 36vw;  /* 
+  width: 36vw;
+  /* 
 
   background: rgb(0, 240, 249);*/
 
@@ -194,9 +229,10 @@ export default {
 .secondBar {
   position: absolute;
   left: 3vw;
-  top: 14vh;
+  top: 18vh;
   height: 4vh;
-  width: 36vw;  /* 
+  width: 36vw;
+  /* 
 
   background: rgb(0, 240, 249);*/
 
@@ -206,9 +242,10 @@ export default {
 .thirdBar {
   position: absolute;
   left: 3vw;
-  top: 21vh;
+  top: 24vh;
   height: 4vh;
-  width: 36vw;  /* 
+  width: 36vw;
+  /* 
 
   background: rgb(0, 240, 249);*/
 
@@ -218,9 +255,10 @@ export default {
 .fourthBar {
   position: absolute;
   left: 3vw;
-  top: 28vh;
+  top: 30vh;
   height: 4vh;
-  width: 36vw;  /*
+  width: 36vw;
+  /*
 
   background: rgb(0, 240, 249); */
 
@@ -229,7 +267,8 @@ export default {
 /* 横向第一条 */
 .firstBlock {
   position: absolute;
-  left: 1vw;  /*
+  left: 1vw;
+  /*
 
   background: rgb(255, 255, 255); */
 }
@@ -237,7 +276,8 @@ export default {
 /* 横向第二条 */
 .secondBlock {
   position: absolute;
-  left: 16vw;  /*
+  left: 16vw;
+  /*
 
   background: rgb(255, 255, 255); */
 }
@@ -245,7 +285,8 @@ export default {
 /* 横向第三条 */
 .thirdBlock {
   position: absolute;
-  left: 26vw;  /*
+  left: 26vw;
+  /*
 
   background: rgb(255, 255, 255); */
 }
@@ -256,32 +297,47 @@ export default {
   left: 20%;
   top: 60%;
   width: 200px;
-  height: 240px;
-  flex-shrink: 0;  /*
-
+  height: 250px;
+  flex-shrink: 0;
+  
+/*
   background: #0fffff; */
 }
 
 .playerPic {
   position: absolute;
-  left: 20%;
-  width: 120px;
+  left: 5%;
+  width: 180px;
   height: 180px;
 }
 
 .playerName {
   position: absolute;
   text-align: center;
-  top: 75%;
+  top: 82%;
   left: 50%;
+  white-space: nowrap;
   transform: translate(-50%, -50%);
   font-size: 1.3vw;
 }
 
-.header {
+.name {
   position: absolute;
-  font-size: 2vw;
-  left: 50%; 
+  top: 0%;
+  width: 100%;
+  height: 20%;
+}
+
+.enName {
+  position: absolute;
+  top: 25%;
+  width: 100%;
+  height: 20%;
+}
+
+.headerText {
+  position: absolute;
+  left: 50%;
   transform: translate(-50%, -50%);
 }
 </style>
