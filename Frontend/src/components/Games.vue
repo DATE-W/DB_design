@@ -1,11 +1,14 @@
-<!-- 2154314_郑楷_赛事列表 2023.08.11 14:00 v1.6.0
+<!-- 2154314_郑楷_赛事列表 2023.08.27 01:00 v2.0.0
  v1.0.0 页面画了一半 
- v1.1.0 画出了左侧的联赛选择器（未添加逻辑），布局了中部的比赛列表（已添加跳转逻辑），增加了各大联赛LOGO素材图，日期选择器和广告区待实现
- v1.2.0 优化了联赛选择器组件的代码、视觉效果、功能、数据通路
- v1.3.0 中间一列赛事缩略图的代码简化与传值
- v1.4.0 功能基本完成，前后端接口已经对齐，能完成实时渲染
- v1.5.0 增加跳转到赛事详情页的通路，并完成传值，添加注释
- v1.6.0 与赛事详情页互相传值，使得在返回本页面时，之前的日期与联赛选择不会丢失 -->
+  v1.1.0 画出了左侧的联赛选择器（未添加逻辑），布局了中部的比赛列表（已添加跳转逻辑），增加了各大联赛LOGO素材图，日期选择器和广告区待实现
+  v1.2.0 优化了联赛选择器组件的代码、视觉效果、功能、数据通路
+  v1.3.0 中间一列赛事缩略图的代码简化与传值
+  v1.4.0 功能基本完成，前后端接口已经对齐，能完成实时渲染
+  v1.5.0 增加跳转到赛事详情页的通路，并完成传值，添加注释
+  v1.6.0 与赛事详情页互相传值，使得在返回本页面时，之前的日期与联赛选择不会丢失
+  v1.7.0 添加显示主队近期三场比赛功能，添加队标显示功能，美化页面
+  v1.8.0 调用获取当前用户状态的接口，未登录时跳转到登陆界面 
+ v2.0.0 正式版首版，所有功能均已完成，删去了冗余代码 -->
 
 <template>
   <my-nav></my-nav>
@@ -109,7 +112,6 @@ export default {
   methods: {
     // 跳转到赛事详情页
     toMatchDetail(uid, leagueC, dateC) {
-      this.match11 = uid;
       //etTimeout(function(){ getSignature() },5000);//Test
       this.$router.push(
         {
@@ -221,24 +223,15 @@ export default {
           type: 'error',
         });
       }
-      /* console.log(dateCho,leagueCho); */
       this.mainTeam = response.data.utf;
-      /* console.log(this.matches); */
     },
 
-  },
-
-  setup() {
-    const getAssetsImages = (name) => {
-      return new URL(league.logo, import.meta.url).href; //本地文件路径
-    }
   },
 
   data() {
     return {
 
       league11: 0,
-      match11: 0,
       date11: ref(this.dateToString(new Date())),
 
       leagues: [
@@ -258,39 +251,6 @@ export default {
 
       /* 测试版本 */
       mainTeam: ref('利物浦'),
-      /* recentMatches: [
-        {
-          "gameDate": "2023-08-12",
-          "homeTeam": 50000532,
-          "opponentTeam": 50000540,
-          "opponentName": "谢菲尔德联",
-          "homeScore": 1,
-          "opponentScore": 0,
-          "opponentLogo": "https://sd.qunliao.info/fastdfs4/M00/D1/27/ChNLkl1L9hOAFN_9AABizeiU33g983.png",
-          "gameUid": "53614996"
-        },
-        {
-          "gameDate": "2023-03-15",
-          "homeTeam": 50000532,
-          "opponentTeam": 50000556,
-          "opponentName": "布莱顿",
-          "homeScore": 0,
-          "opponentScore": 1,
-          "opponentLogo": "https://sd.qunliao.info/fastdfs3/M00/B5/75/ChOxM1xC2F6ACzweAAATm2O1vDk447.png",
-          "gameUid": "53396655"
-        },
-        {
-          "gameDate": "2023-01-18",
-          "homeTeam": 50000532,
-          "opponentTeam": 50000515,
-          "opponentName": "曼联",
-          "homeScore": 1,
-          "opponentScore": 1,
-          "opponentLogo": "https://sd.qunliao.info/fastdfs3/M00/B5/75/ChOxM1xC2FWAK5dCAAAmr0XTTPA012.png",
-          "gameUid": "53396643"
-        }
-      ] */
-
     }
   }
 }
@@ -358,16 +318,6 @@ export default {
   height: 4rem;
 }
 
-.modal1 {
-  position: absolute;
-  left: 0rem;
-  top: 0rem;
-  width: 10rem;
-  height: 4rem;
-  background-color: rgba(255, 255, 255, 0.5);
-  transition: background-color 0.8s ease;
-}
-
 .modal2 {
   position: absolute;
   left: 0rem;
@@ -392,18 +342,6 @@ export default {
 
 .borderBoxLeague:hover {
   background-color: rgb(246, 77, 77);
-}
-
-/* 联赛名称框 */
-.borderBoxText1 {
-  position: absolute;
-  width: 8rem;
-  height: 2rem;
-  top: 1rem;
-  left: 4rem;
-
-  /* 测试版本，正式版本删去 */
-  background: white;
 }
 
 /* 各场赛事框 */
