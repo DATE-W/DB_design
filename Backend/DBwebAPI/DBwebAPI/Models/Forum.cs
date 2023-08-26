@@ -25,6 +25,12 @@ namespace DBwebAPI.Models
         public int post_id { get; set; }
         public int user_id { get; set; }
     }
+    public class PostPic
+    {
+        [SugarColumn(IsPrimaryKey = true)]
+        public int post_id { get; set; }
+        public string pic { get; set; }
+    }
     public class Tag
     {
         [SugarColumn(IsPrimaryKey = true)]
