@@ -80,61 +80,63 @@ namespace DBwebAPI.Controllers
                     List<NewsWithPicture> ret = new List<NewsWithPicture>();
                     if (mtag == "" && ptag == "")
                     {
-                        news = await sqlORM.Queryable<News>().LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).
+                        news = await sqlORM.Queryable<News>().
                             OrderBy(n => n.publishDateTime, OrderByType.Desc).
                             Take(num).ToListAsync();
                         ret = new List<NewsWithPicture>();
+                        Console.WriteLine(news.Count);
+
                         for (int i = 0; i < news.Count; i++)
                         {
-                            List<string> pictureRoutes = await sqlORM.Queryable<News>().
-                                LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).
-                                Where(n => n.news_id == news[i].news_id).
-                                Select((n, nhp) => nhp.pictureRoute).
+                            int id = news[i].news_id;
+                            List<string> pictureRoutes = await sqlORM.Queryable<NewsHavePicture>().
+                                Where(n => n.news_id == id).
+                                Select(nhp => nhp.pictureRoute).
                                 ToListAsync();
                             ret.Add(new NewsWithPicture { newsBody = news[i], pictureRoutes = pictureRoutes });
                         }
                     }
                     else if(mtag != "" && ptag == "")
                     {
-                        news = await sqlORM.Queryable<News>().LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).Where(n => n.matchTag == mtag).
+                        news = await sqlORM.Queryable<News>().
                             OrderBy(n => n.publishDateTime, OrderByType.Desc).Take(num).ToListAsync();
                         ret = new List<NewsWithPicture>();
                         for (int i = 0; i < news.Count; i++)
                         {
-                            List<string> pictureRoutes = await sqlORM.Queryable<News>().
-                                LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).
-                                Where(n => n.news_id == news[i].news_id).
-                                Select((n, nhp) => nhp.pictureRoute).
+                            int id = news[i].news_id;
+                            List<string> pictureRoutes = await sqlORM.Queryable<NewsHavePicture>().
+                                Where(n => n.news_id == id).
+                                Select(nhp => nhp.pictureRoute).
                                 ToListAsync();
                             ret.Add(new NewsWithPicture { newsBody = news[i], pictureRoutes = pictureRoutes });
                         }
                     }
                     else if(mtag == "" && ptag != "")
                     {
-                        news = await sqlORM.Queryable<News>().LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).Where(n => n.propertyTag == ptag).
+                        news = await sqlORM.Queryable<News>().
                             OrderBy(n => n.publishDateTime, OrderByType.Desc).Take(num).ToListAsync();
                         ret = new List<NewsWithPicture>();
                         for (int i = 0; i < news.Count; i++)
                         {
-                            List<string> pictureRoutes = await sqlORM.Queryable<News>().
-                                LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).
-                                Where(n => n.news_id == news[i].news_id).
-                                Select((n, nhp) => nhp.pictureRoute).
+                            int id = news[i].news_id;
+                            List<string> pictureRoutes = await sqlORM.Queryable<NewsHavePicture>().
+                                Where(n => n.news_id == id).
+                                Select(nhp => nhp.pictureRoute).
                                 ToListAsync();
                             ret.Add(new NewsWithPicture { newsBody = news[i], pictureRoutes = pictureRoutes });
                         }
                     }
                     else
                     {
-                        news = await sqlORM.Queryable<News>().LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).Where(n => n.matchTag == mtag && n.propertyTag == ptag).
+                        news = await sqlORM.Queryable<News>().//LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).Where(n => n.matchTag == mtag && n.propertyTag == ptag).
                             OrderBy(n => n.publishDateTime, OrderByType.Desc).Take(num).ToListAsync();
                         ret = new List<NewsWithPicture>();
                         for (int i = 0; i < news.Count; i++)
                         {
-                            List<string> pictureRoutes = await sqlORM.Queryable<News>().
-                                LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).
-                                Where(n => n.news_id == news[i].news_id).
-                                Select((n, nhp) => nhp.pictureRoute).
+                            int id = news[i].news_id;
+                            List<string> pictureRoutes = await sqlORM.Queryable<NewsHavePicture>().
+                                Where(n => n.news_id == id).
+                                Select(nhp => nhp.pictureRoute).
                                 ToListAsync();
                             ret.Add(new NewsWithPicture { newsBody = news[i], pictureRoutes = pictureRoutes });
                         }
