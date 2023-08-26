@@ -44,12 +44,14 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<List<TeamInGameTimeVal>> searchTeamInGameTime([FromBody] TeamInGameTimePara json)
         {
+
+            Console.WriteLine("--------------------------searchTeamInGameTime--------------------------");
             if (json == null)
             {
                 Console.WriteLine("json is null!");
                 return null;
             }
-            Console.WriteLine("--------------------------searchTeamInGameTime--------------------------");
+            Console.WriteLine("json.dateTime is "+json.dateTime.ToString());
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
             try
@@ -59,7 +61,7 @@ namespace DBwebAPI.Controllers
                 List<TeamInGameTimeVal> ans = new List<TeamInGameTimeVal>();
                 List<string> gameNames = new List<string> { "", "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
 
-                string dateTime = json.dateTime;
+                string? dateTime = json.dateTime;
                 Console.WriteLine("dateTime = " + dateTime);
 
                 string? year = dateTime.Substring(0, 4);
