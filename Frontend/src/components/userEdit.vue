@@ -53,10 +53,11 @@ export default {
     },
     data() {
         return {
-            avatarUrl: "./src/assets/img/carousel1.png", // 头像url
-            userName: "WinWin", // 用户名
-            account: "1145141919810", // 账号
-            personalSign: '原神，启动！', //个性签名
+            avatarUrl: "", // 头像url
+            avatarFile: '',//头像的文件
+            userName: "", // 用户名
+            account: "", // 账号
+            personalSign: '', //个性签名
             dialogVisible: false, // 修改对话框是否可见
             dialogTitle: '',
             dialogType: '',
@@ -102,6 +103,7 @@ export default {
         },
         handleFileChange(event) {
             const file = event.target.files[0]; // 获取选中的文件
+            this.avatarFile = file;
             if (file) {
                 // 通过 FileReader 读取选中的文件，获取其 base64 编码
                 const reader = new FileReader();
@@ -136,7 +138,6 @@ export default {
             this.dialogTitle = "";
             this.dialogType = "";
             this.tempInput = "";
-            console.log(this.tempInput)
             this.dialogVisible = false;
         },
         cancelDialog() {
@@ -156,13 +157,34 @@ export default {
                 // 用户点击了“取消”，不执行任何操作
             });
         },
+        async submitPic() {
+            let response
+            const formData = new FormData();
+            formData.append('file', this.avatarFile);
+            try {
+                response = await axios.post('/api/Picture/SaveFile', formData, { 'Content-Type': 'multipart/form-data' });
+            } catch (err) {
+                console.log(err);
+                ElMessage({
+                    message: '未知错误',
+                    grouping: false,
+                    type: 'error',
+                })
+                return
+            }
+            this.avatarUrl = response.data.value;
+            console.log(response);
+        },
         async submitData() {
+            await this.submitPic(); // 提交图片，获得返回的图片url
+            const serverip = 'http://110.40.206.206/test/'
             const userName = this.userName;
             const sign = this.personalSign;
+            this.avatarUrl = serverip + this.avatarUrl;
             const avatar = this.avatarUrl;
-            console.log(sign)
-            console.log(userName)
-
+            console.log(this.avatarUrl)
+            console.log('123456')
+            console.log(avatar);
             //这里加后端交互代码，然后刷新当前页面
             // 延迟刷新页面
             const token = localStorage.getItem('token');
@@ -202,11 +224,11 @@ export default {
                     grouping: false,
                     type: 'error',
                 })
-                this.$router.push('/signin');
+                // this.$router.push('/signin');
             }
-            setTimeout(() => {
-                window.location.reload(); // 刷新当前页面
-            }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
+            // setTimeout(() => {
+            //     window.location.reload(); // 刷新当前页面
+            // }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
         }
     },
 }

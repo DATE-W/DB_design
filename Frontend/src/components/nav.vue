@@ -13,9 +13,7 @@
       </div>
       <div class="nav-right">
         <el-dropdown trigger="hover">
-          <span class="user-avatar" @click="redirectToPersonal">
-            <img :src=this.avatarurl alt="Avatar" />
-          </span>
+          <el-avatar :src=this.avatarurl alt="Avatar" class="avatar"></el-avatar>
           <template #dropdown>
             <el-dropdown-menu v-slot: dropdown>
               <el-dropdown-item @click="redirectToLogin(0)" v-if="!this.islog">用户登录</el-dropdown-item>
@@ -93,11 +91,11 @@ export default {
     redirectToLogin(isAdmin) {
       // 跳转到登录页面的逻辑
       this.$router.push({
-                path: '/signin',
-                query: { 
-                  isAdmin: isAdmin 
-                }
-          });
+        path: '/signin',
+        query: {
+          isAdmin: isAdmin
+        }
+      });
     },
     redirectToRegister() {
       // 跳转到注册页面的逻辑
@@ -161,13 +159,13 @@ export default {
   align-items: center;
 }
 
-.user-avatar {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 48px;
   margin-right: 10px;
+  object-fit: cover;
 }
 
 .user-nickname {

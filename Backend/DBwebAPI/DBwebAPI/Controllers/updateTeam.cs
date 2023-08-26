@@ -10,6 +10,8 @@ using SqlSugar.Extensions;
 using System.Security.Policy;
 using System.Security.AccessControl;
 using System.DirectoryServices.ActiveDirectory;
+using System.Security.Permissions;
+using System.Xml.Linq;
 
 namespace DBwebAPI.Controllers
 {
@@ -234,14 +236,20 @@ namespace DBwebAPI.Controllers
             public int? homeScore { get; set; }
             public int? guestScore { get; set; }
             public string? homeLogo { get; set; }
-            public string? guestLogo { get; set;}
+            public string? guestLogo { get; set; }
             public string? gameUid { get; set; }
-            
+
         }
+
 
         [HttpPost]
         public async Task<List<TeamInGameTimeVal>> searchTeamInGameTime([FromBody] TeamInGameTimePara json)
         {
+            if (json == null)
+            {
+                Console.WriteLine("json is null!");
+                return null;
+            }
 
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
@@ -250,14 +258,17 @@ namespace DBwebAPI.Controllers
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
 
                 List<TeamInGameTimeVal> ans = new List<TeamInGameTimeVal>();
-                List<string> gameNames = new List<string> {"", "英超", "西甲" ,"意甲","德甲","法甲","中超"};
-                string? dateTime = json.dateTime;
-                Console.WriteLine("dateTime = "+dateTime);
+                List<string> gameNames = new List<string> { "", "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
+
+                string dateTime = json.dateTime;
+                Console.WriteLine("dateTime = " + dateTime);
+
                 string? year = dateTime.Substring(0, 4);
                 string? month = dateTime.Substring(5, 2);
                 string? day = dateTime.Substring(8, 2);
                 int gameType = json.gameType;
                 Console.WriteLine("gameType = " + gameType.ToString());
+
 
                 DateTime temp;
 
@@ -266,30 +277,23 @@ namespace DBwebAPI.Controllers
                     .LeftJoin<Team>((g, home, guest) => g.guestTeam == guest.team_id)
                     .Where((g, home, guest) =>
                     g.startTime.Value.ToString("yyyy-MM-dd") == dateTime
-                    //g.startTime.Value.Year.ToString()==year
-                    //&& (g.startTime.Value.Month < 10 ? "0" : "") + g.startTime.Value.Month.ToString() == month
-                    //&& (g.startTime.Value.Day < 10 ? "0" : "") + g.startTime.Value.Day.ToString() == day
-                    && ((gameType != 0 && g.type == gameNames[gameType])||gameType==0)
+                    && ((gameType != 0 && g.type == gameNames[gameType]) || gameType == 0)
                     )
                     .Select((g, home, guest) => new TeamInGameTimeVal
                     {
-                        gameUid=g.game_id.ToString(),
-                        startTime=g.startTime.Value.ToString("HH") + ":" + (g.startTime.Value.Minute < 10 ? "0" : "") + g.startTime.Value.Minute.ToString(),
-                        //    startTime = (g.startTime.Value.Hour<10?"0":"")+ g.startTime.Value.Hour.ToString() + ":"
-                        //+(g.startTime.Value.Minute<10? "0":"") + g.startTime.Value.Minute.ToString(),
+                        gameUid = g.game_id.ToString(),
+                        startTime = g.startTime.Value.ToString("HH") + ":" + (g.startTime.Value.Minute < 10 ? "0" : "") + g.startTime.Value.Minute.ToString(),
                         homeTeamName = home.chinesename,
-                        homeTeam=home.team_id,
-                        guestTeam=guest.team_id,
+                        homeTeam = home.team_id,
+                        guestTeam = guest.team_id,
                         guestTeamName = guest.chinesename,
-                        status=g.status,
-                        homeLogo=home.logo,
-                        guestLogo=guest.logo
-                        //homeScore=g.homeScore,
-                        //guestScore=g.guestScore
+                        status = g.status,
+                        homeLogo = home.logo,
+                        guestLogo = guest.logo
                     })
                     .ToListAsync();
 
-                Console.WriteLine("ansCnt = "+ans.Count().ToString());
+                Console.WriteLine("ansCnt = " + ans.Count().ToString());
 
 
                 // 接下来对比赛进行比分筛选
@@ -308,9 +312,29 @@ namespace DBwebAPI.Controllers
                     ans[i].guestScore = await sqlORM.Queryable<TeamOwnPlayer>()
                         .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == guestTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
                         .SumAsync((top, pjg) => pjg.goal);
-
-
                 }
+
+
+
+                //排序
+                for (int i = 0; i < ans.Count(); i++)
+                {
+                    for (int j = 0; j < ans.Count() - i - 1; j++)
+                    {
+                        //if (ans[j].timeValue< ans[j + 1].timeValue)
+                        if (System.String.Compare(ans[j].startTime, ans[j + 1].startTime) > 0)
+                        {
+                            TeamInGameTimeVal tempGame = new TeamInGameTimeVal();
+                            tempGame = ans[j];
+                            ans[j] = ans[j + 1];
+                            ans[j + 1] = tempGame;
+                        }
+                    }
+                }
+
+
+
+
 
                 return ans;
 
@@ -324,6 +348,8 @@ namespace DBwebAPI.Controllers
             }
 
         }
+
+
 
 
         public class getGameByUidPara
@@ -343,10 +369,13 @@ namespace DBwebAPI.Controllers
         public class getGameByUidVal
         {
             public string? dateTime { get; set; }
+            public string? startTime { get; set; }
             public int homeTeam { get; set; }
-            public int? guestTeam { get;set; }
+            public int? guestTeam { get; set; }
             public string? homeTeamName { get; set; }
             public string? guestTeamName { get; set; }
+            public string? leagueName { get; set; }
+            public int? leagueType { get; set; }
             public string? status { get; set; }
             public int? homeScore { get; set; }
             public int? guestScore { get; set; }
@@ -356,6 +385,7 @@ namespace DBwebAPI.Controllers
             public string? guestLink { get; set; }
             public string? liveStream { get; set; }
             public List<recentGamesVal?>? homeRecentGames { get; set; }
+            public List<recentGamesVal?>? guestRecentGames { get; set; }
 
         }
 
@@ -372,17 +402,17 @@ namespace DBwebAPI.Controllers
                 Console.WriteLine(gameUid);
 
                 List<getGameByUidVal> ans = new List<getGameByUidVal>();
-
-
                 ans = await sqlORM.Queryable<Game>()
                     .LeftJoin<Team>((g, home) => g.homeTeam == home.team_id)
                     .LeftJoin<Team>((g, home, guest) => g.guestTeam == guest.team_id)
                     .Where((g, home, guest) => g.game_id == gameUid)
                     .Select((g, home, guest) => new getGameByUidVal
                     {
-                        dateTime=g.startTime.Value.ToString("yyyy-MM-dd"),
+                        dateTime = g.startTime.Value.ToString("yyyy-MM-dd"),
+                        startTime = g.startTime.Value.ToString("HH") + ":" + (g.startTime.Value.Minute < 10 ? "0" : "") + g.startTime.Value.Minute.ToString(),
                         homeTeamName = home.chinesename,
                         guestTeamName = guest.chinesename,
+                        leagueName = g.type,
                         status = g.status,
                         homeLogo = home.logo,
                         guestLogo = guest.logo,
@@ -394,10 +424,23 @@ namespace DBwebAPI.Controllers
                     })
                     .ToListAsync();
 
+                if (ans.Count != 0)
+                {
+                    Console.WriteLine("found!");
+                }
                 //计算分数
                 if (ans.Count != 0)
                 {
-                    ans[0].homeScore= await sqlORM.Queryable<TeamOwnPlayer>()
+                    List<string> gameNames = new List<string> { "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
+                    for (int i = 0; i < gameNames.Count(); i++)
+                    {
+                        if (ans[0].leagueName == gameNames[i])
+                            ans[0].leagueType = i + 1;
+                    }
+
+
+
+                    ans[0].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
                         .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == ans[0].homeTeam && top.player_id == pjg.player_id && pjg.game_id == gameUid)
                         .SumAsync((top, pjg) => pjg.goal);
 
@@ -414,19 +457,16 @@ namespace DBwebAPI.Controllers
                     ans[0].homeRecentGames = sqlORM.Queryable<Game>()
                         .LeftJoin<Team>((gg, myTeam) => gg.homeTeam == myTeam.team_id || gg.guestTeam == myTeam.team_id)
                         .LeftJoin<Team>((gg, myTeam, opponentTeam) => (gg.guestTeam + gg.homeTeam) == myTeam.team_id + opponentTeam.team_id)
-                        .Where((gg, myTeam, opponentTeam) => myTeam.team_id == ans[0].homeTeam&&gg.status=="Played")
+                        .Where((gg, myTeam, opponentTeam) => myTeam.team_id == ans[0].homeTeam
+                        && gg.status == "Played"
+                        )
                         .OrderBy((gg, myTeam, opponentTeam) => gg.startTime, OrderByType.Desc)
                         .Take(3)
                         .Select((gg, myTeam, opponentTeam) => new recentGamesVal
                         {
-                            //gameDate = (gg.dateTime.Value.Year.ToString()) + "-"
-                            //+ (gg.dateTime.Value.Month < 10 ? "0" : "") + gg.dateTime.Value.Month.ToString() + "-"
-                            //+ (gg.dateTime.Value.Day < 10 ? "0" : "") + gg.dateTime.Value.Day.ToString(),
-                            gameDate=gg.startTime.Value.ToString("yyyy-MM-dd"),
+                            gameDate = gg.startTime.Value.ToString("yyyy-MM-dd"),
                             opponentName = opponentTeam.chinesename,
                             opponentTeamId = opponentTeam.team_id,
-                            //homeScore = (gg.homeTeam == myTeam.team_id ? gg.homeScore : gg.guestScore),
-                            //opponentScore = (gg.homeTeam == myTeam.team_id ? gg.guestScore : gg.homeScore),
                             opponentLogo = opponentTeam.logo,
                             gameUid = gg.game_id.ToString()
 
@@ -447,21 +487,62 @@ namespace DBwebAPI.Controllers
                             .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == thisTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
                             .SumAsync((top, pjg) => pjg.goal);
 
-                        ans[0].homeRecentGames[i].opponentScore= await sqlORM.Queryable<TeamOwnPlayer>()
+                        ans[0].homeRecentGames[i].opponentScore = await sqlORM.Queryable<TeamOwnPlayer>()
                             .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == opponentTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
                             .SumAsync((top, pjg) => pjg.goal);
-
-
-
                     }
+
+
+
+
+                    ans[0].guestRecentGames = sqlORM.Queryable<Game>()
+                        .LeftJoin<Team>((gg, myTeam) => gg.homeTeam == myTeam.team_id || gg.guestTeam == myTeam.team_id)
+                        .LeftJoin<Team>((gg, myTeam, opponentTeam) => (gg.guestTeam + gg.homeTeam) == myTeam.team_id + opponentTeam.team_id)
+                        .Where((gg, myTeam, opponentTeam) => myTeam.team_id == ans[0].guestTeam
+                        && gg.status == "Played"
+                        )
+                        .OrderBy((gg, myTeam, opponentTeam) => gg.startTime, OrderByType.Desc)
+                        .Take(3)
+                        .Select((gg, myTeam, opponentTeam) => new recentGamesVal
+                        {
+                            gameDate = gg.startTime.Value.ToString("yyyy-MM-dd"),
+                            opponentName = opponentTeam.chinesename,
+                            opponentTeamId = opponentTeam.team_id,
+                            opponentLogo = opponentTeam.logo,
+                            gameUid = gg.game_id.ToString()
+                        })
+                        .ToList();
+
+                    //计算近几场得分
+                    for (int i = 0; i < ans[0].guestRecentGames.Count(); i++)
+                    {
+
+
+                        int? game_id = int.Parse(ans[0].guestRecentGames[i].gameUid);
+                        int? thisTeam = ans[0].guestTeam;
+                        int? opponentTeam = ans[0].guestRecentGames[i].opponentTeamId;
+
+
+                        ans[0].guestRecentGames[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                            .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == thisTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                            .SumAsync((top, pjg) => pjg.goal);
+
+                        ans[0].guestRecentGames[i].opponentScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                            .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == opponentTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                            .SumAsync((top, pjg) => pjg.goal);
+                    }
+
+
+                    Console.WriteLine(ans.Count());
+
+
+                    return ans[0];
                 }
 
-                Console.WriteLine(ans.Count());
-
-
-
-
-                return ans[0];
+                else
+                {
+                    return null;
+                }
 
 
             }
@@ -481,14 +562,14 @@ namespace DBwebAPI.Controllers
         }
         public class getTeamMatchesByNameVal
         {
-            public string? gameDate { get;set; }
+            public string? gameDate { get; set; }
             public int? homeTeam { get; set; }
             public int? opponentTeam { get; set; }
             public string? opponentName { get; set; }
-            public int? homeScore { get; set;}
-            public int? opponentScore { get; set;}
+            public int? homeScore { get; set; }
+            public int? opponentScore { get; set; }
             public string? opponentLogo { get; set; }
-            public string? gameUid { get; set;}
+            public string? gameUid { get; set; }
 
         }
 
@@ -510,13 +591,13 @@ namespace DBwebAPI.Controllers
                 ans = await sqlORM.Queryable<Game>()
                     .LeftJoin<Team>((g, home) => g.homeTeam == home.team_id)
                     .LeftJoin<Team>((g, home, guest) => g.guestTeam == guest.team_id)
-                    .Where((g, home, guest) =>( home.chinesename == teamName || guest.chinesename == teamName)&&g.status=="Played")
+                    .Where((g, home, guest) => (home.chinesename == teamName || guest.chinesename == teamName) && g.status == "Played")
                     .OrderBy((g, home, guest) => g.startTime.Value, OrderByType.Desc)
                     .Take(3)
                     .Select((g, home, guest) => new getTeamMatchesByNameVal
                     {
-                        gameDate=g.startTime.Value.ToString("yyyy-MM-dd"),
-                        homeTeam= (home.chinesename == teamName ? home.team_id : guest.team_id),
+                        gameDate = g.startTime.Value.ToString("yyyy-MM-dd"),
+                        homeTeam = (home.chinesename == teamName ? home.team_id : guest.team_id),
                         opponentTeam = (home.chinesename == teamName ? guest.team_id : home.team_id),
                         opponentName = (home.chinesename == teamName ? guest.chinesename : home.chinesename),
                         opponentLogo = (home.chinesename == teamName ? guest.logo : home.logo),
@@ -526,7 +607,7 @@ namespace DBwebAPI.Controllers
                     .ToListAsync();
 
                 //计算分数
-                for(int i = 0; i < ans.Count; i++)
+                for (int i = 0; i < ans.Count; i++)
                 {
 
                     int? game_id = int.Parse(ans[i].gameUid);
@@ -570,7 +651,7 @@ namespace DBwebAPI.Controllers
         {
             //public string? gameName { get; set; }
             public string? teamName { get; set; }
-            public string ? teamLogo { get; set; }
+            public string? teamLogo { get; set; }
             //public string? guestTeamName { get; set; }
 
         }
@@ -595,22 +676,26 @@ namespace DBwebAPI.Controllers
                     .LeftJoin<Team>((g, home) => g.homeTeam == home.team_id)
                     .Distinct()
                     .Where((g, home) => ((gameType != 0 && g.type == gameNames[gameType]) || gameType == 0))
-                    .Select((g, home) => new TeamInGameTypeVal {
+                    .Select((g, home) => new TeamInGameTypeVal
+                    {
                         teamLogo = home.logo,
-                        teamName = home.chinesename, });
+                        teamName = home.chinesename,
+                    });
 
                 var guestTeam = sqlORM.Queryable<Game>()
                     .LeftJoin<Team>((g, guest) => g.guestTeam == guest.team_id)
                     .Distinct()
                     .Where((g, guest) => ((gameType != 0 && g.type == gameNames[gameType]) || gameType == 0))
-                    .Select((g, guest) => new TeamInGameTypeVal { 
-                        teamLogo=guest.logo,
-                        teamName = guest.chinesename, });
+                    .Select((g, guest) => new TeamInGameTypeVal
+                    {
+                        teamLogo = guest.logo,
+                        teamName = guest.chinesename,
+                    });
 
 
                 ans = await sqlORM.Union(homeTeam, guestTeam).ToListAsync();
 
-                Console.WriteLine("team Count = "+ans.Count().ToString());
+                Console.WriteLine("team Count = " + ans.Count().ToString());
 
                 for (int i = 0; i < ans.Count(); i++)
                 {
@@ -634,12 +719,12 @@ namespace DBwebAPI.Controllers
 
         public class getTeamInfoByNamePara
         {
-            public string teamName{ get; set; }
+            public string teamName { get; set; }
         }
         public class teamMemberVal
         {
             public string? playerName { get; set; }
-            public string? playerPhoto { get; set;}
+            public string? playerPhoto { get; set; }
         }
         public class getTeamInfoByNameVal
         {
@@ -650,6 +735,13 @@ namespace DBwebAPI.Controllers
             public string? city { get; set; }
             public int? foundYear { get; set; }
             public string? coach { get; set; }
+            public string? country { get; set; }
+            public string? telephone { get; set; }
+            public string? address { get; set; }
+            public string? venue_name { get; set; }
+            public string? email { get; set; }
+            public int? venue_capacity { get; set; }
+
             public List<teamMemberVal>? teamMember { get; set; }
             public List<recentGamesVal?>? recentGames { get; set; }
         }
@@ -665,30 +757,37 @@ namespace DBwebAPI.Controllers
                 string? teamName = json.teamName;
                 List<getTeamInfoByNameVal> ans = new List<getTeamInfoByNameVal>();
                 ans = await sqlORM.Queryable<Team>()
-                    .Where(it=>it.chinesename==teamName)
-                    .Select(it => new getTeamInfoByNameVal {
-                        teamName=it.chinesename,
-                        team_id=it.team_id,
-                        enName=it.enname,
-                        logo=it.logo,
-                        city=it.city,
-                        foundYear=it.foundedyear,
-                        coach=it.coach,
+                    .Where(it => it.chinesename == teamName)
+                    .Select(it => new getTeamInfoByNameVal
+                    {
+                        teamName = it.chinesename,
+                        team_id = it.team_id,
+                        enName = it.enname,
+                        logo = it.logo,
+                        city = it.city,
+                        foundYear = it.foundedyear,
+                        coach = it.coach,
+                        country = it.country,
+                        telephone = it.telephone,
+                        address = it.address,
+                        venue_capacity = (it.venue_capacity == null ? 0 : it.venue_capacity),
+                        venue_name = it.venue_name,
+                        email = it.email
                     })
                     .ToListAsync();
 
                 //添加最近赛事
                 if (ans.Count() != 0)
                 {
-                    ans[0].teamMember=sqlORM.Queryable<TeamOwnPlayer>()
-                        .LeftJoin<Players>((top,p)=>top.player_id==p.player_id)
+                    ans[0].teamMember = sqlORM.Queryable<TeamOwnPlayer>()
+                        .LeftJoin<Players>((top, p) => top.player_id == p.player_id)
                         .Where((top, p) => top.team_id == ans[0].team_id)
-                        .Select((top,p)=>new teamMemberVal
+                        .Select((top, p) => new teamMemberVal
                         {
-                            playerName=p.chineseName,
-                            playerPhoto=p.photo
+                            playerName = p.chineseName,
+                            playerPhoto = p.photo
                         })
-                        .ToList() ;
+                        .ToList();
 
 
                     ans[0].recentGames = sqlORM.Queryable<Game>()
@@ -766,10 +865,10 @@ namespace DBwebAPI.Controllers
                     .Select((p, pjg) => new topScorerVal
                     {
                         topScorerName = p.chineseName,
-                        goals= SqlFunc.AggregateSumNoNull(pjg.goal)
+                        goals = SqlFunc.AggregateSumNoNull(pjg.goal)
                     })
                     .MergeTable()
-                    .OrderBy(it=>it.goals,OrderByType.Desc)
+                    .OrderBy(it => it.goals, OrderByType.Desc)
                     .Take(10)
                     .ToListAsync();
 
@@ -783,21 +882,104 @@ namespace DBwebAPI.Controllers
                 return null;
             }
 
+        }
+
+
+
+
+        public class topScorersInGameTypePara
+        {
+            public string gameName { get; set; }
 
         }
+        public class topScorersInGameTypeVal
+        {
+            public int? player_id { get; set; }
+            public int? goals { get; set; }
+            public string? playerName { get; set; }
+            public string? photo { get; set; }
+            public string? teamName { get; set; }
+            public string? teamLogo { get; set; }
+        }
+        [HttpPost]
+        public async Task<List<topScorersInGameTypeVal>> topScorersInGameType([FromBody] topScorersInGameTypePara json)
+        {
+
+            ORACLEconn ORACLEConnectTry = new ORACLEconn();
+            ORACLEConnectTry.getConn();
+
+            string? gameName = json.gameName;
+            Console.WriteLine("game name is " + gameName);
+            try
+            {
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                List<topScorersInGameTypeVal> ans = new List<topScorersInGameTypeVal>();
+                ans = await sqlORM.Queryable<Players>()
+                    .LeftJoin<PlayerJoinGame>((p, pjg) => p.player_id == pjg.player_id)
+                    .LeftJoin<Game>((p, pjg, g) => g.game_id == pjg.game_id)
+                    .Where((p, pjg, g) => g.type == gameName)
+                    .GroupBy((p, pjg, g) => p.player_id)
+                    .Select((p, pjg, g) => new topScorersInGameTypeVal
+                    {
+                        player_id = p.player_id,
+                        goals = SqlFunc.AggregateSumNoNull(pjg.goal),
+                    })
+                    .MergeTable()
+                    .OrderBy(it => it.goals, OrderByType.Desc)
+                    .Take(15)
+                    .ToListAsync();
+
+                for (int i = 0; i < ans.Count(); i++)
+                {
+                    var temp = sqlORM.Queryable<Players>()
+                        .LeftJoin<TeamOwnPlayer>((p, top) => p.player_id == top.player_id)
+                        .LeftJoin<Team>((p, top, t) => top.team_id == t.team_id)
+                        .Where((p, top, t) => p.player_id == ans[i].player_id)
+                        .Select((p, top, t) => new topScorersInGameTypeVal
+                        {
+                            teamLogo = t.logo,
+                            teamName = t.chinesename,
+                            playerName = p.chineseName,
+                            photo = p.photo
+                        })
+                        .ToList();
+
+                    ans[i].teamLogo = temp[0].teamLogo;
+                    ans[i].teamName = temp[0].teamName;
+                    ans[i].playerName = temp[0].playerName;
+                    ans[i].photo = temp[0].photo;
+
+                }
+
+
+                return ans;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("UNKNOWN");
+                Console.WriteLine(ex);
+                return null;
+            }
+        }
+
+
 
 
         public class searchTeamOrPlayerPara
         {
-            public string key { get;set; }
+            public string key { get; set; }
+            public int gameType { get; set; }
         }
         public class searchedTeamVal
         {
+            public int? searchedTeamId { get; set; }
             public string? searchedTeamName { get; set; }
             public string? searchedTeamLogo { get; set; }
         }
         public class searchedPlayerVal
         {
+            public int? searchedPlayerId { get; set; }
             public string? searchedPlayerName { get; set; }
             public string? searchedPlayerPhoto { get; set; }
         }
@@ -812,18 +994,46 @@ namespace DBwebAPI.Controllers
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 List<searchedTeamVal> ans = new List<searchedTeamVal>();
 
-                string key = json.key;
-                Console.WriteLine("key word is " + key);
+                List<string> gameNames = new List<string> { "", "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
 
-                ans = sqlORM.Queryable<Team>()
-                    .Where(t=>t.chinesename.Contains(key)||t.enname.Contains(key))
+                string key = json.key;
+                int gameType = json.gameType;
+
+                Console.WriteLine("key word is " + key);
+                Console.WriteLine("game type is " + gameType.ToString());
+
+                var allTeam = sqlORM.Queryable<Team>()
+                    .Where(t => t.chinesename.Contains(key) || t.enname.Contains(key))
                     .Select(t => new searchedTeamVal
                     {
-                        searchedTeamName=t.chinesename,
-                        searchedTeamLogo=t.logo
+                        searchedTeamId = t.team_id,
+                        searchedTeamName = t.chinesename,
+                        searchedTeamLogo = t.logo
 
                     })
                     .ToList();
+
+
+                //gameType=0,无需筛选
+                if (gameType == 0)
+                {
+                    Console.WriteLine("team count = " + allTeam.Count());
+                    return allTeam;
+                }
+
+                for (int i = 0; i < allTeam.Count(); i++)
+                {
+                    var relatedGame = sqlORM.Queryable<Game>()
+                        .Where(it => it.homeTeam == allTeam[i].searchedTeamId || it.guestTeam == allTeam[i].searchedTeamId)
+                        .Select(it => it.type)
+                        .Distinct()
+                        .ToList();
+                    if (relatedGame.Contains(gameNames[gameType]))
+                    {
+                        ans.Add(allTeam[i]);
+                    }
+                }
+
 
                 Console.WriteLine("team count = " + ans.Count());
 
@@ -847,17 +1057,46 @@ namespace DBwebAPI.Controllers
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
                 List<searchedPlayerVal> ans = new List<searchedPlayerVal>();
 
-                string key = json.key;
-                Console.WriteLine("key word is " + key);
+                List<string> gameNames = new List<string> { "", "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
 
-                ans = sqlORM.Queryable<Players>()
+                string key = json.key;
+                int gameType = json.gameType;
+
+                Console.WriteLine("key word is " + key);
+                Console.WriteLine("game type is " + gameType.ToString());
+
+                var allPlayer = sqlORM.Queryable<Players>()
                     .Where(p => p.chineseName.Contains(key) || p.enName.Contains(key))
                     .Select(t => new searchedPlayerVal
                     {
+                        searchedPlayerId = t.player_id,
                         searchedPlayerName = t.chineseName,
                         searchedPlayerPhoto = t.photo
                     })
                     .ToList();
+
+                //gameType=0,无需筛选
+                if (gameType == 0)
+                {
+                    Console.WriteLine("player count = " + allPlayer.Count());
+                    return allPlayer;
+                }
+
+
+                for (int i = 0; i < allPlayer.Count(); i++)
+                {
+                    var relatedGame = sqlORM.Queryable<Players>()
+                        .LeftJoin<PlayerJoinGame>((p, pjg) => p.player_id == pjg.player_id)
+                        .LeftJoin<Game>((p, pjg, g) => pjg.game_id == g.game_id)
+                        .Where((p, pjg, g) => p.player_id == allPlayer[i].searchedPlayerId)
+                        .Select((p, pjg, g) => g.type)
+                        .Distinct()
+                        .ToList();
+                    if (relatedGame.Contains(gameNames[gameType]))
+                    {
+                        ans.Add(allPlayer[i]);
+                    }
+                }
 
                 Console.WriteLine("player count = " + ans.Count());
 
@@ -876,23 +1115,33 @@ namespace DBwebAPI.Controllers
 
         public class getPlayerDetailPara
         {
-            public string? playerName { get;set; }
+            public string? playerName { get; set; }
         }
         public class relatedPlayer
         {
-
+            public string? playerName { get; set; }
+            public string? playerPhoto { get; set; }
+            public string? type { get; set; }
         }
 
-        public class evenData
+        public class eventData
         {
             public string? seasonName { get; set; }
-            public int? playedTime { get; set; }
+            public int? appearance { get; set; }
             public int? goal { get; set; }
+            public int? shoot { get; set; }
+            public int? pass { get; set; }
+            public int? assist { get; set; }
+            public int? red { get; set; }
+            public int? yellow { get; set; }
 
         }
         public class getPlayerDetailVal
         {
+            public int? team_id { get; set; }
+            public int? player_id { get; set; }
             public string? club { get; set; }
+            public string? photo { get; set; }
             public string? position { get; set; }
             public string? number { get; set; }
             public string? nationality { get; set; }
@@ -900,9 +1149,233 @@ namespace DBwebAPI.Controllers
             public string? height { get; set; }
             public string? dominantFoot { get; set; }
 
+            public List<relatedPlayer>? relatedPlayer { get; set; }
+            public List<eventData>? eventData { get; set; }
+
+        }
+        [HttpPost]
+        public async Task<getPlayerDetailVal> getPlayerDetail([FromBody] getPlayerDetailPara json)
+        {
+
+            ORACLEconn ORACLEConnectTry = new ORACLEconn();
+            ORACLEConnectTry.getConn();
+            try
+            {
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                getPlayerDetailVal ans = new getPlayerDetailVal();
+                string? playerName = json.playerName;
+                Console.WriteLine("player name is " + playerName);
+
+                var temp = await sqlORM.Queryable<Players>()
+                    .LeftJoin<TeamOwnPlayer>((p, top) => p.player_id == top.player_id)
+                    .LeftJoin<Team>((p, top, t) => t.team_id == top.team_id)
+                    .Where((p, top, t) => p.chineseName == playerName)
+                    .Select((p, top, t) => new getPlayerDetailVal
+                    {
+                        team_id = top.team_id,
+                        player_id = top.player_id,
+                        photo = p.photo,
+                        club = t.chinesename,
+                        position = p.type,
+                        number = p.playerNumber,
+                        nationality = p.country,
+                        age = p.age,
+                        height = p.height,
+                        dominantFoot = p.foot
+                    })
+                    .ToListAsync();
+
+
+                //更新列表属性
+                if (temp.Count() != 0)
+                {
+                    ans = temp[0];
+                    ans.relatedPlayer = new List<relatedPlayer>();
+
+                    //首先更新相关球员
+                    var players = sqlORM.Queryable<Players>()
+                        .LeftJoin<TeamOwnPlayer>((p, top) => p.player_id == top.player_id)
+                        .LeftJoin<Players>((p, top, pp) => top.player_id == pp.player_id)
+                        .Where((p, top, pp) => top.team_id == ans.team_id && pp.chineseName != playerName)
+                        .Select((p, top, pp) => new relatedPlayer
+                        {
+                            playerName = pp.chineseName,
+                            playerPhoto = pp.photo,
+                            type = pp.type,
+                        })
+                        .Take(12)
+                        .ToList();
+                    ans.relatedPlayer = players;
+                    Console.WriteLine("related players count = " + ans.relatedPlayer.Count().ToString());
+
+                    //更新赛季信息
+                    ans.eventData = new List<eventData>();
+
+
+                    for (int i = 2020; i < 2024; i++)
+                    {
+                        string startTimeStr = i.ToString() + "-07-01";
+                        DateTime startTime = DateTime.Parse(startTimeStr);
+                        string endTimeStr = (i + 1).ToString() + "-06-30";
+                        DateTime endTime = DateTime.Parse(endTimeStr);
+
+                        string evenName = (i - 2000).ToString() + "/" + (i - 1999).ToString();
+                        Console.WriteLine("evenName = " + evenName.ToString());
+
+                        var tempEvent = sqlORM.Queryable<Players>()
+                            .LeftJoin<PlayerJoinGame>((p, pjg) => p.player_id == pjg.player_id)
+                            .LeftJoin<Game>((p, pjg, g) => pjg.game_id == g.game_id)
+                            .Where((p, pjg, g) => p.chineseName == playerName && g.startTime.Value < endTime && g.startTime.Value > startTime)
+                            .Select((p, pjg, g) => new eventData
+                            {
+                                seasonName = evenName,
+                                appearance = SqlFunc.AggregateCount(pjg.goal),
+                                goal = SqlFunc.AggregateSum(pjg.goal),
+                                shoot = SqlFunc.AggregateSum(pjg.shoot),
+                                pass = SqlFunc.AggregateSum(pjg.pass),
+                                assist = SqlFunc.AggregateSum(pjg.assist),
+                                red = SqlFunc.AggregateSum(pjg.red),
+                                yellow = SqlFunc.AggregateSum(pjg.yellow)
+                            })
+                            .ToList();
+
+                        if (tempEvent[0].appearance == null) tempEvent[0].appearance = 0;
+                        if (tempEvent[0].goal == null) tempEvent[0].goal = 0;
+                        if (tempEvent[0].shoot == null) tempEvent[0].shoot = 0;
+                        if (tempEvent[0].pass == null) tempEvent[0].pass = 0;
+                        if (tempEvent[0].assist == null) tempEvent[0].assist = 0;
+                        if (tempEvent[0].red == null) tempEvent[0].red = 0;
+                        if (tempEvent[0].yellow == null) tempEvent[0].yellow = 0;
+
+
+                        ans.eventData.Add(tempEvent[0]);
+
+
+
+                    }
+
+                }
+
+
+                return ans;
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("UNKNOWN");
+                Console.WriteLine(ex);
+                return null;
+            }
+
         }
 
 
+
+
+
+
+
+        //lq特供
+        public class showRecentGamesPara
+        {
+            public int gameType { get; set; }
+        }
+        public class showRecentGamesVal
+        {
+            public string? status { get; set; }
+            public string? homeTeamName { get; set; }
+            public string? guestTeamName { get; set; }
+            public int? guestScore { get; set; }
+            public int? homeScore { get; set; }
+            public string? gameUid { get; set; }
+            public int? homeTeam { get; set; }
+            public int? guestTeam { get; set; }
+            public string? gameName { get; set; }
+            public string? gameTime { get; set; }
+        }
+        [HttpPost]
+        public async Task<List<showRecentGamesVal>> showRecentGames([FromBody] showRecentGamesPara json)
+        {
+
+            ORACLEconn ORACLEConnectTry = new ORACLEconn();
+            ORACLEConnectTry.getConn();
+            try
+            {
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                List<showRecentGamesVal> ans = new List<showRecentGamesVal>();
+                List<string> gameNames = new List<string> { "", "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
+                int gameType = json.gameType;
+
+                ans = await sqlORM.Queryable<Game>()
+                    .LeftJoin<Team>((g, home) => g.homeTeam == home.team_id)
+                    .LeftJoin<Team>((g, home, guest) => g.guestTeam == guest.team_id)
+                    .Where((g, home, guest) => ((gameType != 0 && g.type == gameNames[gameType]) || gameType == 0) && g.status == "Played")
+                    .OrderBy((g, home, guest) => g.startTime, OrderByType.Desc)
+                    .Take(6)
+                    .Select((g, home, guest) => new showRecentGamesVal
+                    {
+                        gameName = g.type,
+                        gameTime = g.startTime.Value.ToString("yyyy-mm-dd"),
+                        gameUid = g.game_id.ToString(),
+                        homeTeamName = home.chinesename,
+                        homeTeam = home.team_id,
+                        guestTeam = guest.team_id,
+                        guestTeamName = guest.chinesename,
+                        status = g.status
+                    })
+                    .ToListAsync();
+
+                Console.WriteLine("ansCnt = " + ans.Count().ToString());
+
+
+
+                // 接下来对比赛进行比分筛选
+                for (int i = 0; i < ans.Count(); i++)
+                {
+                    int? game_id = int.Parse(ans[i].gameUid);
+                    int? homeTeam = ans[i].homeTeam;
+                    int? guestTeam = ans[i].guestTeam;
+                    Console.WriteLine("homeTeam is " + ans[i].homeTeam);
+                    Console.WriteLine("guestTeam is " + ans[i].guestTeam);
+
+                    ans[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == homeTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                        .SumAsync((top, pjg) => pjg.goal);
+
+                    if (ans[i].homeScore == null)
+                    {
+                        ans[i].homeScore = 0;
+                    }
+
+
+                    ans[i].guestScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == guestTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                        .SumAsync((top, pjg) => pjg.goal);
+
+                    if (ans[i].guestScore == null)
+                    {
+                        ans[i].guestScore = 0;
+                    }
+
+
+                }
+
+                return ans;
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("UNKNOWN");
+                Console.WriteLine(ex);
+                return null;
+            }
+
+        }
+
     }
-    
+
 }
+
+

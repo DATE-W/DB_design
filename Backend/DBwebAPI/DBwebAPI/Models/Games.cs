@@ -30,6 +30,12 @@ namespace DBwebAPI.Models
         public string? city { get; set; }
         public string? coach { get; set; }
         public int? foundedyear { get; set; }
+        public string? country { get; set; }
+        public string? telephone { get; set; }
+        public string? address { get; set; }
+        public string? venue_name { get; set; }
+        public string? email { get; set; }
+        public int? venue_capacity { get; set; }
     }
 
     //public class Coach
