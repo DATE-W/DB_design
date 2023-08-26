@@ -973,7 +973,7 @@ namespace DBwebAPI.Controllers
         {
             try
             {
-                Console.WriteLine("--------------------------Get following--------------------------");
+                Console.WriteLine("--------------------------Get followList--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
