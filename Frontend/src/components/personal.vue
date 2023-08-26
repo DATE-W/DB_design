@@ -149,12 +149,12 @@ export default {
       isAccount: false, // 为true表示有账号登录
       showtabs: true, // 是否展示tab标签页
       showfollow: true, // 是否展示关注，只有showtabs为true的时候该变量有意义
-      avatarUrl: "./src/assets/img/carousel1.png", // 头像url
-      userName: "WinWin", // 用户名
-      homeTeam: "明日方舟", //主队名
-      followCnt: 123,       // 关注数
-      befollowCnt: 114514,     // 被关注数
-      likeCnt: 1919810,         // 被点赞总数
+      avatarUrl: "", // 头像url
+      userName: "", // 用户名
+      homeTeam: "", //主队名
+      followCnt: 0,       // 关注数
+      befollowCnt: 0,     // 被关注数
+      likeCnt: 0,         // 被点赞总数
 
     };
   },
