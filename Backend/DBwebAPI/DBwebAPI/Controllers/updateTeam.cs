@@ -51,7 +51,6 @@ namespace DBwebAPI.Controllers
                 Console.WriteLine("json is null!");
                 return null;
             }
-            Console.WriteLine("json.dateTime is "+json.dateTime.ToString());
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
             try
@@ -61,7 +60,7 @@ namespace DBwebAPI.Controllers
                 List<TeamInGameTimeVal> ans = new List<TeamInGameTimeVal>();
                 List<string> gameNames = new List<string> { "", "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
 
-                string? dateTime = json.dateTime;
+                string dateTime = json.dateTime;
                 Console.WriteLine("dateTime = " + dateTime);
 
                 string? year = dateTime.Substring(0, 4);
@@ -515,8 +514,15 @@ namespace DBwebAPI.Controllers
         }
         public class teamMemberVal
         {
+            public int? player_id { get; set; }
             public string? playerName { get; set; }
             public string? playerPhoto { get; set; }
+            public string? playerPosition { get; set; }
+            public string? playerNumber { get; set;}
+            public int? playerAppearance { get; set;}
+            public int? playerShoot { get; set;}
+            public int? playerGoal { get; set;}
+            public string? playerNationality { get; set;}
         }
         public class getTeamInfoByNameVal
         {
@@ -571,15 +577,40 @@ namespace DBwebAPI.Controllers
                 //添加最近赛事
                 if (ans.Count() != 0)
                 {
+                    //先获取球员信息
                     ans[0].teamMember = sqlORM.Queryable<TeamOwnPlayer>()
                         .LeftJoin<Players>((top, p) => top.player_id == p.player_id)
                         .Where((top, p) => top.team_id == ans[0].team_id)
                         .Select((top, p) => new teamMemberVal
                         {
+                            player_id = p.player_id,
                             playerName = p.chineseName,
-                            playerPhoto = p.photo
+                            playerPhoto = p.photo,
+                            playerNationality = p.country,
+                            playerPosition = p.type,
+                            playerNumber = p.playerNumber
                         })
                         .ToList();
+
+                    //接下来循环添加球员数据
+                    for (int i = 0; i < ans[0].teamMember.Count(); i++)
+                    {
+                        var temp = await sqlORM.Queryable<Players>()
+                            .LeftJoin<PlayerJoinGame>((p, pjg) => p.player_id == pjg.player_id)
+                            .Where((p, pjg) => p.player_id == ans[0].teamMember[i].player_id)
+                            .Select((p, pjg) => new teamMemberVal
+                            {
+                                playerAppearance = SqlFunc.AggregateCount(pjg.game_id),
+                                playerGoal= SqlFunc.AggregateSum(pjg.goal),
+                                playerShoot = SqlFunc.AggregateSum(pjg.shoot)
+                            })
+                            .ToListAsync();
+
+                        ans[0].teamMember[i].playerAppearance = (temp[0].playerAppearance==null?0:temp[0].playerAppearance);
+                        ans[0].teamMember[i].playerGoal = (temp[0].playerGoal == null ? 0 : temp[0].playerGoal);
+                        ans[0].teamMember[i].playerShoot = (temp[0].playerShoot == null ? 0 : temp[0].playerShoot);
+
+                    }
 
 
                     ans[0].recentGames = sqlORM.Queryable<Game>()
