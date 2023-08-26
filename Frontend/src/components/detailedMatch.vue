@@ -1,4 +1,4 @@
-<!-- 2154314_郑楷_赛事详情页 2023.08.26 14:00 v1.1.0 
+<!-- 2154314_郑楷_赛事详情页 2023.08.27 01:00 v1.4.0 
  v1.0.0 添加页面，改路由，完成赛事列表向该页的UID传值 
  v1.1.0 向赛事列表主页面传值，使得之前的选择结果得到保存
  v1.2.0 画出基本页面功能，增加往球队详情页的跳转逻辑，增加往其他场次的跳转逻辑
@@ -19,14 +19,20 @@
     <p class="textLeague">{{ getLeagueInfo(this.match.leagueType) }}</p>
   </div>
 
-  <div class="topTextBoxTRA" style="left: 13rem;top:5rem;width:20rem" @click="toTeams(this.match.homeTeamName)">
-    <p class="textTeamName" style="left:1rem">{{ this.match.homeTeamName }}</p>
+  <div class="topTextBoxTRA" style="left: 13rem;top:5rem;width:20rem">
     <img class="picTeam" :src=this.match.homeLogo style="left:2rem">
+    <div class="modal1"></div>
+    <div class="topTextBoxTRA1" style="width:20rem" @click="toTeams(this.match.homeTeamName)">
+      <p class="textTeamName" style="left:1rem">{{ this.match.homeTeamName }}</p>
+    </div>
   </div>
 
   <div class="topTextBoxTRA" style="left: 64rem;top:5rem;width:20rem" @click="toTeams(this.match.guestTeamName)">
-    <p class="textTeamName" style="right:1rem">{{ this.match.guestTeamName }}</p>
     <img class="picTeam" :src=this.match.guestLogo style="right:2rem">
+    <div class="modal1"></div>
+    <div class="topTextBoxTRA1" style="width:20rem" @click="toTeams(this.match.guestTeamName)">
+      <p class="textTeamName" style="right:1rem">{{ this.match.guestTeamName }}</p>
+    </div>
   </div>
 
   <div class="scoreBox" style="left: 31rem;top:8rem">
@@ -42,19 +48,32 @@
   <p class="recentGameTypo" style="left:79rem">近期比赛</p>
 
   <div class="recentGameBoxLeft" v-for="(homeRecentGame, index) in match.homeRecentGames" :key="homeRecentGame.gameUid"
-    :style="{ top: `${index * 7 + 22}rem` }" @click="this.getMatchByUid(homeRecentGame.gameUid);" style="left:13rem;">
-    <p class="textMatchDate">{{ homeRecentGame.gameDate }}</p>
-    <p class="textMatchScore" style="left:5.5rem">{{ homeRecentGame.homeScore }}&nbsp:&nbsp{{ homeRecentGame.opponentScore
-    }}</p>
-    <p class="textMatchOpp" style="right:0.5rem">{{ homeRecentGame.opponentName }}</p>
+    :style="{ top: `${index * 7 + 22}rem` }" style="left:13rem;">
+    <div class="imgBox" style="left:9rem;">
+      <img :src="homeRecentGame.opponentLogo">
+      <div class="modal2"></div>
+    </div>
+    <div class="recentGameBoxLeft1" @click="this.getMatchByUid(homeRecentGame.gameUid);">
+      <p class="textMatchDate">{{ homeRecentGame.gameDate }}</p>
+      <p class="textMatchScore" style="left:5.5rem">{{ homeRecentGame.homeScore }}&nbsp:&nbsp{{
+        homeRecentGame.opponentScore
+      }}</p>
+      <p class="textMatchOpp" style="right:0.5rem">{{ homeRecentGame.opponentName }}</p>
+    </div>
   </div>
 
   <div class="recentGameBoxLeft" v-for="(guestRecentGame, index) in match.guestRecentGames" :key="guestRecentGame.gameUid"
-    :style="{ top: `${index * 7 + 22}rem` }" @click="this.getMatchByUid(guestRecentGame.gameUid)" style="left:64rem;">
-    <p class="textMatchDate" style="right:0">{{ guestRecentGame.gameDate }}</p>
-    <p class="textMatchScore" style="right:5.5rem">{{ guestRecentGame.opponentScore }}&nbsp:&nbsp{{
-      guestRecentGame.homeScore }}</p>
-    <p class="textMatchOpp" style="left:0.5rem">{{ guestRecentGame.opponentName }}</p>
+    :style="{ top: `${index * 7 + 22}rem` }" style="left:64rem;">
+    <div class="imgBox" style="right:9rem;">
+      <img :src="guestRecentGame.opponentLogo">
+      <div class="modal2"></div>
+    </div>
+    <div class="recentGameBoxLeft1" @click="this.getMatchByUid(guestRecentGame.gameUid);">
+      <p class="textMatchDate" style="right:0">{{ guestRecentGame.gameDate }}</p>
+      <p class="textMatchScore" style="right:5.5rem">{{ guestRecentGame.opponentScore }}&nbsp:&nbsp{{
+        guestRecentGame.homeScore }}</p>
+      <p class="textMatchOpp" style="left:0.5rem">{{ guestRecentGame.opponentName }}</p>
+    </div>
   </div>
 </template>
 
@@ -244,6 +263,21 @@ export default {
   background-color: rgb(237, 224, 224);
 }
 
+.topTextBoxTRA1 {
+  position: absolute;
+  width: 27rem;
+  height: 10rem;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.7);
+  border: 2px solid var(--colors-light-eaeaea-100, #EAEAEA);
+  border-radius: 1rem;
+  transition: background-color 0.5s ease;
+}
+
+.topTextBoxTRA1:hover {
+  background-color: rgba(237, 224, 224, 0.9);
+}
+
 .scoreBox {
   position: absolute;
   width: 5rem;
@@ -267,8 +301,47 @@ export default {
   transition: background-color 0.5s ease;
 }
 
+.recentGameBoxLeft1 {
+  position: absolute;
+  width: 20rem;
+  height: 5rem;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.7);
+  border: 2px solid var(--colors-light-eaeaea-100, #EAEAEA);
+  border-radius: 1rem;
+  transition: background-color 0.5s ease;
+}
+
 .recentGameBoxLeft:hover {
   background-color: rgb(240, 240, 240);
+}
+
+.recentGameBoxLeft1:hover {
+  background-color: rgba(240, 240, 240, 0.9);
+}
+
+.imgBox {
+  position: absolute;
+  width: 10rem;
+  height: 4rem;
+}
+
+.modal1 {
+  position: absolute;
+  left: 0rem;
+  top: 10.1rem;
+  width: 20rem;
+  height: 5rem;
+  background-color: white;
+}
+
+.modal2 {
+  position: absolute;
+  left: 0rem;
+  top: 5.1rem;
+  width: 10rem;
+  height: 5.5rem;
+  background-color: white;
 }
 
 
@@ -358,9 +431,9 @@ export default {
 
 .picTeam {
   position: absolute;
-  width: 6rem;
-  height: 6rem;
-  top: 3rem;
+  width: 13rem;
+  height: 13rem;
+  top: 0.5rem;
   object-fit: cover;
 }
 </style>
