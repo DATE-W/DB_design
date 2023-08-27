@@ -26,7 +26,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveFile(List<IFormFile> files)
         {
-            Console.WriteLine("接口访问成功");
+            Console.WriteLine("--------------------------SaveFile--------------------------");
             string[] allowedExtensions = { ".jpg", ".png" };
             List<string> ret = new List<string>();
             try
