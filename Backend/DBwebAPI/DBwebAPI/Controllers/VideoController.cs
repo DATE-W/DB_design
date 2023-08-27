@@ -25,6 +25,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> GetVideoRandomly(GetVideoRequest json)
         {
+            Console.WriteLine("--------------------------GetVideoRandomly--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             int num = json.num;
             string mtag = json.matchTag;
@@ -78,12 +79,14 @@ namespace DBwebAPI.Controllers
             }
             else
             {
+                Console.WriteLine("数据库连接失败");
                 return Ok(new CustomResponse { ok = "no", value = "数据库连接失败！" });
             }
         }
         [HttpPost]
         public async Task<IActionResult> SearchVideo(SearchVideoRequest json)
         {
+            Console.WriteLine("--------------------------SearchVideo--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             string key = json.keyword;
             if(ORACLEConnectTry.getConn() == true)

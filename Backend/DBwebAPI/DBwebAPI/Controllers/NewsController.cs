@@ -53,6 +53,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> GetNews([FromBody] GetNewsRequest json)
         {
+            Console.WriteLine("--------------------------GetNews--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             int num = json.num;
             string mtag = json.matchTag;
@@ -154,6 +155,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> SearchNews([FromBody] SearchNewsRequest json)
         {
+            Console.WriteLine("--------------------------SearchNews--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             string keyword = json.keyword;
             if (ORACLEConnectTry.getConn() == true)
