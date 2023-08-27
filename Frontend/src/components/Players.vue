@@ -1,301 +1,427 @@
-<!-- 
-2152190_李凌朗_球员信息 v1.0.0
- v1.0.0 设计页面布局，与赛事界面统一左侧联赛选择方式，具体广告区、球队球员区跳转逻辑待实现，界面布局待优化
- v1.0.1 重构页面布局，添加图片对布局进行完善
--->
+<!-- 2152190 李凌朗  2153398 王晗 -->
+<!-- 样式大改 添加视频接口 完善搜索接口 -->
 <template>
   <my-nav></my-nav>
-
-  <!-- 左侧联赛选择器 -->
-  <div class="left" style="left:5rem">
-    <!-- 使用v-for指令循环生成联赛选择器内容 -->
-    <div class="leagueStyle" v-for="(league, index) in leagues" :key="index"
-      :style="{ top: `${index * 5 + 0.4}rem`, background: ((index === leagueNo) ? 'aqua' : '') }"
-      @click="leagueChoice(index)">
-      <!-- 插入联赛LOGO图片 -->
-      <img v-if="league.logo" :src="league.logo" class="imgLogo">
-      <!-- 将top值调整为合适的位置，同时调整“全部赛事”和“其他赛事”的位置 -->
-      <p class="textTypeLeague" :style="{ top: '-1.5rem', left: ((0 == index || 7 == index) ? '2.5rem' : '6rem') }">{{
-        league.name }}
-      </p>
-
-    </div>
-  </div>
-
-  <!-- 高光球员合集 -->
-  <div class="highlightPlayer">
-    <p>高光球员合集</p>
-    <img src="../assets/img/highlightPlayer.png" class="highlightPlayerPic" alt="Transfer to highlight player page"
-      @click="direct2HighlightPlayer">
-  </div>
-
-  <!-- 搜索栏 -->
-  <div class="search-container">
-    <el-icon class="search-icon">
-      <Search />
-    </el-icon>
-    <el-input class="search-input" v-model="keyword" placeholder="请输入关键词" @keyup.enter.native="handleSearch(keyword)">
-    </el-input>
-  </div>
-
-
-
-
-
-  <!-- 获取球队信息 -->
-  <div class="team" v-for="(temp, index) in temps" :key="index"
-    :style="{ top: `${Math.floor(index / 4) * 6 + 18}rem`, left: `${index % 4 * 14 + 26}rem` }"
-    @click="direct2TeamMsg(temp.teamName)">
-    <img class="teamLogo" :src="temp.teamLogo">
-    <div class="teamName">
-      <p>{{ temp.teamName }}</p>
-    </div>
-  </div>
-
-  <!-- 广告 -->
-  <div class="AD" style="right:5vw;">
-    <img src="../assets/img/AD.png" class="ADPic" alt="This is an AD image">
-  </div>
+  <el-container>
+    <el-main class="main-container">
+      <!-- 展示视频列表 -->
+      <el-carousel :interval="4000" type="card" height="130px">
+        <el-carousel-item v-for="(video, index) in PlayerVideos" :key="index">
+          <img :src="video.cover" @click="goToVideo(video.url)" class="carousel-image" />
+        </el-carousel-item>
+      </el-carousel>
+      <div class="up-container">
+        <!-- 选择联赛栏 -->
+        <div class="league-buttons">
+          <button v-for="(league, index) in leagues" :key="index" @click="leagueChoice(index)"
+            :class="{ active: SelectedLeague === index }">
+            {{ league.name }}
+          </button>
+        </div>
+        <!-- 搜索框 -->
+        <div class="search-container">
+          <el-icon class="search-icon">
+            <Search />
+          </el-icon>
+          <el-input class="search-input" v-model="keyword" placeholder="请输入关键词"
+            @keyup.enter.native="SearchForName(this.keyword, this.SelectedLeague)"></el-input>
+          <el-button v-if="ShowReturnButton" icon="ArrowLeft" @click="ReturnToBegin"></el-button>
+        </div>
+      </div>
+      <!-- 展示队伍 -->
+      <el-container>
+        <el-aside class="league-logo">
+          <img :src="leagues[SelectedLeague].logo" alt="League Logo" class="logo-show" />
+          <div class="league-name">{{ leagues[SelectedLeague].name }}</div>
+          <div class="league-description">{{ leagues[SelectedLeague].description }}</div>
+        </el-aside>
+        <div class="ShowResults">
+          <div class="result-container"
+            v-for="(team, index) in TeamsinLeague.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+            :key="index">
+            <div class="result-info" @click="goToTeam(team.teamName)">
+              <img :src="team.teamLogo" alt="Team Logo" class="result-logo" />
+              <div class="result-name">{{ team.teamName }}</div>
+            </div>
+          </div>
+          <hr v-if="TeamsinLeague.length > 0 && PlayersinLeague.length > 0" class="grey-separator">
+          <div class="result-container"
+            v-for="(player, index) in PlayersinLeague.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+            :key="index">
+            <div class="result-info" @click="goToPlayer(player.searchedPlayerName)">
+              <img :src="player.searchedPlayerPhoto" alt="Team Logo" class="result-logo" />
+              <div class="result-name">{{ player.searchedPlayerName }}</div>
+            </div>
+          </div>
+        </div>
+      </el-container>
+      <!-- 分页栏 -->
+      <div class="page-container">
+        <el-pagination @current-change="handlePageChange" :current-page="currentPage" :page-size="pageSize"
+          layout="prev, pager, next, jumper" :total="totalTeams"></el-pagination>
+      </div>
+    </el-main>
+    <el-aside width="350px">
+      <!-- 展示射手榜 -->
+      <div class="rank-title">
+        射手榜
+      </div>
+      <div class="rank-scorers-title">
+        <div class="rank-header">排名</div>
+        <div class="rank-header">球员名</div>
+        <div class="rank-header">进球数</div>
+      </div>
+      <div v-for="(topScorer, index) in topScorers" :key="index" class="rank-scorers">
+        <div class="rank-cell">{{ index + 1 }}</div>
+        <div class="rank-cell" @click="goToPlayer(topScorer.topScorerName)">{{ topScorer.topScorerName }}</div>
+        <div class="rank-cell">{{ topScorer.goals }}</div>
+      </div>
+    </el-aside>
+  </el-container>
 </template>
 
 <script>
 import axios from 'axios';
 import MyNav from './nav.vue';
 import { ElMessage } from 'element-plus';
-import { ref } from 'vue';
 
 export default {
-  components: {
-    'my-nav': MyNav
+  data() {
+    return {
+      PlayerVideos: [],//存储视频及封面
+      leagues: [
+        { "name": "全部赛事", "logo": "/src/assets/img/football_logo.png", "description": "本网站展示中超及五大联赛的各个球队，右侧为所有球队，点击球队队徽可查看球队详情。" },
+        { "name": "英超", "logo": "/src/assets/img/pmlogo.png", "description": "英国顶级足球联赛，有曼联、利物浦、切尔西等球队，以激烈比赛和全球球迷而闻名。" },
+        { "name": "西甲", "logo": "/src/assets/img/lllogo.png", "description": "西班牙顶级足球联赛，皇马、巴萨等球队角逐，以技术流、激烈竞争著称。" },
+        { "name": "意甲", "logo": "/src/assets/img/salogo.png", "description": "意大利顶级足球联赛，有尤文图斯、AC米兰等球队，防守严密，历史悠久。" },
+        { "name": "德甲", "logo": "/src/assets/img/bllogo.png", "description": "德国顶级足球联赛，有拜仁慕尼黑、多特蒙德等球队，攻势足球，崇尚对抗。" },
+        { "name": "法甲", "logo": "/src/assets/img/le1logo.png", "description": "法国顶级足球联赛，巴黎圣日耳曼、马赛等球队竞争，新锐天才与老将共舞。" },
+        { "name": "中超", "logo": "/src/assets/img/cslogo.png", "description": "中国顶级足球联赛，广州恒大、上海上港等球队，崛起中展现实力。" },
+      ],//存储联赛名、联赛logo及介绍
+      TeamsinLeague: [],//存储当前联赛包含的球队(包含球队名和球队logo)
+      PlayersinLeague: [],//存储当前联赛包含的球员
+      topScorers: [],//存储射手榜
+      pageSize: 20,//每页最多20项
+      currentPage: 1,//初始为第一页
+      totalTeams: 0,//存储队伍总数
+      SelectedLeague: 0,//用数字代替选择的联赛名
+      keyword: '',//保存搜索关键词
+      ShowReturnButton: false,//搜索返回键 初始不展示
+    };
   },
-
-  created() {
-    this.getBasicTeamMsg(0);
-  },
-
   methods: {
-    direct2HighlightPlayer() {
-      this.$router.push('/highlightPlayerDetail');
+    goToVideo(video_url) {
+      window.open(video_url);
     },
-
-    direct2TeamMsg(teamName) {
+    goToTeam(TeamName) {
       this.$router.push({
         path: '/teamMsg',
-        query: {
-          teamName: teamName
-        }
+        query: { teamName: TeamName }
       })
     },
-
-    leagueChoice(choice) {
-      if (this.leagueNo != choice) {
-        this.leagueNo = choice;
-      }
-      else {
-        this.leagueNo = 0;
-      }
-
-      this.getBasicTeamMsg(choice);
+    goToPlayer(PlayerName) {
+      this.$router.push({
+        path: '/detailedPlayerMsg',
+        query: { playerName: PlayerName }
+      });
     },
-
-    async getBasicTeamMsg(leagueNo) {
-      let response;
+    handlePageChange(currentPage) {
+      this.currentPage = currentPage;
+    },
+    leagueChoice(index) {
+      this.SelectedLeague = index;
+      this.getTeam(index);
+    },
+    SearchForName(keyword, SelectedLeague) {
+      this.ShowReturnButton = true;
+      this.SearchForTeam(keyword, SelectedLeague);
+      this.SearchForPlayer(keyword, SelectedLeague);
+    },
+    ReturnToBegin() {
+      this.ShowReturnButton = false;
+      this.getTeam(this.SelectedLeague);
+    },
+    async getPlayerVideos() {
+      let response
+      try {
+        response = await axios.get('/api/Highlight/getHighlights');
+        if (response.data.ok === 'yes') {
+          console.log('entry in');
+          this.PlayerVideos = response.data.value.map(item => {
+            return {
+              cover: item.photo,
+              url: item.videoUrl,
+            };
+          });
+        }
+        console.log('视频列表为', this.PlayerVideos);
+      } catch (err) {
+        ElMessage({
+          message: '获取球员剪辑失败',
+          type: 'error',
+        });
+      }
+    },
+    async getTopScorer() {
+      let response
+      try {
+        response = await axios.get('/api/updateTeam/getTopScorers');
+        this.topScorers = response.data;
+      } catch (err) {
+        ElMessage({
+          message: '获取射手榜失败',
+          type: 'error',
+        });
+      }
+    },
+    async getTeam(SelectedLeague) {
+      let response
       try {
         response = await axios.post('/api/updateTeam/searchTeamInGameType', {
-          gameType: leagueNo,
+          gameType: SelectedLeague,
         });
-
+        this.TeamsinLeague = [];
+        this.TeamsinLeague = response.data;
+        this.totalTeams = this.TeamsinLeague.length;
+        console.log('球队为', this.TeamsinLeague);
+        console.log('球队数量为', this.totalTeams);
       } catch (err) {
         ElMessage({
           message: '获取信息失败',
           type: 'error',
         });
       }
-
-      this.temps = [];
-      this.temps = response.data;
     },
-
+    async SearchForTeam(keyword, SelectedLeague) {
+      let response
+      try {
+        response = await axios.post('/api/updateTeam/searchForTeam', {
+          key: keyword,
+          gameType: SelectedLeague,
+        });
+        this.TeamsinLeague = [];
+        for (let i = 0; i < response.data.length; i++) {
+          const newTeam = { teamLogo: response.data[i].searchedTeamLogo, teamName: response.data[i].searchedTeamName }; // 创建新对象并设置属性
+          this.TeamsinLeague.push(newTeam); // 将对象添加到数组中
+        }
+      } catch (err) {
+        ElMessage({
+          message: '搜索失败',
+          type: 'error',
+        });
+      }
+    },
+    async SearchForPlayer(keyword, SelectedLeague) {
+      let response
+      try {
+        response = await axios.post('/api/updateTeam/searchForPlayer', {
+          key: keyword,
+          gameType: SelectedLeague,
+        });
+        this.PlayersinLeague = [];
+        this.PlayersinLeague = response.data;
+      } catch (err) {
+        ElMessage({
+          message: '搜索失败',
+          type: 'error',
+        });
+      }
+    },
   },
-
-
-  data() {
-    return {
-      leagueNo: 0,
-      match11: 0,
-      keyword: '',
-      teamsResult:[],
-
-      leagues: [
-        { "name": "全部赛事", "logo": "" },
-        { "name": "英超", "logo": "/src/assets/img/pmlogo.png" },
-        { "name": "西甲", "logo": "/src/assets/img/lllogo.png" },
-        { "name": "意甲", "logo": "/src/assets/img/salogo.png" },
-        { "name": "德甲", "logo": "/src/assets/img/bllogo.png" },
-        { "name": "法甲", "logo": "/src/assets/img/le1logo.png" },
-        { "name": "中超", "logo": "/src/assets/img/cslogo.png" },
-        { "name": "其他赛事", "logo": "" },],
-
-      teams: [
-        { "teamName": "op", "teamLogo": "/src/assets/img/pmlogo.png" },
-        { "teamName": "mai批", "teamLogo": "/src/assets/img/pmlogo.png" },
-        { "teamName": "ba批", "teamLogo": "/src/assets/img/pmlogo.png" },
-        { "teamName": "农批", "teamLogo": "/src/assets/img/pmlogo.png" },
-        { "teamName": "傻批", "teamLogo": "/src/assets/img/lllogo.png" },
-      ],
-
-      temps: [],
-      temps: ref([]),
-
-    }
-  }
+  components: {
+    MyNav,
+  },
+  mounted() {
+    this.getTeam(0);
+    this.getTopScorer();
+    this.getPlayerVideos();
+  },
 }
 </script>
 
 <style scoped>
-/* 左侧容器 */
-.left {
-  position: absolute;
-  width: 15vw;
-  height: 90vh;
-  flex-shrink: 0;
-  background: rgb(240, 240, 240);
+.carousel-image {
+  max-width: 100%;
+  max-height: 130px;
+  display: block;
+  margin: auto;
 }
 
-/* 广告 */
-.AD {
-  position: absolute;
-  width: 17vw;
-  height: 40vw;
-  flex-shrink: 0;
-  bottom: 2vw;
-  background: #4B8FDF;
+.up-container {
+  /* 联赛选择按钮和搜索框所在的container */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: -20px;
 }
 
-/* 联赛选择按钮 */
-.leagueStyle {
-  position: absolute;
-  width: 13vw;
-  height: 4vw;
-  flex-shrink: 0;
-  border-radius: 2vw;
-  border: 1px solid var(--colors-light-eaeaea-100, #EAEAEA);
-  left: 1vw;
-  background-color: #ffffff;
-  transition: background-color 0.8s ease;
-}
-
-.leagueStyle:hover {
-  background-color: rgb(246, 77, 77);
-}
-
-/* 高光球员合集 */
-.highlightPlayer {
-  position: absolute;
-  width: 50vw;
-  height: 7.5vw;
-  top: 5vw;
-  left: 25vw;
-  border: 0.1vw solid var(--colors-light-eaeaea-100, #d1d1d1);
-  background: #83dfec;
-}
-
-/* 搜索框 */
-.search-container {
-  margin-top: 20vh;
-  margin-left: 23.5vw;
+/* 以下均为联赛选择按钮 */
+.league-buttons {
   display: flex;
   align-items: center;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-.search-input {
-  width: 30%;
+.league-buttons button {
+  background-color: white;
+  color: black;
+  border: 1px solid #ccc;
+  font-weight: bold;
+  font-size: 15px;
+  border-radius: 20px;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.league-buttons button:hover {
+  background-color: #f0f0f0;
+}
+
+.league-buttons button.active {
+  background-color: #3ba7ea;
+  color: white;
+  border-color: #3ba7ea;
+}
+
+/* 搜索框样式 */
+.search-container {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
 }
 
 .search-icon {
+  font-size: 24px;
+}
+
+.search-input {
+  width: 100%;
+}
+
+.league-logo {
+  /* 展示内容的左侧介绍 */
+  margin-top: 70px;
+  margin-left: 20px;
+  margin-right: 10px;
+  width: 20%;
+  float: left;
+}
+
+.logo-show {
+  /* 展示对应的联赛logo */
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  background-color: #52dcf8;
+}
+
+.league-name {
+  /* 展示对应联赛的名字 */
+  font-weight: bold;
+  margin-top: 10px;
+  font-size: 30px;
+}
+
+.league-description {
+  /* 展示对应联赛的简介 */
+  font-weight: lighter;
+  font-size: 15px;
+  margin-top: 20px;
+}
+
+.ShowResults {
+  margin-top: 50px;
+  width: 80%;
+  float: left;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+/* 以下为每页展示的队伍/球员logo和name */
+.result-container {
+  width: 20%;
+  box-sizing: border-box;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.result-info {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.result-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.result-name {
+  font-size: 15px;
+}
+
+.grey-separator {
+  /* 分割线 */
+  display: inline-block;
+  width: 100%;
+  max-width: 100%;
+  height: 1px;
+  background-color: #ccc;
+}
+
+.rank-title {
+  /* 射手榜标题 */
+  background-color: #fffafa;
+  font-weight: bold;
   font-size: 25px;
+  text-align: center;
+}
+
+.rank-scorers-title {
+  /* 射手榜整体榜头 */
+  background-color: #fffafa;
+  padding-top: 15px;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+}
+
+.rank-scorers {
+  /* 射手榜 */
+  background-color: #fffafa;
+  padding-top: 19.4px;
+  padding-bottom: 20px;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+}
+
+.rank-header {
+  /* 射手榜榜头 */
+  background-color: #28f06b;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+}
+
+.rank-cell {
+  /* 射手榜内容 */
+  text-align: center;
+  color: black;
 }
 
 .page-container {
+  /* 分页栏 */
   position: absolute;
   bottom: 0px;
-  left: 55%;
+  left: 37%;
   transform: translateX(-50%);
 }
-
-
-/* 左侧联赛名称字体样式 */
-.textTypeLeague {
-  position: absolute;
-  width: 8vw;
-  height: 2vw;
-  top: -1.3vw;
-  left: 6vw;
-  color: var(--colors-text-dark-172239100, #172239);
-  font-feature-settings: 'clig' off, 'liga' off;
-  font-family: Verdana;
-  font-size: 2vw;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-}
-
-/* 联赛图标 */
-.imgLogo {
-  position: absolute;
-  width: 4vw;
-  height: 4vw;
-  border-radius: 2vw;
-  left: 1vw;
-  object-fit: cover;
-}
-
-/* 广告图片 */
-.ADPic {
-  position: absolute;
-  width: 17vw;
-  height: 40vw;
-  flex-shrink: 0;
-  bottom: 0vw;
-}
-
-/* 高光球员跳转图片 */
-.highlightPlayerPic {
-  position: absolute;
-  width: 50vw;
-  height: 7.5vw;
-  top: 0vw;
-  left: 0vw;
-}
-
-/* 球队按钮大小 */
-.team {
-  position: absolute;
-  width: 10vw;
-  height: 3vw;
-  flex-shrink: 0;
-  border-radius: 2vw;
-  display: flex;
-  /* 添加flex布局 */
-  align-items: center;
-  border: 1px solid var(--colors-light-eaeaea-100, #EAEAEA);
-  background: linear-gradient(to right, #9afffd, #c1f3f0);
-}
-
-/* 设置合适的高度来控制间隔 */
-.teamName {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  margin-left: 7px;
-}
-
-/* 球队logo */
-.teamLogo {
-  margin-left: 10px;
-  height: 30px;
-  width: 30px;
-}
 </style>
-
- 
