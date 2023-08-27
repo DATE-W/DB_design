@@ -19,207 +19,6 @@ namespace DBwebAPI.Controllers
     [Route("api/[controller]/[action]")]
     public class updateTeamController : ControllerBase
     {
-
-        //public class TeamInfo
-        //{
-        //    public string? teamName { get; set; }
-        //    public string? city { get; set; }
-        //    public int coach_id { get; set; }
-        //    public string? manager { get; set; }
-        //    public string? boss { get; set; }
-        //    public string? teamLogo { get; set; }
-        //}
-
-
-
-
-
-
-        //[HttpPost]
-        //public async Task<IActionResult> insertTeam([FromBody] TeamInfo json)
-        //{
-
-        //    ORACLEconn ORACLEConnectTry = new ORACLEconn();
-        //    ORACLEConnectTry.getConn();
-        //    try
-        //    {
-        //        SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-
-
-        //        Team newTeam = new Team();
-        //        int team_id = await sqlORM.Queryable<Team>().MaxAsync(it => it.team_id)+1;
-        //        string teamName = json.teamName;
-        //        string city = json.city;
-        //        string manager = json.manager;
-        //        string boss = json.boss;
-        //        int coach_id = json.coach_id;
-        //        string teamLogo = json.teamLogo;
-
-        //        newTeam.team_id = team_id;
-        //        newTeam.city = city;
-        //        newTeam.manager = manager;
-        //        newTeam.boss = boss;
-        //        newTeam.teamName = teamName;
-        //        newTeam.coach_id = coach_id;
-        //        newTeam.teamLogo = teamLogo;
-
-        //        Console.WriteLine("team_id = " + team_id.ToString());
-        //        Console.WriteLine("city = " +city );
-        //        Console.WriteLine("manager = " + manager);
-        //        Console.WriteLine("boss = " + boss);
-        //        Console.WriteLine("teamName = " + teamName);
-        //        Console.WriteLine("coach_id = " + coach_id.ToString());
-        //        Console.WriteLine("teamLogo = " + teamLogo);
-
-        //        sqlORM.Insertable(newTeam).ExecuteCommand();
-
-        //        return Ok(new CustomResponse { ok = "yes", value = "Success" });
-
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine("UNKNOWN");
-        //        Console.WriteLine(ex);
-        //        return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" }); // Internal server error
-        //    }
-        //}
-
-        //public class CoachInfo
-        //{
-        //    public string? coachName { get; set; }
-        //    public int? coachYear { get; set; }
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> insertCoach([FromBody] CoachInfo json)
-        //{
-
-        //    ORACLEconn ORACLEConnectTry = new ORACLEconn();
-        //    ORACLEConnectTry.getConn();
-        //    try
-        //    {
-        //        SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-
-
-        //        Coach newCoach = new Coach();
-        //        int coach_id = await sqlORM.Queryable<Coach>().MaxAsync(it => it.coach_id) + 1;
-        //        string coachName = json.coachName;
-        //        int? coachYear = json.coachYear;
-
-
-        //        newCoach.coach_id = coach_id;
-        //        newCoach.coachName = coachName;
-        //        newCoach.coachYear = coachYear;
-
-
-        //        Console.WriteLine("coach_id = " + coach_id.ToString());
-        //        Console.WriteLine("coachName = " + coachName);
-        //        Console.WriteLine("coachYear = " + coachYear.ToString());
-
-        //        sqlORM.Insertable(newCoach).ExecuteCommand();
-
-        //        return Ok(new CustomResponse { ok = "yes", value = "Success" });
-
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine("UNKNOWN");
-        //        Console.WriteLine(ex);
-        //        return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" }); // Internal server error
-        //    }
-        //}
-
-        //public class GameInfo
-        //{
-        //    public int? homeTeam { get; set; }
-        //    public int? guestTeam { get; set; }
-        //    public string? gameName { get; set; }
-        //    public int? gameType { get; set; }
-        //    public int? status { get; set; }
-        //    public DateTime? dateTime { get; set; }
-        //    public string? city { get; set; }
-        //    public string? mainReferee { get; set; }
-        //    public int? homeScore { get; set; }
-        //    public int? guestScore { get; set; }
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> insertGame([FromBody] GameInfo json)
-        //{
-
-        //    ORACLEconn ORACLEConnectTry = new ORACLEconn();
-        //    ORACLEConnectTry.getConn();
-        //    try
-        //    {
-        //        SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-
-
-        //        Game newGame = new Game();
-        //        int game_id = await sqlORM.Queryable<Game>().MaxAsync(it => it.game_id) + 1;
-        //        string gameName = json.gameName;
-        //        int? homeTeam = json.homeTeam;
-        //        int? guestTeam = json.guestTeam;
-        //        int? gameType = json.gameType;
-        //        int? status = json.status;
-        //        string city=json.city;
-        //        string mainReferee=json.mainReferee;
-        //        DateTime? dateTime = json.dateTime;
-        //        int? homeScore = json.homeScore;
-        //        int ? guestScore = json.guestScore;
-
-
-
-        //        newGame.game_id = game_id;
-        //        newGame.gameName = gameName;
-        //        newGame.homeTeam = homeTeam;
-        //        newGame.guestTeam = guestTeam;
-        //        newGame.gameType = gameType;
-        //        newGame.status = status;
-        //        newGame.dateTime = dateTime;
-        //        newGame.city = city;
-        //        newGame.mainReferee = mainReferee;
-        //        newGame.homeScore = homeScore;
-        //        newGame.guestScore = guestScore;
-
-
-        //        Console.WriteLine("game_id = " + game_id.ToString());
-        //        Console.WriteLine("gameName = " + gameName);
-        //        Console.WriteLine("homeTeam = " + homeTeam.ToString());
-        //        Console.WriteLine("guestTeam = " + guestTeam.ToString());
-        //        Console.WriteLine("gameType = " + gameType.ToString());
-        //        Console.WriteLine("status = " + status.ToString());
-        //        Console.WriteLine("dateTime = " + dateTime.ToString());
-        //        Console.WriteLine("city = " + city);
-        //        Console.WriteLine("mainReferee = " + mainReferee);
-        //        Console.WriteLine("homeScore = " + homeScore);
-        //        Console.WriteLine("guestScore = " + guestScore);
-
-
-
-
-        //        //sqlORM.Insertable(newGame).ExecuteCommand();
-
-        //        List<DateTime?> list = sqlORM.Queryable<Game>().Select(it => it.dateTime).ToList();
-        //        Console.WriteLine(list.Count());
-
-
-        //        //sqlORM.Queryable<Game>().Select(it => it.homeTeam).ToList();
-
-        //        return Ok(new CustomResponse { ok = "yes", value = "Success" });
-
-
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine("UNKNOWN");
-        //        Console.WriteLine(ex);
-        //        return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" }); // Internal server error
-        //    }
-        //}
-
         public class TeamInGameTimePara
         {
             public string? dateTime { get; set; }
@@ -245,12 +44,13 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<List<TeamInGameTimeVal>> searchTeamInGameTime([FromBody] TeamInGameTimePara json)
         {
+
+            Console.WriteLine("--------------------------searchTeamInGameTime--------------------------");
             if (json == null)
             {
                 Console.WriteLine("json is null!");
                 return null;
             }
-
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
             try
@@ -314,8 +114,6 @@ namespace DBwebAPI.Controllers
                         .SumAsync((top, pjg) => pjg.goal);
                 }
 
-
-
                 //排序
                 for (int i = 0; i < ans.Count(); i++)
                 {
@@ -331,11 +129,6 @@ namespace DBwebAPI.Controllers
                         }
                     }
                 }
-
-
-
-
-
                 return ans;
 
 
@@ -392,6 +185,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<getGameByUidVal> getGameByUid([FromBody] getGameByUidPara json)
         {
+            Console.WriteLine("--------------------------getGameByUidPara--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
             try
@@ -578,6 +372,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<List<getTeamMatchesByNameVal>> getTeamMatchesByName([FromBody] getTeamMatchesByNamePara json)
         {
+            Console.WriteLine("--------------------------getTeamMatchesByName--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
             try
@@ -659,7 +454,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<List<TeamInGameTypeVal>> searchTeamInGameType([FromBody] TeamInGameTypePara json)
         {
-
+            Console.WriteLine("--------------------------searchTeamInGameType--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
             try
@@ -701,11 +496,7 @@ namespace DBwebAPI.Controllers
                 {
                     Console.WriteLine("teamName=" + ans[i].teamName);
                 }
-
-
                 return ans;
-
-
             }
             catch (Exception ex)
             {
@@ -723,8 +514,15 @@ namespace DBwebAPI.Controllers
         }
         public class teamMemberVal
         {
+            public int? player_id { get; set; }
             public string? playerName { get; set; }
             public string? playerPhoto { get; set; }
+            public string? playerPosition { get; set; }
+            public string? playerNumber { get; set;}
+            public int? playerAppearance { get; set;}
+            public int? playerShoot { get; set;}
+            public int? playerGoal { get; set;}
+            public string? playerNationality { get; set;}
         }
         public class getTeamInfoByNameVal
         {
@@ -748,7 +546,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<List<getTeamInfoByNameVal>> getTeamInfoByName([FromBody] getTeamInfoByNamePara json)
         {
-
+            Console.WriteLine("--------------------------getTeamInfoByName--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
             try
@@ -779,15 +577,40 @@ namespace DBwebAPI.Controllers
                 //添加最近赛事
                 if (ans.Count() != 0)
                 {
+                    //先获取球员信息
                     ans[0].teamMember = sqlORM.Queryable<TeamOwnPlayer>()
                         .LeftJoin<Players>((top, p) => top.player_id == p.player_id)
                         .Where((top, p) => top.team_id == ans[0].team_id)
                         .Select((top, p) => new teamMemberVal
                         {
+                            player_id = p.player_id,
                             playerName = p.chineseName,
-                            playerPhoto = p.photo
+                            playerPhoto = p.photo,
+                            playerNationality = p.country,
+                            playerPosition = p.type,
+                            playerNumber = p.playerNumber
                         })
                         .ToList();
+
+                    //接下来循环添加球员数据
+                    for (int i = 0; i < ans[0].teamMember.Count(); i++)
+                    {
+                        var temp = await sqlORM.Queryable<Players>()
+                            .LeftJoin<PlayerJoinGame>((p, pjg) => p.player_id == pjg.player_id)
+                            .Where((p, pjg) => p.player_id == ans[0].teamMember[i].player_id)
+                            .Select((p, pjg) => new teamMemberVal
+                            {
+                                playerAppearance = SqlFunc.AggregateCount(pjg.game_id),
+                                playerGoal= SqlFunc.AggregateSum(pjg.goal),
+                                playerShoot = SqlFunc.AggregateSum(pjg.shoot)
+                            })
+                            .ToListAsync();
+
+                        ans[0].teamMember[i].playerAppearance = (temp[0].playerAppearance==null?0:temp[0].playerAppearance);
+                        ans[0].teamMember[i].playerGoal = (temp[0].playerGoal == null ? 0 : temp[0].playerGoal);
+                        ans[0].teamMember[i].playerShoot = (temp[0].playerShoot == null ? 0 : temp[0].playerShoot);
+
+                    }
 
 
                     ans[0].recentGames = sqlORM.Queryable<Game>()
@@ -841,9 +664,6 @@ namespace DBwebAPI.Controllers
 
 
 
-
-
-
         public class topScorerVal
         {
             public string topScorerName { get; set; }
@@ -852,7 +672,7 @@ namespace DBwebAPI.Controllers
         [HttpGet]
         public async Task<List<topScorerVal>> getTopScorers()
         {
-
+            Console.WriteLine("--------------------------getTopScorers--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
             try
@@ -884,9 +704,6 @@ namespace DBwebAPI.Controllers
 
         }
 
-
-
-
         public class topScorersInGameTypePara
         {
             public string gameName { get; set; }
@@ -904,7 +721,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<List<topScorersInGameTypeVal>> topScorersInGameType([FromBody] topScorersInGameTypePara json)
         {
-
+            Console.WriteLine("--------------------------topScorersInGameType--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
 
@@ -986,7 +803,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<List<searchedTeamVal>> searchForTeam([FromBody] searchTeamOrPlayerPara json)
         {
-
+            Console.WriteLine("--------------------------searchForTeam--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
             try
@@ -1049,7 +866,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<List<searchedPlayerVal>> searchForPlayer([FromBody] searchTeamOrPlayerPara json)
         {
-
+            Console.WriteLine("--------------------------searchForPlayer--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
             try
@@ -1156,7 +973,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<getPlayerDetailVal> getPlayerDetail([FromBody] getPlayerDetailPara json)
         {
-
+            Console.WriteLine("--------------------------getPlayerDetail--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
             try
@@ -1273,9 +1090,6 @@ namespace DBwebAPI.Controllers
 
 
 
-
-
-
         //lq特供
         public class showRecentGamesPara
         {
@@ -1297,7 +1111,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<List<showRecentGamesVal>> showRecentGames([FromBody] showRecentGamesPara json)
         {
-
+            Console.WriteLine("--------------------------showRecentGames--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             ORACLEConnectTry.getConn();
             try

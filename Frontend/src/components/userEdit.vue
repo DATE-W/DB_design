@@ -20,7 +20,7 @@
             <div>{{ personalSign }}</div>
         </div>
     </el-card>
-    <el-card class="card" shadow="hover" style="margin-top: 3vh;">
+    <el-card class="card" shadow="none" style="margin-top: 3vh;">
         <div class="cardInfo">
             <div>账号</div>
             <div>{{ account }}</div>
@@ -53,8 +53,8 @@ export default {
     },
     data() {
         return {
-            avatarUrl: "", // 头像url
-            avatarFile: '',//头像的文件
+            avatarUrl: '', // 头像url
+            avatarFile: [],//头像的文件
             userName: "", // 用户名
             account: "", // 账号
             personalSign: '', //个性签名
@@ -103,7 +103,7 @@ export default {
         },
         handleFileChange(event) {
             const file = event.target.files[0]; // 获取选中的文件
-            this.avatarFile = file;
+            this.avatarFile.push(file);
             if (file) {
                 // 通过 FileReader 读取选中的文件，获取其 base64 编码
                 const reader = new FileReader();
@@ -160,7 +160,10 @@ export default {
         async submitPic() {
             let response
             const formData = new FormData();
-            formData.append('file', this.avatarFile);
+            // Assuming this.avatarFiles is an array of selected files
+            for (const file of this.avatarFile) {
+                formData.append('files', file);
+            };
             try {
                 response = await axios.post('/api/Picture/SaveFile', formData, { 'Content-Type': 'multipart/form-data' });
             } catch (err) {
@@ -171,13 +174,13 @@ export default {
                     type: 'error',
                 })
                 return
-            }
-            this.avatarUrl = response.data.value;
+            };
+            this.avatarUrl = response.data.value[0];
             console.log(response);
         },
         async submitData() {
             await this.submitPic(); // 提交图片，获得返回的图片url
-            const serverip = 'http://110.40.206.206/test/'
+            const serverip = 'http://110.40.206.206/'
             const userName = this.userName;
             const sign = this.personalSign;
             this.avatarUrl = serverip + this.avatarUrl;

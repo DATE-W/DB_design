@@ -26,7 +26,7 @@ namespace DBwebAPI.Controllers
         public async Task<IActionResult> normalRegisterAsync([FromBody] RegisterRequest registerRequest)
         {
             int count = -1;
-            Console.WriteLine("GET Register!");
+            Console.WriteLine("--------------------------Get normalRegisterAsync--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             if (ORACLEConnectTry.getConn() == true)
             {
@@ -44,6 +44,8 @@ namespace DBwebAPI.Controllers
                     usr.userSecQue = registerRequest.UserSecQue;
                     usr.userSecAns = registerRequest.UserSecAns;
                     usr.userPoint = 0;
+                    usr.follownumber = 0;
+                    usr.followednumber = 0;
                     usr.avatar = "/";
                     usr.signature = "...";
                     usr.createDateTime = DateTime.Now;

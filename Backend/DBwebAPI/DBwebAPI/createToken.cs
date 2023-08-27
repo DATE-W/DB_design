@@ -15,9 +15,9 @@ namespace DBwebAPI
         {
             DateTime utcNow = DateTime.UtcNow;
             SecurityKey securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
-
+            
             // authority用于鉴定用户权限，应该保证是这两个值中的一个
-            if (authority != "Normal" && authority != "Admin")
+            if(authority != "Normal" && authority != "Admin")
             {
                 throw new Exception($"此权限不存在：{authority}");
             }
@@ -58,30 +58,30 @@ namespace DBwebAPI
             var tokenS = tokenHandler.ReadJwtToken(token);
             var autret = tokenS.Claims.FirstOrDefault(o => o.Type == "Authority");
             string? aut = autret == null ? null : autret.Value;
-
-            if (aut == null)
+            
+            if(aut == null)
             {
                 //无论如何，aut不应该为null，因为token中必须包含Authority值
                 throw (new Exception("token的authority值错误，createToken.cs:62"));
             }
-            switch (option)
+            switch(option)
             {
                 case ValidTokenAuthority.Normal:
-                    if (aut != "Normal")
+                    if(aut != "Normal")
                     {
-                        throw (new Exception($"指定的身份为普通用户，但实际验证得到的是aut"));
+                        throw (new Exception($"指定的身份为普通用户，但实际验证得到的是{aut}"));
                     }
                     break;
                 case ValidTokenAuthority.Admin:
                     if (aut != "Admin")
                     {
-                        throw (new Exception($"指定的身份为管理员，但实际验证得到的是aut"));
+                        throw (new Exception($"指定的身份为管理员，但实际验证得到的是{aut}"));
                     }
                     break;
                 case ValidTokenAuthority.None:
                     break;
             }
-
+        
             string alg = tokenS.Header.Alg;//读取出算法
             IList<string> aud = tokenS.Payload.Aud;
             string iss = tokenS.Payload.Iss;
@@ -94,7 +94,7 @@ namespace DBwebAPI
                 ValidateIssuer = true, // 验证签发者
                 ValidateAudience = true, // 验证受众
                 ValidateLifetime = true,
-                ValidAlgorithms = new[] { alg },
+                ValidAlgorithms = new[] {alg},
                 ValidAudiences = aud,
                 ValidIssuer = iss,
             };

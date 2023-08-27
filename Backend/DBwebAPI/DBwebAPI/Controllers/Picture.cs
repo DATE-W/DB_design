@@ -23,62 +23,67 @@ namespace DBwebAPI.Controllers
                 return allowedExtensions.Contains(fileExtension);
             }
         }
-        public class CustomResponse
-        {
-            public string ok { get; set; }
-            public object value { get; set; }
-        }
         [HttpPost]
-        public async Task<IActionResult> SaveFile(IFormFile file)
+        public async Task<IActionResult> SaveFile(List<IFormFile> files)
         {
-            Console.WriteLine("接口访问成功");
+            Console.WriteLine("--------------------------SaveFile--------------------------");
             string[] allowedExtensions = { ".jpg", ".png" };
-            if(file == null || file.Length == 0)
+            List<string> ret = new List<string>();
+            try
             {
-                Console.WriteLine("未接收到有效文件");
-                return BadRequest(new CustomResponse { ok = "no", value = "未接收到有效图片" });
-            }
-            else
-            {
-                Stream stream = file.OpenReadStream();
-                MD5 md5 = MD5.Create();
-                string fileName;
-                var hash = md5.ComputeHash(stream);
-                if (hash == null)
+                int x = 0;
+                foreach (IFormFile file in files)
                 {
-                    Console.WriteLine("哈希错了，怪");
-                    return BadRequest(new CustomResponse { ok = "no", value = "服务器内部错误" });
-                }
-                else
-                {
-                    // 将哈希值转换为16进制字符串
-                    StringBuilder strb = new StringBuilder();
-                    foreach (byte b in hash)
+                    x++;
+                    if (file == null || file.Length == 0)
                     {
-                        strb.Append(b.ToString("x2")); // 使用"x2"格式化将字节转换为16进制
+                        Console.WriteLine("未接收到有效文件");
+                        throw new Exception($"第{x}份文件无效");
                     }
-                    fileName = strb.ToString();
+                    else
+                    {
+                        Stream stream = file.OpenReadStream();
+                        MD5 md5 = MD5.Create();
+                        SHA256 sha256 = SHA256.Create();
+                        string fileName;
+                        var hash = sha256.ComputeHash(stream);
+                        if (hash == null)
+                        {
+                            Console.WriteLine("哈希错了，怪");
+                            return BadRequest(new CustomResponse { ok = "no", value = "服务器内部错误" });
+                        }
+                        else
+                        {
+                            // 将哈希值转换为16进制字符串
+                            StringBuilder strb = new StringBuilder();
+                            foreach (byte b in hash)
+                            {
+                                strb.Append(b.ToString("x2")); // 使用"x2"格式化将字节转换为16进制
+                            }
+                            fileName = strb.ToString();
+                        }
+                        // string filePath = @"C:\Users\13293\Desktop\";
+                        string basePath = "/home/ubuntu/DataBase/";
+                        string relPath = "pictures/";
+                        string filePath = basePath + relPath;
+                        string extension = Path.GetExtension(file.FileName);
+                        filePath += fileName + extension;
+                        using (Stream saveStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(saveStream);
+                        }
+                        // 在这里关闭 saveStream
+                        Console.WriteLine("成功");
+                        ret.Add(relPath + fileName + extension);
+                    }
                 }
-                string filePath = "/home/ubuntu/DataBase/test/";
-                //string filePath = "C:/Users/13293/Desktop/fuck/";
-                string extension = Path.GetExtension(file.FileName);
-                filePath += fileName + extension;
-                Stream saveStream = new FileStream(filePath, FileMode.Create);
-                try
-                {
-                    await file.CopyToAsync(saveStream);
-                    Console.WriteLine("成功");
-                    saveStream.Close();
-                    return Ok(new CustomResponse { ok = "yes", value = fileName + extension });
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    return Ok(new CustomResponse { ok = "no", value = fileName});
-                }
+                return Ok(new CustomResponse { ok = "yes", value = ret });
             }
-
-            
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Ok(new CustomResponse { ok = "no", value = "上传失败！" });
+            }
         }
     }
 }
