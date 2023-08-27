@@ -62,8 +62,8 @@ namespace DBwebAPI.Controllers
                             }
                             fileName = strb.ToString();
                         }
-                        string filePath = @"C:\Users\13293\Desktop\";
-                        //string filePath = "/home/ubuntu/DataBase/test/";
+                        // string filePath = @"C:\Users\13293\Desktop\";
+                        string filePath = "/home/ubuntu/DataBase/pictures/";
                         string extension = Path.GetExtension(file.FileName);
                         filePath += fileName + extension;
                         using (Stream saveStream = new FileStream(filePath, FileMode.Create))
