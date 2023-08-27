@@ -26,7 +26,7 @@ namespace DBwebAPI.Controllers
         public async Task<IActionResult> normalRegisterAsync([FromBody] RegisterRequest registerRequest)
         {
             int count = -1;
-            Console.WriteLine("GET Register!");
+            Console.WriteLine("--------------------------Get normalRegisterAsync--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             if (ORACLEConnectTry.getConn() == true)
             {

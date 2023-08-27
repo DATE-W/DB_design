@@ -26,7 +26,7 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginPassword([FromBody] LoginRequest json)
         {
-            Console.WriteLine("GET Login!");
+            Console.WriteLine("--------------------------Get LoginPassword--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             //提取参数
             string account = json.Account;
