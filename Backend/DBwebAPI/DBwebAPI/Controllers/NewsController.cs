@@ -98,7 +98,7 @@ namespace DBwebAPI.Controllers
                     }
                     else if(mtag != "" && ptag == "")
                     {
-                        news = await sqlORM.Queryable<News>().
+                        news = await sqlORM.Queryable<News>().Where(n => n.matchTag == mtag).
                             OrderBy(n => n.publishDateTime, OrderByType.Desc).Take(num).ToListAsync();
                         ret = new List<NewsWithPicture>();
                         for (int i = 0; i < news.Count; i++)
@@ -113,7 +113,7 @@ namespace DBwebAPI.Controllers
                     }
                     else if(mtag == "" && ptag != "")
                     {
-                        news = await sqlORM.Queryable<News>().
+                        news = await sqlORM.Queryable<News>().Where(n => n.propertyTag == ptag).
                             OrderBy(n => n.publishDateTime, OrderByType.Desc).Take(num).ToListAsync();
                         ret = new List<NewsWithPicture>();
                         for (int i = 0; i < news.Count; i++)
@@ -128,7 +128,7 @@ namespace DBwebAPI.Controllers
                     }
                     else
                     {
-                        news = await sqlORM.Queryable<News>().//LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).Where(n => n.matchTag == mtag && n.propertyTag == ptag).
+                        news = await sqlORM.Queryable<News>().Where(n => n.matchTag == mtag && n.propertyTag == ptag).//LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).Where(n => n.matchTag == mtag && n.propertyTag == ptag).
                             OrderBy(n => n.publishDateTime, OrderByType.Desc).Take(num).ToListAsync();
                         ret = new List<NewsWithPicture>();
                         for (int i = 0; i < news.Count; i++)
