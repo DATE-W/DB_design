@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SqlSugar;
+using System.Linq.Expressions;
+using DBwebAPI;
 using DBwebAPI.Models;
 using DBwebAPI.Relations;
 
@@ -15,16 +17,15 @@ namespace DBwebAPI.Controllers
             public News newsBody { get; set; }
             public List<string>? pictureRoutes { get; set; }
         }
-        public class CustomResponse
-        {
-            public string ok { get; set; }
-            public object value { get; set; }
-        }
         public class GetNewsRequest
         {
             public int num { get; set; }
             public string matchTag { get; set; }
             public string propertyTag { get; set; }
+        }
+        public class SearchNewsRequest
+        {
+            public string keyword;
         }
         [HttpGet] 
         public async Task<IActionResult> GetNewsNum()
@@ -52,7 +53,6 @@ namespace DBwebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> GetNews([FromBody] GetNewsRequest json)
         {
-            Console.WriteLine("GET Login!");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
             int num = json.num;
             string mtag = json.matchTag;
@@ -62,6 +62,11 @@ namespace DBwebAPI.Controllers
                 try
                 {
                     SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                    int sum = sqlORM.Queryable<Video>().Count();
+                    if (num == -1 || num > sum)
+                    {
+                        num = sum;
+                    }
                     //List<News> news = await sqlORM.Queryable<News>().OrderBy(it => it.publishDateTime).Take(num).ToListAsync();
                     //List<NewsWithPicture> newsWithPictures = new List<NewsWithPicture>();
                     //for(int i = 0; i < news.Count; i++)
@@ -75,56 +80,63 @@ namespace DBwebAPI.Controllers
                     List<NewsWithPicture> ret = new List<NewsWithPicture>();
                     if (mtag == "" && ptag == "")
                     {
-                        news = await sqlORM.Queryable<News>().LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).Take(num).ToListAsync();
+                        news = await sqlORM.Queryable<News>().
+                            OrderBy(n => n.publishDateTime, OrderByType.Desc).
+                            Take(num).ToListAsync();
                         ret = new List<NewsWithPicture>();
+                        Console.WriteLine(news.Count);
+
                         for (int i = 0; i < news.Count; i++)
                         {
-                            List<string> pictureRoutes = await sqlORM.Queryable<News>().
-                                LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).
-                                Where(n => n.news_id == news[i].news_id).
-                                Select((n, nhp) => nhp.pictureRoute).
+                            int id = news[i].news_id;
+                            List<string> pictureRoutes = await sqlORM.Queryable<NewsHavePicture>().
+                                Where(n => n.news_id == id).
+                                Select(nhp => nhp.pictureRoute).
                                 ToListAsync();
                             ret.Add(new NewsWithPicture { newsBody = news[i], pictureRoutes = pictureRoutes });
                         }
                     }
                     else if(mtag != "" && ptag == "")
                     {
-                        news = await sqlORM.Queryable<News>().LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).Where(n => n.matchTag == mtag).Take(num).ToListAsync();
+                        news = await sqlORM.Queryable<News>().
+                            OrderBy(n => n.publishDateTime, OrderByType.Desc).Take(num).ToListAsync();
                         ret = new List<NewsWithPicture>();
                         for (int i = 0; i < news.Count; i++)
                         {
-                            List<string> pictureRoutes = await sqlORM.Queryable<News>().
-                                LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).
-                                Where(n => n.news_id == news[i].news_id).
-                                Select((n, nhp) => nhp.pictureRoute).
+                            int id = news[i].news_id;
+                            List<string> pictureRoutes = await sqlORM.Queryable<NewsHavePicture>().
+                                Where(n => n.news_id == id).
+                                Select(nhp => nhp.pictureRoute).
                                 ToListAsync();
                             ret.Add(new NewsWithPicture { newsBody = news[i], pictureRoutes = pictureRoutes });
                         }
                     }
                     else if(mtag == "" && ptag != "")
                     {
-                        news = await sqlORM.Queryable<News>().LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).Where(n => n.propertyTag == ptag).Take(num).ToListAsync();
+                        news = await sqlORM.Queryable<News>().
+                            OrderBy(n => n.publishDateTime, OrderByType.Desc).Take(num).ToListAsync();
                         ret = new List<NewsWithPicture>();
                         for (int i = 0; i < news.Count; i++)
                         {
-                            List<string> pictureRoutes = await sqlORM.Queryable<News>().
-                                LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).
-                                Where(n => n.news_id == news[i].news_id).
-                                Select((n, nhp) => nhp.pictureRoute).
+                            int id = news[i].news_id;
+                            List<string> pictureRoutes = await sqlORM.Queryable<NewsHavePicture>().
+                                Where(n => n.news_id == id).
+                                Select(nhp => nhp.pictureRoute).
                                 ToListAsync();
                             ret.Add(new NewsWithPicture { newsBody = news[i], pictureRoutes = pictureRoutes });
                         }
                     }
                     else
                     {
-                        news = await sqlORM.Queryable<News>().LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).Where(n => n.matchTag == mtag && n.propertyTag == ptag).Take(num).ToListAsync();
+                        news = await sqlORM.Queryable<News>().//LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).Where(n => n.matchTag == mtag && n.propertyTag == ptag).
+                            OrderBy(n => n.publishDateTime, OrderByType.Desc).Take(num).ToListAsync();
                         ret = new List<NewsWithPicture>();
                         for (int i = 0; i < news.Count; i++)
                         {
-                            List<string> pictureRoutes = await sqlORM.Queryable<News>().
-                                LeftJoin<NewsHavePicture>((n, nhp) => n.news_id == nhp.news_id).
-                                Where(n => n.news_id == news[i].news_id).
-                                Select((n, nhp) => nhp.pictureRoute).
+                            int id = news[i].news_id;
+                            List<string> pictureRoutes = await sqlORM.Queryable<NewsHavePicture>().
+                                Where(n => n.news_id == id).
+                                Select(nhp => nhp.pictureRoute).
                                 ToListAsync();
                             ret.Add(new NewsWithPicture { newsBody = news[i], pictureRoutes = pictureRoutes });
                         }
@@ -134,10 +146,62 @@ namespace DBwebAPI.Controllers
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    return Ok(new CustomResponse { ok = "no", value = "UNKNOWN" }); // Internal server error
+                    return Ok(new CustomResponse { ok = "no", value = "服务器内部错误" }); // Internal server error
                 }
             }
-            else { return Ok(new CustomResponse { ok = "no", value = "ConnectionFailed" }); };
+            else { return Ok(new CustomResponse { ok = "no", value = "数据库连接失败！" }); };
+        }
+        [HttpPost]
+        public async Task<IActionResult> SearchNews([FromBody] SearchNewsRequest json)
+        {
+            ORACLEconn ORACLEConnectTry = new ORACLEconn();
+            string keyword = json.keyword;
+            if (ORACLEConnectTry.getConn() == true)
+            {
+                try
+                {
+                    SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                    //Expression<Func<News, bool>> exp = Expressionable.Create<News>() //创建表达式
+                    //    .AndIF(p > 0, it => it.Id == p)
+                    //    .AndIF(name != null, it => it.Name == name && it.Sex == 1)
+                    //    .ToExpression();//注意 这一句 不能少
+                    List<News> news = await sqlORM.Queryable<News>().Where(it => (it.title.Contains(keyword) || it.summary.Contains(keyword) || it.contains.Contains(keyword))).ToListAsync();
+                    Func<News, int> evaluate = x =>
+                    {
+                        int num = 0;
+                        if (x.title.Contains(keyword))
+                        {
+                            num += 4;
+                        }
+                        if (x.summary.Contains(keyword))
+                        {
+                            num += 2;
+                        }
+                        if (x.contains.Contains(keyword))
+                        {
+                            num += 1;
+                        }
+                        return num;
+                    };
+                    
+                    news.Sort((a, b) => 
+                    { 
+                        int na = evaluate(a), nb = evaluate(b);
+                        return (na == nb ? 0 : (na > nb ? -1 : 1));
+                    });
+                    return Ok(new CustomResponse { ok = "yes", value = news});
+                }
+                catch
+                {
+                    //return new InternalError(new CustomResponse { ok = "no", value = "Internal Error" });
+                    return Ok(new CustomResponse { ok = "no", value = "Internal Error" });
+                }
+            }
+            else
+            {
+                //return new ServiceUnavailable(new CustomResponse { ok = "no", value = "ConnectionFailed" });
+                return Ok(new CustomResponse { ok = "no", value = "ConnectionFailed" });
+            }
         }
     }
 }
