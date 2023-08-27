@@ -62,8 +62,10 @@ namespace DBwebAPI.Controllers
                             }
                             fileName = strb.ToString();
                         }
-                        string filePath = @"C:\Users\13293\Desktop\";
-                        //string filePath = "/home/ubuntu/DataBase/test/";
+                        // string filePath = @"C:\Users\13293\Desktop\";
+                        string basePath = "/home/ubuntu/DataBase/";
+                        string relPath = "pictures/";
+                        string filePath = basePath + relPath;
                         string extension = Path.GetExtension(file.FileName);
                         filePath += fileName + extension;
                         using (Stream saveStream = new FileStream(filePath, FileMode.Create))
@@ -72,7 +74,7 @@ namespace DBwebAPI.Controllers
                         }
                         // 在这里关闭 saveStream
                         Console.WriteLine("成功");
-                        ret.Add(fileName + extension);
+                        ret.Add(relPath + fileName + extension);
                     }
                 }
                 return Ok(new CustomResponse { ok = "yes", value = ret });
