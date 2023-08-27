@@ -70,7 +70,7 @@ namespace DBwebAPI.Controllers
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                
+               
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
                 //验证 Authorization 请求头是否包含 JWT 令牌
@@ -94,13 +94,14 @@ namespace DBwebAPI.Controllers
                 {
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
-                }
-               /*
+                }//*/
+                /*
                 int user_id = 12;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
                     .ToListAsync();
-                string account = tempUsr.FirstOrDefault().userAccount; */
+                string account = tempUsr.FirstOrDefault().userAccount; 
+                */
                 //获取新的Post_id
                 int post_id = sqlORM.Queryable<Posts>().Max(it => it.post_id) + 1;
                 //解析json文件

@@ -93,7 +93,7 @@ namespace DBwebAPI.Controllers
                 List<Team> tmpUFT = new List<Team>();
                 tmpUFT = await sqlORM.Queryable<Team>().Where(it => it.team_id == UFT_id)
                     .ToListAsync();
-                String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "查无此队";
+                String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "暂无主队";
                 //点赞数
                 List<PublishPost> tmpPP = new List<PublishPost>();
                 tmpPP = await sqlORM.Queryable<PublishPost>().Where(it => it.user_id == user_id)
@@ -1030,7 +1030,7 @@ namespace DBwebAPI.Controllers
                     List<Team> tmpUFT = new List<Team>();
                     tmpUFT = await sqlORM.Queryable<Team>().Where(it => it.team_id == UFT_id)
                         .ToListAsync();
-                    String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "no such team";
+                    String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "暂无主队";
                     t.uft = UFT;
 
                     //点赞数
@@ -1132,7 +1132,7 @@ namespace DBwebAPI.Controllers
                     List<Team> tmpUFT = new List<Team>();
                     tmpUFT = await sqlORM.Queryable<Team>().Where(it => it.team_id == UFT_id)
                         .ToListAsync();
-                    String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "no such team";
+                    String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "暂无主队";
                     t.uft = UFT;
 
                     //点赞数
@@ -1257,6 +1257,8 @@ namespace DBwebAPI.Controllers
             public string name { get; set; }
             public string image1 { get; set; }
             public string image2 { get; set; }
+            public string image3 { get; set; }
+            public string image4 { get; set; }
         }
         [HttpGet]
         public async Task<IActionResult> getalltheme()
@@ -1312,6 +1314,8 @@ namespace DBwebAPI.Controllers
                 userThemejson.name = userTheme.name;
                 userThemejson.image1 = userTheme.image1;
                 userThemejson.image2 = userTheme.image2;
+                userThemejson.image3 = userTheme.image3;
+                userThemejson.image4 = userTheme.image4;
                 tmpThemes.Add(userThemejson);
 
                 foreach (var t in allthemes)
@@ -1321,10 +1325,76 @@ namespace DBwebAPI.Controllers
                     tmp.name = t.name;
                     tmp.image1 = t.image1;
                     tmp.image2 = t.image2;
+                    tmp.image3 = t.image3;
+                    tmp.image4 = t.image4;
                     tmpThemes.Add(tmp);
                 }
                 ThemeJson[] themesJson = tmpThemes.ToArray();
                 return Ok(themesJson);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("数据库错误：" + ex.Message);
+                return BadRequest(new { error = "数据库错误" });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> gettheme()
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get gettheme--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+
+                // 从请求头中获取传递的JWT令牌
+                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                //验证 Authorization 请求头是否包含 JWT 令牌
+                if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
+                {
+                    Console.WriteLine("未提供有效的JWT");
+                    return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
+                }
+                //
+                string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
+                // 验证并解析JWT令牌
+                var handler = new JwtSecurityTokenHandler();
+                var tokenS = handler.ReadJwtToken(jwtToken);
+                // 获取JWT令牌中的claims信息
+                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
+                    .ToListAsync();
+                //判断用户是否存在
+                if (tempUsr.Count() == 0)
+                {
+                    Console.WriteLine("用户不存在");
+                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
+                }
+                int user_id = tempUsr.FirstOrDefault().user_id;
+                /*
+                int user_id = 4;
+                List<Usr> tempUsr = new List<Usr>();
+                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
+                    .ToListAsync();*/
+                List<Theme> allthemes = new List<Theme>();
+                allthemes = await sqlORM.Queryable<Theme>().ToListAsync();
+                List<ThemeJson> tmpThemes = new List<ThemeJson>();
+
+                Theme userTheme = await sqlORM.Queryable<Theme>().SingleAsync(it => it.id == tempUsr.FirstOrDefault().themeType);
+                ThemeJson userThemejson = new ThemeJson();
+                userThemejson.id = userTheme.id;
+                userThemejson.name = userTheme.name;
+                userThemejson.image1 = userTheme.image1;
+                userThemejson.image2 = userTheme.image2;
+                userThemejson.image3 = userTheme.image3;
+                userThemejson.image4 = userTheme.image4;
+                return Ok(userThemejson);
             }
             catch (Exception ex)
             {
