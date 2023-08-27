@@ -5,10 +5,10 @@
     </el-header>
 
     <el-container>
-      <el-aside>
+      <el-aside style="background-image: url('http://110.40.206.206/test/e67a05d7abaea46ec26613ddf5d4161e.jpg');">
         <!-- 左侧一列 -->
         <!-- 用户信息与邮箱 -->
-        <el-card class="personal-card">
+        <el-card class="personal-card" style="opacity:0.8">
           <div v-if="isAccount">
             <!-- 用户名 -->
             <div class="userNameLayout">
@@ -44,14 +44,11 @@
                 </div>
               </div>
             </el-card>
-            <el-card shadow="hover" class="childcard">
+            <el-card shadow="none" class="childcard">
               <div class="childcardInfo">
                 <div>点赞</div>
                 <div>
                   {{ likeCnt }}&nbsp;
-                  <el-icon>
-                    <ArrowRightBold />
-                  </el-icon>
                 </div>
               </div>
             </el-card>
@@ -67,7 +64,9 @@
 
 
             <!-- 退出登录 -->
-            <el-button class="logout-button" type="danger" @click="logout">登出</el-button>
+            <div style="display: flex; justify-content: center;">
+              <el-button class="logout-button" type="danger" @click="logout">登出</el-button>
+            </div>
           </div>
           <div v-else>
             <!-- 点击登录 -->
@@ -303,10 +302,12 @@ export default {
 
 .logout-button {
   position: absolute;
-  width: 200px;
+  font-size: 24px;
+  width: 150px;
   height: 60px;
-  bottom: 11vh;
-  left: 3vw;
+  bottom: 5vh;
+  opacity: 0.8;
+  border-radius: 100px;
 }
 
 
