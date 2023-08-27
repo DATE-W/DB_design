@@ -36,6 +36,10 @@ namespace DBwebAPI.Controllers
 
 
                 var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                Console.WriteLine("token = " + token);
+
+
                 var valid = new ValidateToken();
                 bool pass = valid.ValidateJwtToken(token, ValidTokenAuthority.Admin);
                 if (pass == false)
@@ -73,6 +77,7 @@ namespace DBwebAPI.Controllers
             public string? title { get; set; }
             public string? publisherName { get; set; }
             public string? reporterName { get; set; }
+            public int? reporter_id { get; set; }
             public string? description { get; set; }
         }
         [HttpGet]
@@ -92,6 +97,7 @@ namespace DBwebAPI.Controllers
                     .Select((r, er, pp, ee, p) => new reportInfo
                     {
                         post_id = pp.post_id,
+                        reporter_id =r.reporter_id,
                         title = p.title,
                         publisherName = ee.userName,
                         reporterName = er.userName,

@@ -3,7 +3,7 @@
     <div class="nav-container">
       <div class="nav-left">
         <div class="nav-logo">Logo</div>
-        <el-menu class="nav-menu" mode="horizontal" active-text-color="#409eff" @select="handleMenuSelect">
+        <el-menu class="nav-menu" mode="horizontal" active-text-color="#409eff" :ellipsis="false">
           <el-menu-item index="1" @click="redirectToMain">首页</el-menu-item>
           <el-menu-item index="2" @click="redirectToNews">新闻</el-menu-item>
           <el-menu-item index="3" @click="redirectToForum">论坛</el-menu-item>
@@ -13,19 +13,18 @@
       </div>
       <div class="nav-right">
         <el-dropdown trigger="hover">
-          <span class="user-avatar" @click="redirectToPersonal">
-            <img src="../assets/img/football_logo.png" alt="Avatar" />
-          </span>
+          <el-avatar :src=this.avatarurl alt="Avatar" class="avatar"></el-avatar>
           <template #dropdown>
             <el-dropdown-menu v-slot: dropdown>
-              <el-dropdown-item @click="redirectToLogin(0)">用户登录</el-dropdown-item>
-              <el-dropdown-item @click="redirectToLogin(1)">管理员登录</el-dropdown-item>
-              <el-dropdown-item @click="redirectToRegister">注册</el-dropdown-item>
-              <el-dropdown-item @click="redirectToPersonal">个人中心</el-dropdown-item>
+              <el-dropdown-item @click="redirectToLogin(0)" v-if="!this.islog">用户登录</el-dropdown-item>
+              <el-dropdown-item @click="redirectToLogin(1)" v-if="!this.islog">管理员登录</el-dropdown-item>
+              <el-dropdown-item @click="redirectToRegister" v-if="!this.islog">注册</el-dropdown-item>
+              <el-dropdown-item @click="redirectToPersonal" v-if="this.islog">个人中心</el-dropdown-item>
+              <el-dropdown-item @click="logout" v-if="this.islog">登出</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <span class="user-nickname">user-nickname</span>
+        <span class="user-nickname">{{ this.userName }}</span>
       </div>
     </div>
   </el-header>
@@ -33,22 +32,70 @@
   
 
 <script>
+import axios from 'axios';
+import { ElMessage } from 'element-plus';
 export default {
+  data() {
+    return {
+      islog: false,
+      avatarurl: "./src/assets/img/carousel1.png",
+      userName: '',
+    }
+  },
+  mounted() {
+    this.JudgeAccount();
+  },
   methods: {
-    redirectToLogin(mode) {
+    async JudgeAccount() {
+      const token = localStorage.getItem('token');
+      if (token == null) {
+        this.islog = false;
+        console.log(this.islog);
+        return;
+      }
+      let response
+      try {
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        response = await axios.post('/api/User/profile', {}, { headers })
+      } catch (err) {
+        console.log(err);
+        if (err.response.data.result == 'fail') {
+          ElMessage({
+            message: err.response.data.msg,
+            grouping: false,
+            type: 'error',
+          })
+        } else {
+          ElMessage({
+            message: '未知错误',
+            grouping: false,
+            type: 'error',
+          })
+          return
+        }
+        return
+      }
+      console.log(response);
+      //有账号
+      if (response.data.ok == 'yes') {
+        this.islog = true;
+        this.userName = response.data.value.username;
+        this.avatarurl = response.data.value.avatar;
+      }
+      else {
+        this.islog = false;
+      }
+    },
+    redirectToLogin(isAdmin) {
       // 跳转到登录页面的逻辑
-      if(mode==0){
-        this.$router.push({
-                path: '/signin',
-                query: { isAdmin: 0 }
-          });
-      }
-      else if(mode==1){
-        this.$router.push({
-                path: '/signin',
-                query: { isAdmin: 1 }
-          });
-      }
+      this.$router.push({
+        path: '/signin',
+        query: {
+          isAdmin: isAdmin
+        }
+      });
     },
     redirectToRegister() {
       // 跳转到注册页面的逻辑
@@ -77,6 +124,12 @@ export default {
     redirectToPlayers() {
       //跳转到新闻页面的逻辑
       this.$router.push('/Players')
+    },
+    logout() {
+      localStorage.removeItem('token');
+      setTimeout(() => {
+        window.location.reload(); // 刷新当前页面
+      }, 100); // 2000毫秒后刷新，你可以根据需要调整延迟时间
     }
   }
 };
@@ -106,13 +159,13 @@ export default {
   align-items: center;
 }
 
-.user-avatar {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 48px;
   margin-right: 10px;
+  object-fit: cover;
 }
 
 .user-nickname {
