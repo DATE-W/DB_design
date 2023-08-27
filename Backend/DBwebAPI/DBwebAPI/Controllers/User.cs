@@ -42,7 +42,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                  // 从请求头中获取传递的JWT令牌
                  string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -150,7 +150,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -221,7 +221,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                  // 从请求头中获取传递的JWT令牌
                  string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -351,7 +351,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -516,7 +516,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -573,7 +573,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -705,7 +705,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                  // 从请求头中获取传递的JWT令牌
                  string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -860,7 +860,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -923,7 +923,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get userAction");
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -994,7 +994,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -1096,7 +1096,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -1202,7 +1202,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -1286,7 +1286,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -1364,7 +1364,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -1439,7 +1439,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -1524,7 +1524,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -1598,7 +1598,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -1688,7 +1688,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 //找到发帖人
 

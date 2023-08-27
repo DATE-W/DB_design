@@ -24,7 +24,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 Notice notice = new Notice();
                 int? id=sqlORM.Queryable<Notice>().Max(it=>it.notice_id);
                 if (id.HasValue) {

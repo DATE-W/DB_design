@@ -55,7 +55,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 List<TeamInGameTimeVal> ans = new List<TeamInGameTimeVal>();
                 List<string> gameNames = new List<string> { "", "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
@@ -190,7 +190,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 int? gameUid = Convert.ToInt32(json.gameUid);
                 Console.WriteLine(gameUid);
@@ -377,7 +377,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 string? teamName = json.teamName;
 
@@ -459,7 +459,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 List<TeamInGameTypeVal> ans = new List<TeamInGameTypeVal>();
 
@@ -551,7 +551,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 string? teamName = json.teamName;
                 List<getTeamInfoByNameVal> ans = new List<getTeamInfoByNameVal>();
                 ans = await sqlORM.Queryable<Team>()
@@ -677,7 +677,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 List<topScorerVal> ans = new List<topScorerVal>();
                 ans = await sqlORM.Queryable<Players>()
                     .LeftJoin<PlayerJoinGame>((p, pjg) => p.player_id == pjg.player_id)
@@ -729,7 +729,7 @@ namespace DBwebAPI.Controllers
             Console.WriteLine("game name is " + gameName);
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 List<topScorersInGameTypeVal> ans = new List<topScorersInGameTypeVal>();
                 ans = await sqlORM.Queryable<Players>()
                     .LeftJoin<PlayerJoinGame>((p, pjg) => p.player_id == pjg.player_id)
@@ -808,7 +808,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 List<searchedTeamVal> ans = new List<searchedTeamVal>();
 
                 List<string> gameNames = new List<string> { "", "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
@@ -871,7 +871,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 List<searchedPlayerVal> ans = new List<searchedPlayerVal>();
 
                 List<string> gameNames = new List<string> { "", "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
@@ -978,7 +978,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 getPlayerDetailVal ans = new getPlayerDetailVal();
                 string? playerName = json.playerName;
                 Console.WriteLine("player name is " + playerName);
@@ -1116,7 +1116,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 List<showRecentGamesVal> ans = new List<showRecentGamesVal>();
                 List<string> gameNames = new List<string> { "", "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
                 int gameType = json.gameType;

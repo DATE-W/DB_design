@@ -37,7 +37,7 @@ namespace DBwebAPI.Controllers
             {
                 try
                 {
-                    SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                    SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                     //List<News> news = await sqlORM.Queryable<News>().OrderBy(it => it.publishDateTime).ToListAsync();
                     num = await sqlORM.Queryable<News>().CountAsync();
                     return Ok(new CustomResponse { ok = "yes", value = num });
@@ -62,7 +62,7 @@ namespace DBwebAPI.Controllers
             {
                 try
                 {
-                    SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                    SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                     int sum = sqlORM.Queryable<Video>().Count();
                     if (num == -1 || num > sum)
                     {
@@ -162,7 +162,7 @@ namespace DBwebAPI.Controllers
             {
                 try
                 {
-                    SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                    SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                     //Expression<Func<News, bool>> exp = Expressionable.Create<News>() //创建表达式
                     //    .AndIF(p > 0, it => it.Id == p)
                     //    .AndIF(name != null, it => it.Name == name && it.Sex == 1)

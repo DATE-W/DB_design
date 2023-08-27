@@ -25,7 +25,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 var ans =await sqlORM.Queryable<Highlight>()
                     .Select(it => new getHighlightsVal
                     {

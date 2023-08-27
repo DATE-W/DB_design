@@ -38,7 +38,7 @@ namespace DBwebAPI.Controllers
             {
                 try
                 {
-                    SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                    SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                     //进行用户查询
                     List<Usr> tempUsr = new List<Usr>();
                     tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account
@@ -92,7 +92,7 @@ namespace DBwebAPI.Controllers
             {
                 try
                 {
-                    SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                    SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                     //进行用户查询
                     List<Admins> tempAdmin = new List<Admins>();
                     tempAdmin = await sqlORM.Queryable<Admins>().Where(it => it.adminName == account

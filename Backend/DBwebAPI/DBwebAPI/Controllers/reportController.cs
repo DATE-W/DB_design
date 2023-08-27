@@ -31,7 +31,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
 
 
@@ -87,7 +87,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 var ans = await sqlORM.Queryable<Reports>()
                     .LeftJoin<Usr>((r, er) => r.reporter_id == er.user_id)
                     .LeftJoin<PublishPost>((r, er, pp) => r.post_id == pp.post_id)
@@ -130,7 +130,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 int? reporter_id = json.reporter_id;
                 int? post_id=json.post_id;
@@ -179,7 +179,7 @@ namespace DBwebAPI.Controllers
             try
             {
                 
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 int? reporter_id = json.reporter_id;
                 int? post_id = json.post_id;
@@ -245,7 +245,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 int count =await sqlORM.Updateable<Usr>()
                     .SetColumns(it => it.isBanned == 1)
                     .Where(it => it.user_id == json.user_id)
