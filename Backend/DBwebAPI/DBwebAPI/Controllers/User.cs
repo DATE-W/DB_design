@@ -1571,6 +1571,10 @@ namespace DBwebAPI.Controllers
                 return BadRequest(new { error = "数据库错误" });
             }
         }
+        public class userinfoJson
+        {
+            public int author_id { get; set; }
+        }
         public class UserJson
         {
             public string name { get; set; }
@@ -1582,7 +1586,7 @@ namespace DBwebAPI.Controllers
             public int likenum { get; set; }
         }
         [HttpPost]
-        public async Task<IActionResult> UserInfo([FromBody] int author_id)
+        public async Task<IActionResult> UserInfo([FromBody] userinfoJson json)
         {
             try
             {
@@ -1597,7 +1601,7 @@ namespace DBwebAPI.Controllers
 
                 //找到发帖人
 
-                Usr User = await sqlORM.Queryable<Usr>().SingleAsync(it => it.user_id == author_id);
+                Usr User = await sqlORM.Queryable<Usr>().SingleAsync(it => it.user_id == json.author_id);
                 if (User == null)
                 {
                     return BadRequest();
@@ -1610,7 +1614,7 @@ namespace DBwebAPI.Controllers
                 response.follownum = User.follownumber;
                 //点赞数
                 List<PublishPost> tmpPP = new List<PublishPost>();
-                tmpPP = await sqlORM.Queryable<PublishPost>().Where(it => it.user_id == author_id)
+                tmpPP = await sqlORM.Queryable<PublishPost>().Where(it => it.user_id == json.author_id)
                     .ToListAsync();
                 int approvalNum = 0;
                 foreach (var pp in tmpPP)
@@ -1622,7 +1626,7 @@ namespace DBwebAPI.Controllers
                 }
                 response.likenum = approvalNum;
                 //主队
-                UserFavouriteTeam uft = await sqlORM.Queryable<UserFavouriteTeam>().SingleAsync(it => it.user_id == author_id);
+                UserFavouriteTeam uft = await sqlORM.Queryable<UserFavouriteTeam>().SingleAsync(it => it.user_id == json.author_id);
                 if (uft == null)
                     response.uft = "暂无主队";
                 else
