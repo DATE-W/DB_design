@@ -44,6 +44,8 @@ namespace DBwebAPI.Controllers
                     usr.userSecQue = registerRequest.UserSecQue;
                     usr.userSecAns = registerRequest.UserSecAns;
                     usr.userPoint = 0;
+                    usr.follownumber = 0;
+                    usr.followednumber = 0;
                     usr.avatar = "/";
                     usr.signature = "...";
                     usr.createDateTime = DateTime.Now;
