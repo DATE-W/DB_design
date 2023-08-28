@@ -1,30 +1,54 @@
 <template>
     <div>
-        {{ items }}
+        {{ Details.newsbody.matchTag }}
+    </div>
+    <div>
+        {{ Details.newsbody.propertyTag }}
+    </div>
+    <div>
+        {{ Details.newsbody.title }}
+    </div>
+    <div>
+        {{ Details.newsbody.summary }}
+    </div>
+    <div>
+        {{ Details.newsbody.contains }}
+    </div>
+    <div>
+        {{ Details.newsbody.news_id }}
+    </div>
+    <div>
+        {{ Details.newsbody.publishDateTime }}
+    </div>
+    <div v-for="item in Details.pictureRoutes">
+        {{ item }}
     </div>
 </template>
   
 <script>
 export default {
-    // props: {
-    //     items: {
-    //         type: Object,
-    //         required: true,
-    //     }
-    // },
     data() {
         return {
-            items: '',
+            Details: {
+                newsbody: {
+                    matchTag: "",
+                    propertyTag: "",
+                    title: "",
+                    summary: "",
+                    contains: "",
+                    news_id: 0,
+                    publishDateTime: '',
+                },
+                pictureRoutes: [],
+            },
         };
     },
     created() {
-        this.items = this.$route.params.items;
-    },
-    methods: {
-        test() {
-            console.log(123);
-            console.log(this.items);
+        const queryString = this.$route.query.data;
+        if (queryString) {
+            const decodedString = decodeURIComponent(queryString);
+            this.Details = JSON.parse(decodedString);
         }
-    }
+    },
 };
 </script>

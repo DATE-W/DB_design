@@ -138,6 +138,7 @@ export default {
       // dataItems = response.data.value;
       dataItems.splice(0, dataItems.length, ...response.data.value);
       console.log(this.VideoCarousel);
+      return;
     },
 
     //换一批，即更新数据

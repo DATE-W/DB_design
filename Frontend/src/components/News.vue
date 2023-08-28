@@ -394,7 +394,7 @@
   </div>
   <div class="line" style="left:5%; width: 80%;height: 0.05px;"></div>
 
-  <newsdetails v-if="Detail == null" :items="Detail"></newsdetails>
+  <a @click="openNewsDetails(test)">测试数据交互</a>
 </template>
 
 <script>
@@ -404,16 +404,6 @@ import { ElCarousel, ElCarouselItem } from 'element-plus';
 import { ElMessage } from 'element-plus';
 import axios from 'axios';
 import NewsDetails from './NewsDetails.vue';
-
-const routes = [
-  // 其他路由配置...
-  {
-    path: '/NewsDetails/:items', // 假设需要传递一个名为id的参数
-    name: 'NewsDetails', // 指定路由名称为"NewsDetails"
-    component: NewsDetails,
-    props: true
-  }
-];
 
 export default {
   components: {
@@ -426,7 +416,18 @@ export default {
     return {
       ok: '',
 
-      Detail: [], //新闻详情内容，传递给NewsDetails.vue进行渲染
+      test: {
+        newsbody: {
+          matchTag: "1",
+          propertyTag: "2",
+          title: "3",
+          summary: "4",
+          contains: "5",
+          news_id: 0,
+          publishDateTime: '6',
+        },
+        pictureRoutes: ['图片1', '图片2', '图片3', '图片4', '图片5']
+      },
 
       //当前联赛
       LeagueTitle1: '',  //**动态
@@ -461,43 +462,29 @@ export default {
       LeagueNews: [],    //联赛模块展示新闻
       LeagueTeam: [],//联赛队伍队徽
       LeagueShooter: [],   //联赛队伍射手榜
-
-      tmp: [],
     }
   },
 
   //进入页面后调取接口，从而获得一组数据
   created() {
     this.getData(4, '', '普通', this.carouselRecommendItems);    //主页面左上角走马灯
-    this.getData(2, '', '普通', this.recommendItems1);          //主页面左上角走马灯下推荐内容
-    this.getData(2, '', '普通', this.recommendItems2);          //主页面中部推荐内容
-    // this.getData(8, '', '普通', this.tmp);
-    // this.carouselRecommendItems = this.tmp.slice(0, 4);
-    // this.recommendItems1 = this.tmp.slice(4, 6);
-    // this.recommendItems2 = this.tmp.slice(6, 8);
+    // this.getData(2, '', '普通', this.recommendItems1);          //主页面左上角走马灯下推荐内容
+    // this.getData(2, '', '普通', this.recommendItems2);          //主页面中部推荐内容
 
-    this.getVideoData(4, '', '', this.carouselVideoItems);      //主页面视频走马灯
-    this.getVideoData(2, '', '', this.videoItems1);            //主页面视频图文
-    this.getVideoData(5, '', '', this.videoItems2);            //主页面视频纯文字
-    // this.getVideoData(11, '', '', this.tmp);
-    // this.carouselVideoItems = this.tmp.slice(0, 4);
-    // this.videoItems1 = this.tmp.slice(4, 6);
-    // this.videoItems2 = this.tmp.slice(6, 11);
+    // this.getVideoData(4, '', '', this.carouselVideoItems);      //主页面视频走马灯
+    // this.getVideoData(2, '', '', this.videoItems1);            //主页面视频图文
+    // this.getVideoData(5, '', '', this.videoItems2);            //主页面视频纯文字
 
-    this.getData(4, '中超', '普通', this.ChinaItems);            //主页面中超新闻
-    this.getData(4, '英超', '普通', this.ENGLANDItems);          //主页面英超新闻
-    this.getData(4, '西甲', '普通', this.SpainItems);          //主页面西甲新闻
-    this.getData(4, '德甲', '普通', this.GermanyItems);          //主页面德甲新闻
-    this.getData(4, '意甲', '普通', this.ItalyItems);          //主页面意甲新闻
-    this.getData(4, '法甲', '普通', this.FranceItems);          //主页面法甲新闻
+    // this.getData(4, '中超', '普通', this.ChinaItems);            //主页面中超新闻
+    // this.getData(4, '英超', '普通', this.ENGLANDItems);          //主页面英超新闻
+    // this.getData(4, '西甲', '普通', this.SpainItems);          //主页面西甲新闻
+    // this.getData(4, '德甲', '普通', this.GermanyItems);          //主页面德甲新闻
+    // this.getData(4, '意甲', '普通', this.ItalyItems);          //主页面意甲新闻
+    // this.getData(4, '法甲', '普通', this.FranceItems);          //主页面法甲新闻
 
-    this.getData(4, '', '八卦', this.carouselGossipItems);      //主页面右侧八卦走马灯
-    this.getData(3, '', '八卦', this.gossipItems1);      //主页面右侧八卦图文
-    this.getData(5, '', '八卦', this.gossipItems2);      //主页面右侧八卦纯文字
-    //   this.getData(12, '', '八卦', this.tmp);
-    //   this.carouselGossipItems = this.tmp.slice(0, 4);
-    //   this.gossipItems1 = this.tmp.slice(4, 7);
-    //   this.gossipItems2 = this.tmp.slice(7, 12);
+    // this.getData(4, '', '八卦', this.carouselGossipItems);      //主页面右侧八卦走马灯
+    // this.getData(3, '', '八卦', this.gossipItems1);      //主页面右侧八卦图文
+    // this.getData(5, '', '八卦', this.gossipItems2);      //主页面右侧八卦纯文字
   },
 
   mounted() {
@@ -508,11 +495,13 @@ export default {
   },
 
   methods: {
+    //搜索
     search() {
       this.activeTab = 'Search';
       // 执行搜索逻辑
       this.performSearch(this.searchInput);
     },
+    //调用搜索接口，并更新数据
     async performSearch(keyword) {
       try {
         const requestData = {
@@ -524,8 +513,8 @@ export default {
             'Content-Type': 'application/json',
           },
         }); // 发送POST请求，并将请求数据作为 JSON 对象发送
-        console.log('123456');
-        console.log(response1.data.value);
+        // console.log('123456');
+        // console.log(response1.data.value);
 
         const response2 = await axios.post('/api/Video/SearchVideo', requestData, {
           headers: {
@@ -538,14 +527,16 @@ export default {
         // 将数组存贮于传入的数组名中
         this.searchNewsResults = response1.data.value;
         this.searchVideoResults = response2.data.value;
-        console.log('123');
-        console.log(this.searchNewsResults);
+        // console.log('123');
+        // console.log(this.searchNewsResults);
         // console.log(this.searchVideoResults);
       } catch (error) {
         console.error(error);
-      }
+      };
+      return;
     },
 
+    //联赛页面球队队徽悬挂
     handleScroll() {
       const scrollTop = window.scrollY;
       const threshold = 2000; // 右侧部分滑动到多少位置时触发悬浮效果
@@ -612,7 +603,8 @@ export default {
         // console.log(this.items);
       } catch (error) {
         console.error(error);
-      }
+      };
+      return;
     },
     //从后端获取视频数据
     async getVideoData(newsQuantity, tag1, tag2, dataItems) {
@@ -643,9 +635,8 @@ export default {
           grouping: false,
           type: 'error',
         })
-
-        return
       }
+      return;
     },
     //从后端读取联赛队伍名称+队徽(1-6——英超西甲意甲德甲法甲中超)
     async getTeamName(gameTypeInt) {
@@ -675,6 +666,7 @@ export default {
         })
         return
       }
+      return;
     },
     //从后端读取联赛射手榜
     async getShooter(gameType) {
@@ -702,8 +694,9 @@ export default {
           grouping: false,
           type: 'error',
         })
-        return
+        return;
       }
+      return;
     },
 
     //截断过长的文本
@@ -731,17 +724,13 @@ export default {
 
     //打开新闻详情页
     openNewsDetails(item) {
-      // console.log('123');
-      // console.log(item);
-      // console.log(this.Detail);
-      // this.openLink('/NewsDetails');
-      const dataItems = item;
-      this.$router.push({ name: 'NewsDetails', path: '/NewsDetails', params: { items: dataItems } });
+      const queryString = encodeURIComponent(JSON.stringify(item));
+      this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
     }
   }
 }
 </script>
-
+                
 <style>
 .total {
   position: relative;

@@ -107,7 +107,8 @@ export default {
         // console.log(this.items);
       } catch (error) {
         console.error(error);
-      }
+      };
+      return;
     },
 
     //从后端接口获取视频数据
@@ -133,7 +134,8 @@ export default {
         // console.log(this.items);
       } catch (error) {
         console.error(error);
-      }
+      };
+      return;
     },
 
     //按照selectTag来筛选数据
