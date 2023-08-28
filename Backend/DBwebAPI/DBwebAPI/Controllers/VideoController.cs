@@ -34,7 +34,7 @@ namespace DBwebAPI.Controllers
             {
                 try
                 {
-                    SqlSugarClient db = ORACLEConnectTry.sqlORM;
+                    SqlSugarScope db = ORACLEConnectTry.sqlORM;
                     int sum = db.Queryable<Video>().Count();
                     if (num == -1 || num > sum)
                     {
@@ -93,7 +93,7 @@ namespace DBwebAPI.Controllers
             {
                 try
                 {
-                    SqlSugarClient db = ORACLEConnectTry.sqlORM;
+                    SqlSugarScope db = ORACLEConnectTry.sqlORM;
                     List<Video> videos = new List<Video>();
                     videos = await db.Queryable<Video>().Where(v => v.title.Contains(key) || v.matchTag.Contains(key) || v.propertyTag.Contains(key)).ToListAsync();
                     Func<Video, int> evaluate = (v) =>

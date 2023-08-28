@@ -8,7 +8,7 @@ namespace DBwebAPI.Controllers
     [Route("[controller]")]
     public class ORACLEconn : Controller
     {
-        public SqlSugarClient sqlORM = null;
+        public SqlSugarScope sqlORM = null;
         [HttpGet]
         public bool getConn()
         {

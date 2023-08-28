@@ -24,7 +24,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 Notice notice = new Notice();
                 int? id=sqlORM.Queryable<Notice>().Max(it=>it.notice_id);
                 if (id.HasValue) {
@@ -34,6 +34,7 @@ namespace DBwebAPI.Controllers
                 }
                 notice.notice_id = id;
                 notice.text = json.text;
+                notice.publishdatetime = DateTime.Now;
 
                 adminPublishNotice adminPublishNotice = new adminPublishNotice();
                 adminPublishNotice.notice_id = id;

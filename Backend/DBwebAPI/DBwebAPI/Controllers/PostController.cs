@@ -29,7 +29,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 int? post_id = json.post_id;
                 var ans = await sqlORM.Queryable<Posts>()
                     .Where(it => it.post_id == post_id)
@@ -75,7 +75,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 getYestdayInfoVal ans = new getYestdayInfoVal();
 
                 DateTime now = DateTime.Now;

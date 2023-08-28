@@ -35,7 +35,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 // Query the database to find the userSecQue based on the userAccount
                 List<string> userSecQues = await sqlORM.Queryable<Usr>()
                     .Where(u => u.userAccount == account)
@@ -73,7 +73,7 @@ namespace DBwebAPI.Controllers
             ORACLEConnectTry.getConn();
             try
             {
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 // Query the database to find the user account and security answer
                 var user = await sqlORM.Queryable<Usr>()
                     .Where(u => u.userAccount == account)

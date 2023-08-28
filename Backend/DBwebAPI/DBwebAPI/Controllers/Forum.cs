@@ -69,7 +69,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -197,7 +197,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                
                 // Get the total count of posts from the database using SqlSugar's Queryable.Count method.
                 int totalCount = await sqlORM.Queryable<Posts>().CountAsync();
@@ -224,7 +224,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 int count = json.count;
                 int page = json.page;
@@ -328,7 +328,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 int count = json.count;
                 int page = json.page;
@@ -433,7 +433,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 int count = json.count;
                 int page = json.page;
@@ -578,7 +578,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 int count = json.count;
                 int page = json.page;
@@ -693,6 +693,7 @@ namespace DBwebAPI.Controllers
         }
         public class Comment
         {
+            public int user_id { get; set; }
             public string userName { get; set; }
             public string contains { get; set; }
             public DateTime publishDateTime { get; set; }
@@ -725,7 +726,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 int post_id = json.post_id;
               
@@ -826,6 +827,7 @@ namespace DBwebAPI.Controllers
                     ComUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == comment.user_id)
                         .ToListAsync();
                     Comment tmpComment = new Comment();
+                    tmpComment.user_id = comment.user_id;
                     tmpComment.userName = ComUsr.First().userName;
                     tmpComment.contains = comment.contains;
                     tmpComment.publishDateTime = comment.publishDateTime;
@@ -870,7 +872,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 int post_id = json.post_id;
                 string contains = json.contains;
@@ -961,7 +963,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 int post_id = json.post_id;
  
                 
@@ -1073,7 +1075,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 int post_id = json.post_id;
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -1184,7 +1186,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 int post_id = json.post_id;
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
@@ -1293,7 +1295,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 int follow_id=1;
                 if (json != null)
                 {
@@ -1397,7 +1399,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("数据库连接失败");
                     return BadRequest("数据库连接失败");
                 };
-                SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 int post_id = json.post_id;
                 String descriptions = json.descriptions;
