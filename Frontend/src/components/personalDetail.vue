@@ -1,12 +1,11 @@
 <!-- 我的动态 v1.2 -->
 <template>
-    <div class="overflow-container">
-        <div class="bg-theme" :style="{ backgroundImage: 'url(' + backgroundImage + ')' }">
-            <!-- <img :src="backgroundImage" alt="Carousel Image" class="bg-image"> -->
-        </div>
+    <div class="overflow-container" ref="scrollContainer">
         <!-- 上方展示背景图 -->
         <el-container class="main-container">
             <el-main class="user-profile">
+                <div class="bg-theme" :style="{ backgroundImage: 'url(' + backgroundImage + ')' }">
+                </div>
                 <!-- 遍历动态分组数组，为每个分组创建区域 -->
                 <div class="dynamic-group" v-for="(group, groupIndex) in groupedDynamics" :key="groupIndex">
                     <!-- 遍历分组内的动态，为每个动态创建区域 -->
@@ -43,7 +42,15 @@
                 </div>
             </el-main>
             <el-aside class="right-profile">
-
+                <div @click="scrollToTop" class="scroll-to-top-btn">
+                    <div class="image-container">
+                        <img src="../assets/img/ToTop.png" alt="Scroll to Top">
+                    </div>
+                    <div class="text-overlay">
+                        <div class="line">{{ line1 }}</div>
+                        <div class="line">{{ line2 }}</div>
+                    </div>
+                </div>
             </el-aside>
         </el-container>
         <!-- 展示我的动态 -->
@@ -56,6 +63,8 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            line1: '回到',
+            line2: '顶部',
             dynamics: [
             ],
             backgroundImage: '',
@@ -80,6 +89,17 @@ export default {
         this.getTheme();
     },
     methods: {
+        scrollToTop() {
+            // 获取元素的引用
+            const container = this.$refs.scrollContainer;
+            // 使用元素的滚动方法来滚动到顶部
+            if (container) {
+                container.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            }
+        },
         // 根据动态类型返回相应的文本内容
         getActionText(dynamic) {
             switch (dynamic.type) {
@@ -207,21 +227,15 @@ export default {
 .bg-theme {
     position: relative;
     width: 100%;
-    height: 200px;
-}
-
-.bg-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: 250px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
 }
 
 .right-profile {
-    width: 20vw;
-    background-color: aliceblue;
+    width: 15vw;
+    background: linear-gradient(to top, rgb(18, 188, 240), rgb(169, 209, 244));
 }
 
 .dynamic-group {
@@ -291,4 +305,50 @@ export default {
 }
 
 /* author头像 */
+
+.scroll-to-top-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    overflow: hidden;
+    z-index: 999;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    transition: opacity 0.3s;
+}
+
+.text-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.scroll-to-top-btn:hover .image-container img {
+    opacity: 0;
+}
+
+.scroll-to-top-btn:hover .text-overlay {
+    opacity: 1;
+}
+
+.line {
+    color: black;
+    font-size: 16px;
+}
 </style>

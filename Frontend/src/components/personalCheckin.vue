@@ -1,18 +1,20 @@
 <!-- 签到 v1.2 -->
 <template>
   <!-- 添加外层的容器，并使用Flexbox布局 -->
-  <div class="checkin-container">
-    <el-config-provider :locale="zhCn">
-      <el-calendar ref="calendar">
-        <template #date-cell="{ data }">
-          <p>
-            {{ formatDate(data.day) }}
-            {{ isSelectedDate(data.day) ? '✔️' : '' }}
-          </p>
-        </template>
-      </el-calendar>
-    </el-config-provider>
-    <el-button class="checkin-button" type="primary" @click="CheckIn">点此签到</el-button>
+  <div class="overflow-container">
+    <div class="checkin-container">
+      <el-config-provider :locale="zhCn">
+        <el-calendar ref="calendar">
+          <template #date-cell="{ data }">
+            <p>
+              {{ formatDate(data.day) }}
+              {{ isSelectedDate(data.day) ? '✔️' : '' }}
+            </p>
+          </template>
+        </el-calendar>
+      </el-config-provider>
+      <el-button class="checkin-button" type="primary" @click="CheckIn">点此签到</el-button>
+    </div>
   </div>
 </template>
   
@@ -124,6 +126,15 @@ export default {
 </script>
   
 <style scoped>
+.overflow-container {
+  overflow-y: auto;
+  max-height: 625px;
+}
+
+.overflow-container::-webkit-scrollbar {
+  width: 0;
+}
+
 .checkin-container {
   display: flex;
   flex-direction: column;

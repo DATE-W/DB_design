@@ -1,75 +1,86 @@
 <!-- 我的积分 v1.2 -->
 <template>
-    <div class="main-container">
-        <div class="left-container">
-            <div class="user-title">{{ usertitle }}</div>
-            <div class="user-point">
-                {{ userpoint }}
-                <span class="user-point-else">积分</span>
-            </div>
-            <div class="rectangle-container">
-                <div v-for="(height, index) in rectangleHeights" :key="index" class="rectangle" :style="{
-                    height: height + 'px',
-                    marginTop: (rectangleHeights[maxHeightIndex] - height) + 'px',
-                    backgroundColor: (index === userIndex) ? '#0BE4F7' : '#E2EFEE'
-                }">
-                    <div class="rectangle-point">{{ point[index] }}</div>
-                    <div class="rectangle-title">{{ title[index] }}</div>
+    <div class="overflow-container">
+        <div class="main-container">
+            <div class="left-container">
+                <div class="user-title">{{ usertitle }}</div>
+                <div class="user-point">
+                    {{ userpoint }}
+                    <span class="user-point-else">积分</span>
+                </div>
+                <div class="rectangle-container">
+                    <div v-for="(height, index) in rectangleHeights" :key="index" class="rectangle" :style="{
+                        height: height + 'px',
+                        marginTop: (rectangleHeights[maxHeightIndex] - height) + 'px',
+                        backgroundColor: (index === userIndex) ? '#0BE4F7' : '#E2EFEE'
+                    }">
+                        <div class="rectangle-point">{{ point[index] }}</div>
+                        <div class="rectangle-title">{{ title[index] }}</div>
+                    </div>
+                </div>
+                <div class="point-detail">
+                    <span class="detail-title">积分明细:</span>
+                    <ul class="infinite-list" style="overflow: auto">
+                        <li v-for="(detail, index) in pointDetails" :key="index" class="infinite-list-item">
+                            {{ getDetailText(detail) }}
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <div class="point-detail">
-                <span class="detail-title">积分明细:</span>
-                <ul class="infinite-list" style="overflow: auto">
-                    <li v-for="(detail, index) in pointDetails" :key="index" class="infinite-list-item">
-                        {{ getDetailText(detail) }}
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="user-equity">
-            <div class="equity-title">权益详情</div>
-            <div>
-                <el-collapse v-model="activeNames" @change="handleChange">
-                    <el-collapse-item name="1">
-                        <template #title>
-                            <span style="display: inline-block; min-width: 350px;">平平无奇</span>
-                        </template>
-                        <div>
-                            1
-                        </div>
-                    </el-collapse-item>
-                    <el-collapse-item title="普通用户" name="2">
-                        <div>
-                            2
-                        </div>
-                    </el-collapse-item>
-                    <el-collapse-item title="一贴成名" name="3">
-                        <div>
-                            3
-                        </div>
-                    </el-collapse-item>
-                    <el-collapse-item title="球场金童" name="4">
-                        <div>
-                            4
-                        </div>
-                    </el-collapse-item>
-                    <el-collapse-item title="明日之星" name="5">
-                        <div>
-                            5
-                        </div>
-                    </el-collapse-item>
-                    <el-collapse-item title="名人堂" name="6">
-                        <div>
-                            6
-                        </div>
-                    </el-collapse-item>
-                </el-collapse>
+            <div class="user-equity">
+                <div class="equity-title">权益详情</div>
+                <div>
+                    <el-collapse v-model="activeNames" @change="handleChange">
+                        <el-collapse-item name="1">
+                            <template #title>
+                                <span style="display: inline-block; min-width: 350px;">平平无奇</span>
+                            </template>
+                            <div>
+                                1
+                            </div>
+                        </el-collapse-item>
+                        <el-collapse-item title="普通用户" name="2">
+                            <div>
+                                2
+                            </div>
+                        </el-collapse-item>
+                        <el-collapse-item title="一贴成名" name="3">
+                            <div>
+                                3
+                            </div>
+                        </el-collapse-item>
+                        <el-collapse-item title="球场金童" name="4">
+                            <div>
+                                4
+                            </div>
+                        </el-collapse-item>
+                        <el-collapse-item title="明日之星" name="5">
+                            <div>
+                                5
+                            </div>
+                        </el-collapse-item>
+                        <el-collapse-item title="名人堂" name="6">
+                            <div>
+                                6
+                            </div>
+                        </el-collapse-item>
+                    </el-collapse>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.overflow-container {
+    overflow-y: auto;
+    max-height: 625px;
+}
+
+.overflow-container::-webkit-scrollbar {
+    width: 0;
+}
+
 .left-container {
     flex: 1;
 }
