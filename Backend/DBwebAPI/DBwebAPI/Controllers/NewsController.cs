@@ -163,6 +163,7 @@ namespace DBwebAPI.Controllers
                 try
                 {
                     SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
+                    List<NewsWithPicture> ret = new List<NewsWithPicture>();
                     //Expression<Func<News, bool>> exp = Expressionable.Create<News>() //创建表达式
                     //    .AndIF(p > 0, it => it.Id == p)
                     //    .AndIF(name != null, it => it.Name == name && it.Sex == 1)
@@ -191,7 +192,17 @@ namespace DBwebAPI.Controllers
                         int na = evaluate(a), nb = evaluate(b);
                         return (na == nb ? 0 : (na > nb ? -1 : 1));
                     });
-                    return Ok(new CustomResponse { ok = "yes", value = news});
+                    ret = new List<NewsWithPicture>();
+                    for (int i = 0; i < news.Count; i++)
+                    {
+                        int id = news[i].news_id;
+                        List<string> pictureRoutes = await sqlORM.Queryable<NewsHavePicture>().
+                            Where(n => n.news_id == id).
+                            Select(nhp => nhp.pictureRoute).
+                            ToListAsync();
+                        ret.Add(new NewsWithPicture { newsBody = news[i], pictureRoutes = pictureRoutes });
+                    }
+                    return Ok(new CustomResponse { ok = "yes", value = ret});
                 }
                 catch
                 {
