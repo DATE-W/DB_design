@@ -5,7 +5,10 @@
     </el-header>
 
     <el-container>
-      <el-aside :style="{ backgroundImage: 'url(' + backgroundImage + ')' }">
+      <el-aside :style="{
+        backgroundImage: 'url(' + backgroundImage + ')',
+        backgroundSize: 'cover', backgroundRepeat: 'no-repeat',
+      }">
         <!-- 左侧一列 -->
         <!-- 用户信息与邮箱 -->
         <el-card class="personal-card" style="opacity:0.8">
