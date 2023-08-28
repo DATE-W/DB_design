@@ -264,7 +264,7 @@
                     <Cherry />
                   </el-icon>
                   <!-- 法甲新闻 -->
-                  <div class="RightNews">
+                  <div class="RightNews" style="top:-4.5vh">
                     <p class="CenterTitle">法甲</p>
                     <el-row v-if="recommendItems1.length != 0" v-for="(item, index) in FranceItems" :key="index">
                       <div class="textItem" style="top:-10vh">
@@ -345,7 +345,7 @@
             <el-col :span="18">
               <div v-if="searchNewsResults.length != 0" v-for="item in searchNewsResults" :key="item.id"
                 class="itemSearch">
-                <div class="imgWrapper">
+                <div class="imgWrapper" style=" position: relative;top: -10vh;left: -4vw;">
                   <img v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == false"
                     referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="Image" class="imgSearch">
                   <video v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true"
@@ -353,9 +353,11 @@
                     controls />
                 </div>
                 <div class="TextWrapper">
-                  <div v-if="item.newsBody != null" class="titleSearch">{{ truncateText(item.newsBody.title, 20) }}
+                  <div v-if="item.newsBody != null" class="titleSearch" style="top:-9vh;left:-11vw;">{{
+                    truncateText(item.newsBody.title, 20) }}
                   </div>
-                  <div v-if="item.newsBody != null" class="descriptionSearch">{{ item.newsBody.summary }}</div>
+                  <div v-if="item.newsBody != null" class="descriptionSearch" style="top:-6vh;left:-11vw;">{{
+                    truncateText(item.newsBody.summary, 80) }}</div>
                 </div>
               </div>
               <div class="NoMore">No More ......</div>
@@ -402,6 +404,16 @@ import { ElCarousel, ElCarouselItem } from 'element-plus';
 import { ElMessage } from 'element-plus';
 import axios from 'axios';
 import NewsDetails from './NewsDetails.vue';
+
+const routes = [
+  // 其他路由配置...
+  {
+    path: '/NewsDetails/:items', // 假设需要传递一个名为id的参数
+    name: 'NewsDetails', // 指定路由名称为"NewsDetails"
+    component: NewsDetails,
+    props: true
+  }
+];
 
 export default {
   components: {
@@ -474,10 +486,10 @@ export default {
 
     this.getData(4, '中超', '普通', this.ChinaItems);            //主页面中超新闻
     this.getData(4, '英超', '普通', this.ENGLANDItems);          //主页面英超新闻
-    // this.getData(4, '西甲', '普通', this.SpainItems);          //主页面西甲新闻
-    // this.getData(4, '德甲', '普通', this.GermanyItems);          //主页面德甲新闻
-    // this.getData(4, '意甲', '普通', this.ItalyItems);          //主页面意甲新闻
-    // this.getData(4, '法甲', '普通', this.FranceItems);          //主页面法甲新闻
+    this.getData(4, '西甲', '普通', this.SpainItems);          //主页面西甲新闻
+    this.getData(4, '德甲', '普通', this.GermanyItems);          //主页面德甲新闻
+    this.getData(4, '意甲', '普通', this.ItalyItems);          //主页面意甲新闻
+    this.getData(4, '法甲', '普通', this.FranceItems);          //主页面法甲新闻
 
     this.getData(4, '', '八卦', this.carouselGossipItems);      //主页面右侧八卦走马灯
     this.getData(3, '', '八卦', this.gossipItems1);      //主页面右侧八卦图文
@@ -512,6 +524,7 @@ export default {
             'Content-Type': 'application/json',
           },
         }); // 发送POST请求，并将请求数据作为 JSON 对象发送
+        console.log('123456');
         console.log(response1.data.value);
 
         const response2 = await axios.post('/api/Video/SearchVideo', requestData, {
@@ -720,9 +733,10 @@ export default {
     openNewsDetails(item) {
       // console.log('123');
       // console.log(item);
-      this.Detail = item;
       // console.log(this.Detail);
-      this.openLink('/NewsDetails');
+      // this.openLink('/NewsDetails');
+      const dataItems = item;
+      this.$router.push({ name: 'NewsDetails', path: '/NewsDetails', params: { items: dataItems } });
     }
   }
 }
@@ -1035,7 +1049,7 @@ export default {
 
 .textItem {
   display: flex;
-  margin: 8px;
+  margin: 9px;
 }
 
 .CenterNews {

@@ -6,16 +6,24 @@
   
 <script>
 export default {
-    props: {
-        items: {
-            type: Object,
-            required: true,
-        }
+    // props: {
+    //     items: {
+    //         type: Object,
+    //         required: true,
+    //     }
+    // },
+    data() {
+        return {
+            items: '',
+        };
+    },
+    created() {
+        this.items = this.$route.params.items;
     },
     methods: {
         test() {
             console.log(123);
-            console.log(items);
+            console.log(this.items);
         }
     }
 };
