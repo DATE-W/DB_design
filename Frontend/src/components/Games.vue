@@ -1,4 +1,4 @@
-<!-- 2154314_郑楷_赛事列表 2023.08.27 01:00 v2.0.0
+<!-- 2154314_郑楷_赛事列表 2023.08.28 11:30 v2.1.0
  v1.0.0 页面画了一半 
   v1.1.0 画出了左侧的联赛选择器（未添加逻辑），布局了中部的比赛列表（已添加跳转逻辑），增加了各大联赛LOGO素材图，日期选择器和广告区待实现
   v1.2.0 优化了联赛选择器组件的代码、视觉效果、功能、数据通路
@@ -8,7 +8,8 @@
   v1.6.0 与赛事详情页互相传值，使得在返回本页面时，之前的日期与联赛选择不会丢失
   v1.7.0 添加显示主队近期三场比赛功能，添加队标显示功能，美化页面
   v1.8.0 调用获取当前用户状态的接口，未登录时跳转到登陆界面 
- v2.0.0 正式版首版，所有功能均已完成，删去了冗余代码 -->
+ v2.0.0 正式版首版，所有功能均已完成，删去了冗余代码
+  v2.1.0 优化主队近期赛事板块，在用户无主队时跳转到设置主队界面 -->
 
 <template>
   <my-nav></my-nav>
@@ -61,23 +62,37 @@
     <el-date-picker v-model="date11" type="date" placeholder="日期选择" :size="large" value-format="YYYY-MM-DD"
       style="left:1.5rem;top:5rem" @change="this.getMatches(this.date11, this.league11);" />
   </div>
+
   <!-- 右侧下方主队容器 -->
   <div class="borderBoxRightAD" style="left:74rem;">
     <!-- <button @click="console.log(recentMatches);">1</button>
     <button @click="getRecentMatches('利物浦');">2</button> -->
-    <p>主队: {{ mainTeam }}</p>
-    <div class="borderBoxRecentMatch" v-for="(recentMatch, index) in recentMatches" :key="recentMatch.gameUid"
-      :style="{ top: `${index * 5.5 + 3}rem` }">
-      <!-- <p>{{ recentMatch.gameUid }}</p> -->
-      <div class="imgBox">
-        <img :src="recentMatch.opponentLogo">
-        <div class="modal2"></div>
+    <div class="showMainTeam" v-show="mainTeamButton" @click="mainTeamButtonAction">
+      <div v-if="!onAccount">
+        <p>没登陆</p>
       </div>
-      <div class="borderBoxRecentMatchModal" @click="toMatchDetail(recentMatch.gameUid, this.league11, this.date11)">
-        <p class="textRecentMatchScore">{{ recentMatch.homeScore }}</p>
-        <p class="textRecentMatchScore" style="left:3rem;color:black"> - {{ recentMatch.opponentScore }}</p>
-        <p class="gameDateR">{{ recentMatch.gameDate }}</p>
-        <p class="textVsComponent">VS {{ recentMatch.opponentName }}</p>
+      <div v-else-if="this.mainTeam == '查无此队'">
+        <p>无主队</p>
+      </div>
+      <div v-else>
+        <p>有主队</p>
+      </div>
+    </div>
+    <div v-show="this.onAccount && this.mainTeam && (!mainTeamButton)">
+      <p class="textTypoLeague" style="left:0rem;width:20rem;top:-3rem">主队: {{ mainTeam }}</p>
+      <div class="borderBoxRecentMatch" v-for="(recentMatch, index) in recentMatches" :key="recentMatch.gameUid"
+        :style="{ top: `${index * 5.5 + 3}rem` }">
+        <!-- <p>{{ recentMatch.gameUid }}</p> -->
+        <div class="imgBox">
+          <img :src="recentMatch.opponentLogo">
+          <div class="modal2"></div>
+        </div>
+        <div class="borderBoxRecentMatchModal" @click="toMatchDetail(recentMatch.gameUid, this.league11, this.date11)">
+          <p class="textRecentMatchScore">{{ recentMatch.homeScore }}</p>
+          <p class="textRecentMatchScore" style="left:3rem;color:black"> - {{ recentMatch.opponentScore }}</p>
+          <p class="gameDateR">{{ recentMatch.gameDate }}</p>
+          <p class="textVsComponent">VS {{ recentMatch.opponentName }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -100,13 +115,13 @@ export default {
       this.date11 = this.$route.query.date11;
     }
     this.league11 = this.$route.query.league11;
+    this.getMainTeam();
+    this.getMatches(this.date11, this.league11);
   },
 
   mounted() {
     // 在页面挂载后获取赛事列表数据
-    this.getMatches(this.date11, this.league11);
-    this.getRecentMatches(this.mainTeam);
-    /* this.getMainTeam(); */
+
   },
 
   methods: {
@@ -120,6 +135,27 @@ export default {
             gameUid: uid,
             lgeChoice: leagueC,
             dateChoice: dateC,
+          }
+        }
+      );
+    },
+    // 跳转到登陆界面
+    redirectToLogin() {
+      // 跳转到登录页面的逻辑
+      this.$router.push({
+        path: '/signin',
+        query: {
+          isAdmin: 0,
+        }
+      });
+    },
+    // 跳转到设置主队
+    redirectToEdit() {
+      this.$router.push(
+        {
+          path: '/personalEdit',
+          query: {
+            value: 'teamedit',
           }
         }
       );
@@ -172,6 +208,21 @@ export default {
       var dateTime = year + "-" + month + "-" + day;
       return dateTime;
     },
+    // 主队按钮
+    mainTeamButtonAction() {
+      this.mainTeamButton = false;
+      if (!this.onAccount) {
+        this.redirectToLogin();
+      }
+      else if (this.mainTeam == '查无此队') {
+        this.redirectToEdit();
+      }
+      else {
+        console.log(this.mainTeam);
+        this.getRecentMatches(this.mainTeam);
+      }
+      return;
+    },
     // 调用接口获取赛事列表数据
     async getMatches(dateCho, leagueCho) {
       let response
@@ -190,6 +241,7 @@ export default {
       /* console.log(dateCho,leagueCho); */
       this.matches = response.data;
       console.log(this.matches);
+      return;
     },
     // 调用接口获取主队近期三场赛事
     async getRecentMatches(mainTeam) {
@@ -208,14 +260,23 @@ export default {
       /* console.log(dateCho,leagueCho); */
       this.recentMatches = response.data;
       console.log(this.recentMatches);
+      return;
     },
     // 调用接口获取主队名
     async getMainTeam() {
+      const token = localStorage.getItem('token');
+      if (token == null) {
+        console.log('No register');
+        return;
+      }
+      this.onAccount = true;
       let response
       try {
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
         response = await axios.post('/api/User/profile', {
-          teamName: mainTeam,
-        }, {})
+        }, { headers })
       } catch (err) {
         ElMessage({
           message: '获取主队信息失败',
@@ -223,7 +284,9 @@ export default {
           type: 'error',
         });
       }
-      this.mainTeam = response.data.utf;
+      console.log(response.data.value.uft);
+      this.mainTeam = response.data.value.uft;
+      return;
     },
 
   },
@@ -246,11 +309,11 @@ export default {
 
       /* 正式版本 */
       matches: ref([]),
+      mainTeam: "",
       recentMatches: ref([]),
-      /* mainTeam: ref(''), */
+      onAccount: false,
+      mainTeamButton: true,
 
-      /* 测试版本 */
-      mainTeam: ref('利物浦'),
     }
   }
 }
@@ -290,7 +353,7 @@ export default {
 .borderBoxRightTop {
   position: absolute;
   width: 17rem;
-  height: 15rem;
+  height: 10rem;
   flex-shrink: 0;
   /* 正式版本 */
   background: rgb(240, 240, 240);
@@ -371,6 +434,18 @@ export default {
 
 .borderBoxMatchModal:hover {
   background: rgba(240, 240, 240, 0.9);
+}
+
+.showMainTeam {
+  position: absolute;
+  width: 17rem;
+  height: 8rem;
+  flex-shrink: 0;
+  border-radius: 1.5rem;
+  border: 0.05rem solid var(--colors-light-eaeaea-100, #d1d1d1);
+  background: white;
+  display: flex;
+  justify-content: center;
 }
 
 .borderBoxRecentMatch {

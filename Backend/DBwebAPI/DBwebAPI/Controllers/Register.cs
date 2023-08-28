@@ -45,6 +45,7 @@ namespace DBwebAPI.Controllers
                     usr.userSecAns = registerRequest.UserSecAns;
                     usr.userPoint = 0;
                     usr.follownumber = 0;
+                    usr.themeType = 0;
                     usr.followednumber = 0;
                     usr.avatar = "/";
                     usr.signature = "...";

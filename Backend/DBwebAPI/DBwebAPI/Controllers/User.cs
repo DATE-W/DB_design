@@ -1260,7 +1260,7 @@ namespace DBwebAPI.Controllers
             public string image3 { get; set; }
             public string image4 { get; set; }
         }
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> getalltheme()
         {
             try
@@ -1273,7 +1273,7 @@ namespace DBwebAPI.Controllers
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
-                
+
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
                 //验证 Authorization 请求头是否包含 JWT 令牌
@@ -1338,7 +1338,7 @@ namespace DBwebAPI.Controllers
                 return BadRequest(new { error = "数据库错误" });
             }
         }
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> gettheme()
         {
             try
@@ -1394,6 +1394,13 @@ namespace DBwebAPI.Controllers
                 userThemejson.image2 = userTheme.image2;
                 userThemejson.image3 = userTheme.image3;
                 userThemejson.image4 = userTheme.image4;
+                Console.WriteLine("userAccount" +account);
+                Console.WriteLine("userThemejson.id:"+ userThemejson.id);
+                Console.WriteLine("userThemejson.name:" + userThemejson.name);
+                Console.WriteLine("userThemejson.image1:" + userThemejson.image1);
+                Console.WriteLine("userThemejson.image2:" + userThemejson.image2);
+                Console.WriteLine("userThemejson.image3:" + userThemejson.image3);
+                Console.WriteLine("userThemejson.image4:" + userThemejson.image4);
                 return Ok(userThemejson);
             }
             catch (Exception ex)
