@@ -30,7 +30,25 @@ namespace DBwebAPI
         }
 
 
+        public SqlSugarScope Db = new SqlSugarScope(new ConnectionConfig()
+        {
+            ConnectionString = constr,//连接符字串
+            DbType = DbType.Oracle,//数据库类型
+            IsAutoCloseConnection = true
+        },
+        db => {
+            //调试SQL事件，可以删掉
+            db.Aop.OnLogExecuting = (sql, pars) =>
+            {
+                //Console.WriteLine(sql);//输出sql,查看执行sql
+            };
+        });
+
+
     }
+
+
+
 
     //public class SQLSugar
     //{
