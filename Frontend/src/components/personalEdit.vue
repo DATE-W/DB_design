@@ -9,8 +9,9 @@
         </el-header>
         <el-divider style="margin: 0;" />
         <el-main class="lrborder" style="padding: 0px; height: 95vh;">
-            <el-tabs type="border-card" tab-position="left" style="height: 100%; border: 0;" class="demo-tabs">
-                <el-tab-pane>
+            <el-tabs v-model="activeName" type="border-card" tab-position="left" style="height: 100%; border: 0;"
+                class="demo-tabs">
+                <el-tab-pane name="useredit">
                     <template #label>
                         <span class="custom-tabs-label">
                             <el-icon>
@@ -21,7 +22,7 @@
                     </template>
                     <userEdit />
                 </el-tab-pane>
-                <el-tab-pane>
+                <el-tab-pane name="themeedit">
                     <template #label>
                         <span class="custom-tabs-label">
                             <el-icon>
@@ -32,7 +33,7 @@
                     </template>
                     <themeEdit />
                 </el-tab-pane>
-                <el-tab-pane>
+                <el-tab-pane name="teamedit">
                     <template #label>
                         <span class="custom-tabs-label">
                             <el-icon>
@@ -43,7 +44,6 @@
                     </template>
                     <hometeamEdit />
                 </el-tab-pane>
-                <el-tab-pane label="还没想好">Task</el-tab-pane>
             </el-tabs>
         </el-main>
     </el-container>
@@ -54,6 +54,11 @@ import userEdit from './userEdit.vue';
 import themeEdit from './themeEdit.vue';
 import hometeamEdit from './hometeamEdit.vue';
 export default {
+    mounted() {
+        if (this.$route.query.value) {
+            this.activeName = this.$route.query.value;
+        }
+    },
     components: {
         'userEdit': userEdit,
         'themeEdit': themeEdit,
@@ -66,6 +71,7 @@ export default {
             account: "1145141919810", // 账号
             dialogVisible: false, // 修改对话框是否可见
             dialogTitle: '',
+            activeName: 'useredit',
         };
     },
     methods: {
@@ -76,10 +82,9 @@ export default {
             if (buttonType == "username") {
                 this.dialogTitle = "修改用户昵称";
             }
-
             this.dialogVisible = true;
-
         },
+
     },
 };
 </script>

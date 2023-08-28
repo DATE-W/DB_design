@@ -1,17 +1,17 @@
 <template>
     <div>
         <!-- 当前主题展示 -->
-        <div class="currentTheme" :style="{ backgroundImage: `url(${selectedTheme.url})` }">
+        <div class="currentTheme" :style="{ backgroundImage: `url(${selectedTheme.image3})` }">
         </div>
     </div>
-        <el-divider></el-divider>
+    <el-divider></el-divider>
     <div>
         <!-- 主题选项 -->
         <el-row class="frame-options">
             <el-col :span="8" v-for="(theme, index) in themeList" :key="index">
                 <div class="frame-option">
                     <div class="theme-item" @click="showThemePreview(theme)">
-                        <div class="theme-circle" :style="`background-image: url(${theme.url})`"
+                        <div class="theme-circle" :style="`background-image: url(${theme.image4})`"
                             :class="{ 'selected-frame': selectedTheme === theme }"></div>
                         <div class="theme-name">{{ theme.name }}</div>
                     </div>
@@ -22,54 +22,59 @@
 </template>
   
 <script>
-import { ElMessageBox } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import axios from 'axios';
 export default {
     mounted() {
-
+        this.getalltheme();
     },
     data() {
         return {
-            themeList: [
-                { name: '主题1', url: './src/assets/img/carousel1.png' },
-                { name: '主题2', url: './src/assets/img/carousel2.png' },
-                { name: '主题3', url: './src/assets/img/carousel1.png' },
-                { name: '主题4', url: './src/assets/img/carousel2.png' },
-                { name: '主题5', url: './src/assets/img/carousel1.png' },
-                { name: '主题6', url: './src/assets/img/carousel2.png' },
-                { name: '主题7', url: './src/assets/img/carousel1.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                { name: '主题8', url: './src/assets/img/carousel2.png' },
-                // 添加更多主题对象...
-            ],
-            selectedTheme: { name: '当前选择的主题', url: './src/assets/img/carousel1.png' }, // 初始化选中的主题
+            themeList: [],
+            selectedTheme: {
+                id: 0,
+                name: '',
+                image1: '',
+                image2: '',
+                image3: '',
+                image4: ''
+            }, // 初始化选中的主题
             previewImageUrl: './src/assets/img/carousel1.png' // 用于保存预览图片的 URL
         };
     },
     methods: {
+        async getalltheme() {
+            const token = localStorage.getItem('token');
+            if (token == null) {
+                return;
+            }
+            let response
+            try {
+                const headers = {
+                    Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/User/getalltheme', {}, { headers })
+            } catch (err) {
+                console.log(err);
+                ElMessage({
+                    message: '未知错误',
+                    grouping: false,
+                    type: 'error',
+                })
+                return
+            }
+            console.log(response);
+            this.themeList = response.data;
+        },
         showThemePreview(theme) {
-            this.previewImageUrl = theme.url;
+            this.previewImageUrl = theme.image3;
 
             ElMessageBox({
                 title: '切换主题',
                 message: `
                     <div>
                         <p>是否切换到主题 ${theme.name}？</p>
-                        <img src="${theme.url}" alt="Theme Preview" style="max-width: 100%;">
+                        <img src="${theme.image3}" alt="Theme Preview" style="max-width: 100%;">
                     </div>
                 `,
                 showCancelButton: true,
@@ -83,9 +88,29 @@ export default {
                 this.previewImageUrl = '';
             });
         },
-        selectTheme(theme) {
+        async selectTheme(theme) {
             this.selectedTheme = theme;
             // 执行选中主题相关操作
+            const token = localStorage.getItem('token');
+            if (token == null) {
+                return;
+            }
+            let response
+            try {
+                const headers = {
+                    Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/User/modifytheme', { theme_id: theme.id }, { headers })
+            } catch (err) {
+                console.log(err);
+                ElMessage({
+                    message: '未知错误',
+                    grouping: false,
+                    type: 'error',
+                })
+                return
+            }
+
             this.previewImageUrl = '';
         }
     }
@@ -109,12 +134,15 @@ export default {
 }
 
 .frame-options::-webkit-scrollbar {
-    width: 5px; /* 设置滚动条宽度 */
+    width: 5px;
+    /* 设置滚动条宽度 */
 }
 
 .frame-options::-webkit-scrollbar-thumb {
-    background-color: #888; /* 设置滚动条颜色 */
-    border-radius: 5px; /* 设置滚动条圆角 */
+    background-color: #888;
+    /* 设置滚动条颜色 */
+    border-radius: 5px;
+    /* 设置滚动条圆角 */
 }
 
 .frame-option {
@@ -140,7 +168,8 @@ export default {
     width: 100px;
     height: 100px;
     background-size: cover;
-    border-radius: 10px; /* 调整这里的值来设置圆角大小 */
+    border-radius: 10px;
+    /* 调整这里的值来设置圆角大小 */
 }
 
 
@@ -148,12 +177,14 @@ export default {
     margin-top: 5px;
     font-size: 12px;
 }
+
 .currentTheme {
-  align-items: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  height: 40vh;
-  padding: 20px; /* 添加内边距以使文字内容不紧贴边界 */
+    align-items: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 40vh;
+    padding: 20px;
+    /* 添加内边距以使文字内容不紧贴边界 */
 }
 </style>
