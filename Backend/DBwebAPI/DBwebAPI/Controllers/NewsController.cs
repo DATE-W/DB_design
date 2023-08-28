@@ -25,7 +25,7 @@ namespace DBwebAPI.Controllers
         }
         public class SearchNewsRequest
         {
-            public string keyword;
+            public string keyword { get; set; }
         }
         [HttpGet] 
         public async Task<IActionResult> GetNewsNum()
