@@ -7,14 +7,38 @@ import { ElMessage, ElMessageBox } from 'element-plus';
     },
     data() {
         return {
-            InNum: 0,
-            SignNum:0,
-            newPost:0,
+            signInNum:0,
+            newUsrNum:0,
+            newPostNum:0,
         };
     },
+    mounted(){
+        this.getYesInfo();
+    },
     methods:{
-        killUser(){
-
+        async getYesInfo(){
+            console.log("start get Yesterday Info")
+            let response
+            try {
+                response = await axios.get('/api/Post/getYestdayInfo');
+            } catch (err) {
+                console.error(err);
+                if (err.response.data.result == 'fail') {
+                    ElMessage.error(err.response.data.msg)
+                } else {
+                    ElMessage.error("未知错误")
+                }
+                return
+            }
+            console.log("YesterdayInfo - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
+            if(response.data.ok=='no')
+            {
+                ElMessage.error("获取昨日信息失败");
+            }else if(response.data.ok=='yes'){
+               this.signInNum=response.data.value.signInNum;
+               this.newUsrNum=response.data.value.newUsrNum;
+               this.newPostNum=response.data.value.newPostNum;
+            }
         },
     }
 }
@@ -23,13 +47,13 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 <template>
     <el-container class="aside-upper-box">
           <el-container class="sub-box" style="background-color: rgb(246, 148, 148);margin-top:10px;">
-                <span class="sub-text">昨日访问人数：{{ InNum }} 人</span>
+                <span class="sub-text">昨日签到人数：{{ signInNum }} 人</span>
           </el-container>
           <el-container class="sub-box" style="background-color: rgb(156, 233, 49);margin-top:20px;">
-                <span class="sub-text">昨日新增用户：{{ SignNum }} 个</span>
+                <span class="sub-text">昨日新增用户：{{ newUsrNum }} 个</span>
           </el-container>
           <el-container class="sub-box" style="background-color: rgb(148, 174, 246);margin-top:20px;">
-                <span class="sub-text">昨日新增帖子：{{ newPost }} 个</span>
+                <span class="sub-text">昨日新增帖子：{{ newPostNum }} 个</span>
           </el-container>
     </el-container>
 </template>

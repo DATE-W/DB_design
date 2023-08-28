@@ -11,6 +11,8 @@ export default {
     data() {
         return {
             reportedPost: [],
+            tittle:"",
+            contains:"",
         };
     },
     methods:{
@@ -48,14 +50,40 @@ export default {
                ElMessage.error("未找到相关举报信息");
             }
         },
-        toPost(postId){
-            this.$router.push({
-                path: '/detail',
-                query: { 
-                    fromAdmin: 1,
-                    clickedPostID: postId,
+        async toPost(postId){
+            console.log("getPost")
+            let response
+            try {
+                response = await axios.post('/api/Post/getPostInfo',  {
+                    post_id: postId,
+                });
+            } catch (err) {
+                if (err.response.data.result == 'fail') {
+                    ElMessage({
+                        message: err.response.data.msg,
+                        grouping: false,
+                        type: 'error',
+                    })
+                } else {
+                    ElMessage({
+                        message: '未知错误',
+                        grouping: false,
+                        type: 'error',
+                    })
                 }
-            });
+                return
+            }
+            console.log("getPostInfo - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
+            if (response.data.ok == 'yes') {
+               this.tittle=response.data.value.title;
+               this.contains=response.data.value.contains;
+            }
+            else {
+               ElMessage.error("获取帖子信息失败");
+            }
+            ElMessageBox.alert(this.contains, this.tittle, {
+                confirmButtonText: 'OK',
+            })
         },
         async getReportedPost(){
             console.log("start get reported post")
@@ -88,6 +116,7 @@ export default {
                     };
                 // 将转换后的数据添加到 reportedPost 数组中
                 this.reportedPost.push(convertedItem);
+                this.reportedPost.sort((a, b) => a.post_id - b.post_id);
                 });
             }
         },
