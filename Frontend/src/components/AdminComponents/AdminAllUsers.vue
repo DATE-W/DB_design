@@ -7,9 +7,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
     },
     data() {
         return {
-            Users: [
-                { user_id: 0,userName: "U 1",userPoint: 0,regDate: "2023-08-17",followedNumber:0 },
-            ],
+            Users: [],
         };
     },
     mounted(){
@@ -19,14 +17,9 @@ import { ElMessage, ElMessageBox } from 'element-plus';
         async getAllUsers()
         {
             console.log("start get all users")
-            const token = localStorage.getItem('token');
-            console.log("token = " + token)
             let response
             try {
-                const headers = {
-                     Authorization: `Bearer ${token}`,
-                };
-                response = await axios.get('api/report/getUsrInfo',{},{headers});
+                response = await axios.get('api/report/getUsrInfo');
             } catch (err) {
                 console.error(err);
                 if (err.response.data.result == 'fail') {
@@ -42,7 +35,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
                 ElMessage.error("获取用户列表失败");
             }else if(response.data.ok=='yes'){
                // 遍历传来的数据并进行转换
-                response.value.forEach(item => {
+                response.data.value.forEach(item => {
                     const convertedItem = {
                         user_id: item.user_id,
                         userName: item.userName,
@@ -52,6 +45,8 @@ import { ElMessage, ElMessageBox } from 'element-plus';
                     };
                 // 将转换后的数据添加到 reportedPost 数组中
                 this.Users.push(convertedItem);
+                 // 对 Users 数组按照 user_id 进行排序
+                this.Users.sort((a, b) => a.user_id - b.user_id);
                 });
             }
         },
@@ -62,8 +57,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
             let response
             try {
                 response = await axios.post('api/report/banUsr',  {
-                    // user_id:this.Users[index].user_id,
-                    user_id:5,
+                    user_id:this.Users[index].user_id,
                 });
             } catch (err) {
                 if (err.response.data.result == 'fail') {
