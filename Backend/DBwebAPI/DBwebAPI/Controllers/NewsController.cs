@@ -12,6 +12,43 @@ namespace DBwebAPI.Controllers
     [ApiController]
     public class NewsController : ControllerBase
     {
+        public class NewsCompare : IComparer<NewsWithPicture>
+        {
+            public int Compare(NewsWithPicture? x, NewsWithPicture? y)
+            {
+                Func<NewsWithPicture, int> eval = tmp =>
+                {
+                    string t = tmp.newsBody.matchTag;
+                    if (t == "中超")
+                    {
+                        return 1;
+                    }
+                    if (t == "英超")
+                    {
+                        return 2;
+                    }
+                    if (t == "西甲")
+                    {
+                        return 3;
+                    }
+                    if (t == "德甲")
+                    {
+                        return 4;
+                    }
+                    if (t == "意甲")
+                    {
+                        return 5;
+                    }
+                    if (t == "法甲")
+                    {
+                        return 6;
+                    }
+                    return -1;
+                };
+                int nx = eval(x), ny = eval(y);
+                return nx == ny ? 0 : (nx < ny ? -1 : 1);
+            }
+        }
         public class NewsWithPicture
         {
             public News newsBody { get; set; }
@@ -88,12 +125,15 @@ namespace DBwebAPI.Controllers
                     ret.news.Add(news.GetRange(4, 2));
                     ret.news.Add(news.GetRange(6, 2));
 
-                    Console.WriteLine(news[8].newsBody.matchTag);
-                    Console.WriteLine(news[12].newsBody.matchTag);
-                    Console.WriteLine(news[16].newsBody.matchTag);
-                    Console.WriteLine(news[20].newsBody.matchTag);
-                    Console.WriteLine(news[24].newsBody.matchTag);
-                    Console.WriteLine(news[28].newsBody.matchTag);
+                    
+                    news.Sort(8, 24, new NewsCompare());
+
+                    //Console.WriteLine(news[8].newsBody.matchTag);
+                    //Console.WriteLine(news[12].newsBody.matchTag);
+                    //Console.WriteLine(news[16].newsBody.matchTag);
+                    //Console.WriteLine(news[20].newsBody.matchTag);
+                    //Console.WriteLine(news[24].newsBody.matchTag);
+                    //Console.WriteLine(news[28].newsBody.matchTag);
 
                     ret.news.Add(news.GetRange(8, 4));
                     ret.news.Add(news.GetRange(12, 4));
