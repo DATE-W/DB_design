@@ -13,21 +13,24 @@
           <div class="GossipButton">
             <el-row class="mb-4">
               <el-button plain @click="selectGossip('中超')">中超</el-button>
-              <el-button type="primary" plain>英超</el-button>
-              <el-button type="success" plain>西甲</el-button>
-              <el-button type="info" plain>意甲</el-button>
-              <el-button type="warning" plain>德甲</el-button>
-              <el-button type="danger" plain>法甲</el-button>
+              <el-button type="primary" plain @click="selectGossip('中超')">英超</el-button>
+              <el-button type="success" plain @click="selectGossip('中超')">西甲</el-button>
+              <el-button type="info" plain @click="selectGossip('中超')">意甲</el-button>
+              <el-button type="warning" plain @click="selectGossip('中超')">德甲</el-button>
+              <el-button type="danger" plain @click="selectGossip('中超')">法甲</el-button>
             </el-row>
           </div>
           <div class="line" style="width: 40vw;height: 0.2px;top:-9vh;left:8%;"></div>
-          <div v-for="item in GossipNews" :key="item.id" class="itemSearch">
+          <div v-if="GossipNews.length != 0" v-for="item in GossipNews" :key="item.id" class="itemSearch">
             <div class="imgWrapper">
-              <img :src="item.image" alt="Image" class="imgSearch">
+              <img v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == false"
+                referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="Image" class="imgSearch">
+              <video v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true"
+                referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]" class="imgSearch" controls />
             </div>
             <div class="TextWrapper">
-              <div class="titleSearch">{{ item.title }}</div>
-              <div class="descriptionSearch">{{ item.description }}</div>
+              <div class="titleSearch">{{ item.newsBody.title }}</div>
+              <div class="descriptionSearch">{{ truncateText(item.newsBody.summary, 28) }}</div>
             </div>
           </div>
           <div class="NoMore">No More ......</div>
@@ -40,13 +43,14 @@
           </el-icon>
           <div class="line" style="width: 22vw;height: 0.2px;top:-3vh;left:-6%;"></div>
           <div class="imgListSearch">
-            <div v-for="(item, index) in GossipNewsVideo" :key="index" class="imgItemSearch">
+            <div v-if="GossipNewsVideo.length != 0" v-for="(item, index) in GossipNewsVideo" :key="index"
+              class="imgItemSearch">
               <el-row :gutter="20">
                 <el-col :span="11">
-                  <img :src="item.image" alt="Image" class="imgVideoSearch">
+                  <img referrerPolicy='no-referrer' :src="item.cover" alt="Image" class="imgVideoSearch">
                 </el-col>
                 <el-col :span="8">
-                  <div class="descriptionVideoSearch">{{ item.title }}</div>
+                  <div class="descriptionVideoSearch">{{ truncateText(item.title, 25) }}</div>
                 </el-col>
               </el-row>
             </div>
@@ -56,16 +60,12 @@
       </el-row>
     </div>
   </div>
+  <el-backtop :right="100" :bottom="100" />
 </template>
 
 <script>
 import MyNav from './nav.vue';
 import axios from 'axios';
-
-import carousel1 from '../assets/img/carousel1.png';
-import carousel2 from '../assets/img/carousel2.png';
-import carousel3 from '../assets/img/carousel3.png';
-import carousel4 from '../assets/img/carousel4.png';
 
 export default {
   components: {
@@ -73,78 +73,19 @@ export default {
   },
   data() {
     return {
-      GossipNews: [
-        {
-          image: carousel1,
-          title: '新闻1的标题 1111',
-          description: '搜索结果1正文可使用按钮触发下拉菜单。\
-                        \设置 split-button 属性来让触发下拉元素呈现为按钮组，左边是功能按钮，右边是触发下拉菜单的按钮，设置为 true 即可。 如果你想要在第三和第四个选项之间添加一个分隔符，你只需要为第四个选项添加一个 divider 的 CSS class。',
-          link: 'https://element-plus.org/'
-        },
-        {
-          image: carousel2,
-          title: '新闻2的标题 1111',
-          description: '搜索结果1正文可使用按钮触发下拉菜单。\
-                        \设置 split-button 属性来让触发下拉元素呈现为按钮组，左边是功能按钮，右边是触发下拉菜单的按钮，设置为 true 即可。 如果你想要在第三和第四个选项之间添加一个分隔符，你只需要为第四个选项添加一个 divider 的 CSS class。',
-          link: 'https://element-plus.org/'
-        },
-        {
-          image: carousel3,
-          title: '新闻3的标题 1111',
-          description: '搜索结果1正文可使用按钮触发下拉菜单。\
-                        \设置 split-button 属性来让触发下拉元素呈现为按钮组，左边是功能按钮，右边是触发下拉菜单的按钮，设置为 true 即可。 如果你想要在第三和第四个选项之间添加一个分隔符，你只需要为第四个选项添加一个 divider 的 CSS class。',
-          link: 'https://element-plus.org/'
-        },
-        {
-          image: carousel4,
-          title: '新闻4的标题 1111',
-          description: '搜索结果1正文可使用按钮触发下拉菜单。\
-                        \设置 split-button 属性来让触发下拉元素呈现为按钮组，左边是功能按钮，右边是触发下拉菜单的按钮，设置为 true 即可。 如果你想要在第三和第四个选项之间添加一个分隔符，你只需要为第四个选项添加一个 divider 的 CSS class。',
-          link: 'https://element-plus.org/'
-        },
-      ],
-      GossipNewsVideo: [
-        {
-          image: carousel1,
-          title: '新闻1的标题 1111sffsfsfsffsfasfasf',
-          link: 'https://element-plus.org/'
-        },
-        {
-          image: carousel2,
-          title: '新闻2的标题 1111dgdgsgsgsg',
-          link: 'https://element-plus.org/'
-        },
-        {
-          image: carousel3,
-          title: '新闻3的标题 1111bbdsgsgsgsgsg',
-          link: 'https://element-plus.org/'
-        },
-        {
-          image: carousel1,
-          title: '新闻4的标题 1111sgszgsgszg',
-          link: 'https://element-plus.org/'
-        },
-        {
-          image: carousel2,
-          title: '新闻5的标题 1111sgzsgg',
-          link: 'https://element-plus.org/'
-        },
-        {
-          image: carousel3,
-          title: '新闻6的标题 1111dxhdfhdfhdhdhd',
-          link: 'https://element-plus.org/'
-        },
-      ],
+      GossipNews: [],
+      GossipNewsVideo: [],
     }
   },
 
   created() {
-
+    this.getData(-1, '', '八卦', this.GossipNews);
+    this.getVideo(-1, '', '八卦', this.GossipNewsVideo);
   },
 
   methods: {
     //从后端接口获取新闻数据
-    async getGossipNews(newsQuantity, tag1, tag2, dataItems) {
+    async getData(newsQuantity, tag1, tag2, dataItems) {
       try {
         const requestData = {
           num: newsQuantity,
@@ -152,7 +93,7 @@ export default {
           propertyTag: String(tag2),
         };
 
-        const response = await axios.post('/api/Video/GetVideoRandomly', requestData, {
+        const response = await axios.post('/api/News/GetNews', requestData, {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -170,7 +111,7 @@ export default {
     },
 
     //从后端接口获取视频数据
-    async getGossipVideo(newsQuantity, tag1, tag2, dataItems) {
+    async getVideo(newsQuantity, tag1, tag2, dataItems) {
       try {
         const requestData = {
           num: newsQuantity,
@@ -188,7 +129,7 @@ export default {
 
         // 将数组存贮于传入的数组名中
         dataItems.splice(0, dataItems.length, ...response.data.value);
-        // console.log(dataItems);
+        console.log(dataItems);
         // console.log(this.items);
       } catch (error) {
         console.error(error);
@@ -197,7 +138,21 @@ export default {
 
     //按照selectTag来筛选数据
     selectGossip(selectTag) {
-      ;
+      this.getData(-1, selectTag, '八卦', this.GossipNews);
+      this.getVideo(-1, selectTag, '八卦', this.GossipNewsVideo);
+    },
+
+    //截断过长的文本
+    truncateText(text, maxLength) {
+      if (text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+      }
+      return text;
+    },
+
+    //匹配mp4字符，用于判断视频还是图片的渲染
+    matchMP4(str) {
+      return str.includes('mp4');
     }
   }
 }
@@ -229,25 +184,26 @@ export default {
 .imgSearch {
   top: 0vh;
   left: 0%;
-  width: 120%;
-  height: 120%;
+  width: 30vw;
+  height: 40vh;
   position: relative;
 }
 
 /* 标题样式 */
 .titleSearch {
   font-weight: bold;
-  width: 50%;
   /* 设置容器的宽度 */
   overflow: hidden;
   /* 隐藏超出容器宽度的文本 */
   text-overflow: ellipsis;
   /* 使用省略号表示超出的文本 */
-  white-space: nowrap;
+  /* white-space: nowrap; */
   /* white-space: nowrap;  不换行 */
+  width: 27vw;
   margin-top: 5px;
+  font-size: 30px;
   position: relative;
-  left: 8%;
+  left: -12vw;
 }
 
 /* 描述样式 */

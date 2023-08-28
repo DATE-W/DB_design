@@ -31,8 +31,8 @@
               <el-carousel-item v-for="(item, index) in VideoCarousel" :key="index">
                 <img referrerPolicy='no-referrer' :src="item.cover" alt="carousel image" class="imgANO"
                   @click="openLink(item.urllink)">
-                <div class="description" @click="openLink(item.urlink)">{{ item.title }}</div>
-                <!-- <div class="description" @click="openLink(item.urlink)">{{ truncateText(item.text, 20) }}</div> -->
+                <div class="description" v-if="item.title != null" @click="openLink(item.urllink)">{{
+                  truncateText(item.title, 30) }}</div>
               </el-carousel-item>
             </el-carousel>
           </div>
@@ -46,7 +46,8 @@
               style="margin-top: 8px;">
               <img referrerPolicy='no-referrer' :src="item.cover" class="imgRightItem" @click="openLink(item.urllink)"
                 alt="image" />
-              <a class="Rightdescription" @click="openLink(item.urlink)">{{ item.title }}</a>
+              <a class="Rightdescription" v-if="item.title != null" @click="openLink(item.urlink)">{{
+                truncateText(item.title, 14) }}</a>
             </el-col>
           </el-row>
         </div>
@@ -67,7 +68,8 @@
             style="margin-top: 50px;">
             <img referrerPolicy='no-referrer' :src="item.cover" class="imgItem" @click="openLink(item.urllink)"
               alt="image" />
-            <a class="Alldescription" @click="openLink(item.urllink)">{{ item.title }}</a>
+            <a class="Alldescription" v-if="item.title != null" @click="openLink(item.urllink)">{{
+              truncateText(item.title, 12) }}</a>
           </el-col>
         </el-row>
       </div>
@@ -83,11 +85,6 @@
 import MyNav from './nav.vue';
 import axios from 'axios';
 
-import carousel1 from '../assets/img/carousel1.png';
-import carousel2 from '../assets/img/carousel2.png';
-import carousel3 from '../assets/img/carousel3.png';
-import carousel4 from '../assets/img/carousel4.png';
-
 
 export default {
   components: {
@@ -95,39 +92,18 @@ export default {
   },
   data() {
     return {
-      VideoCarousel: [
-        { image: carousel1, description: '图片1的描述', link: 'https://element-plus.org/' },
-        { image: carousel2, description: '图片2的描述', link: 'https://element-plus.org/' },
-        { image: carousel3, description: '图片3的描述', link: 'https://element-plus.org/' },
-        { image: carousel4, description: '图片4的描述', link: 'https://element-plus.org/' },
-      ],
-      VideoRight: [
-        { image: carousel1, description: '图片1的描述', link: 'https://element-plus.org/' },
-        { image: carousel2, description: '图片2的描述', link: 'https://element-plus.org/' },
-        { image: carousel3, description: '图片3的描述', link: 'https://element-plus.org/' },
-        { image: carousel1, description: '图片1的描述', link: 'https://element-plus.org/' },
-        { image: carousel2, description: '图片2的描述', link: 'https://element-plus.org/' },
-        { image: carousel3, description: '图片3的描述', link: 'https://element-plus.org/' },
-      ],
-      VideoAll: [
-        { image: carousel1, description: '图片1的描述', link: 'https://element-plus.org/' },
-        { image: carousel2, description: '图片2的描述', link: 'https://element-plus.org/' },
-        { image: carousel3, description: '图片3的描述', link: 'https://element-plus.org/' },
-        { image: carousel1, description: '图片1的描述', link: 'https://element-plus.org/' },
-        { image: carousel2, description: '图片2的描述', link: 'https://element-plus.org/' },
-        { image: carousel3, description: '图片3的描述', link: 'https://element-plus.org/' },
-        { image: carousel1, description: '图片1的描述', link: 'https://element-plus.org/' },
-        { image: carousel2, description: '图片2的描述', link: 'https://element-plus.org/' },
-        { image: carousel3, description: '图片3的描述', link: 'https://element-plus.org/' },
-        { image: carousel1, description: '图片1的描述', link: 'https://element-plus.org/' },
-        { image: carousel2, description: '图片2的描述', link: 'https://element-plus.org/' },
-        { image: carousel3, description: '图片3的描述', link: 'https://element-plus.org/' },
-        { image: carousel1, description: '图片1的描述', link: 'https://element-plus.org/' },
-        { image: carousel2, description: '图片2的描述', link: 'https://element-plus.org/' },
-        { image: carousel3, description: '图片3的描述', link: 'https://element-plus.org/' },
-      ],
+      VideoCarousel: [],
+      VideoRight: [],
+      VideoAll: [],
     }
   },
+
+  created() {
+    this.getVideoData(3, '通用', '', this.VideoCarousel);
+    this.getVideoData(6, '', '', this.VideoRight);
+    this.getVideoData(15, '', '', this.VideoAll);
+  },
+
   methods: {
     //打开链接的页面
     openLink(url) {
@@ -136,28 +112,32 @@ export default {
 
     //从后端接口获取数据
     async getVideoData(newsQuantity, tag1, tag2, dataItems) {
+      let response
       try {
         const requestData = {
           num: newsQuantity,
           matchTag: String(tag1),
           propertyTag: String(tag2),
         };
-
-        const response = await axios.post('/api/Video/GetVideoRandomly', requestData, {
+        response = await axios.post('/api/Video/GetVideoRandomly', requestData, {
           headers: {
             'Content-Type': 'application/json',
           },
         }); // 发送POST请求，并将请求数据作为 JSON 对象发送
-
-        console.log(response.data.value);
-
-        // 将数组存贮于传入的数组名中
-        dataItems.splice(0, dataItems.length, ...response.data.value);
-        // console.log(dataItems);
-        // console.log(this.items);
       } catch (error) {
         console.error(error);
+        ElMessage({
+          message: err.response.data.msg,
+          grouping: false,
+          type: 'error',
+        })
+        return
       }
+      console.log(response.data.value);
+      // 将数组存贮于传入的数组名中
+      // dataItems = response.data.value;
+      dataItems.splice(0, dataItems.length, ...response.data.value);
+      console.log(this.VideoCarousel);
     },
 
     //换一批，即更新数据
@@ -178,14 +158,10 @@ export default {
         return text.substring(0, maxLength) + '...';
       }
       return text;
-    }
+    },
   },
 
-  created() {
-    this.getVideoData(3, '通用', '', this.VideoCarousel);
-    this.getVideoData(6, '', '', this.VideoRight);
-    this.getVideoData(15, '', '', this.VideoAll);
-  },
+
 }
 
 </script>
@@ -199,7 +175,7 @@ export default {
 
 .VideoRecommend {
   position: relative;
-  top: 1vh;
+  top: 2vh;
   left: 7vw;
 }
 
