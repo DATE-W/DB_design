@@ -1,9 +1,10 @@
-<!-- 2154314_郑楷_赛事详情页 2023.08.27 01:00 v1.4.0 
+<!-- 2154314_郑楷_赛事详情页 2023.08.27 19:00 v1.5.0 
  v1.0.0 添加页面，改路由，完成赛事列表向该页的UID传值 
  v1.1.0 向赛事列表主页面传值，使得之前的选择结果得到保存
  v1.2.0 画出基本页面功能，增加往球队详情页的跳转逻辑，增加往其他场次的跳转逻辑
  v1.3.0 通过Uid来调用接口，实时渲染页面内容，增加各场比赛之间的直接跳转功能
- v1.4.0 修复了返回比赛一级页面时不能保留原有选择的bug，美化了队标显示 -->
+ v1.4.0 修复了返回比赛一级页面时不能保留原有选择的bug，美化了队标显示
+ v1.5.0 直播入口跳转功能，页面美化 -->
 
 <template>
   <my-nav></my-nav>
@@ -27,7 +28,7 @@
     </div>
   </div>
 
-  <div class="topTextBoxTRA" style="left: 64rem;top:5rem;width:20rem" @click="toTeams(this.match.guestTeamName)">
+  <div class="topTextBoxTRA" style="left: 64rem;top:5rem;width:20rem">
     <img class="picTeam" :src=this.match.guestLogo style="right:2rem">
     <div class="modal1"></div>
     <div class="topTextBoxTRA1" style="width:20rem" @click="toTeams(this.match.guestTeamName)">
@@ -43,12 +44,12 @@
     <p class="textScore">{{ scoreCheck(this.match.guestScore) }}</p>
   </div>
 
-  <p class="recentGameTypo" style="left:13rem">近期比赛</p>
+  <p class="recentGameTypo" style="left:7rem">近期比赛</p>
 
-  <p class="recentGameTypo" style="left:79rem">近期比赛</p>
+  <p class="recentGameTypo" style="left:85rem">近期比赛</p>
 
   <div class="recentGameBoxLeft" v-for="(homeRecentGame, index) in match.homeRecentGames" :key="homeRecentGame.gameUid"
-    :style="{ top: `${index * 7 + 22}rem` }" style="left:13rem;">
+    :style="{ top: `${index * 7 + 22}rem` }" style="left:7rem;">
     <div class="imgBox" style="left:9rem;">
       <img :src="homeRecentGame.opponentLogo">
       <div class="modal2"></div>
@@ -63,7 +64,7 @@
   </div>
 
   <div class="recentGameBoxLeft" v-for="(guestRecentGame, index) in match.guestRecentGames" :key="guestRecentGame.gameUid"
-    :style="{ top: `${index * 7 + 22}rem` }" style="left:64rem;">
+    :style="{ top: `${index * 7 + 22}rem` }" style="left:70rem;">
     <div class="imgBox" style="right:9rem;">
       <img :src="guestRecentGame.opponentLogo">
       <div class="modal2"></div>
@@ -73,6 +74,14 @@
       <p class="textMatchScore" style="right:5.5rem">{{ guestRecentGame.opponentScore }}&nbsp:&nbsp{{
         guestRecentGame.homeScore }}</p>
       <p class="textMatchOpp" style="left:0.5rem">{{ guestRecentGame.opponentName }}</p>
+    </div>
+  </div>
+
+  <div>
+    <img class="intoLiveImg" src="../assets/img/IntoLive.jpg">
+    <div class="intoLiveModal" @click="goToVideo(this.match.liveStream);">
+      <img class="LiveLogo" src="../assets/img/LiveStreamLogo.png">
+      <p class="textLive">直播入口</p>
     </div>
   </div>
 </template>
@@ -117,6 +126,9 @@ export default {
       /* this.homeTeamName = response.data.homeTeamName; */
       this.match = response.data;
       console.log(this.match);
+    },
+    goToVideo(video_url) {
+      window.open(video_url);
     },
     // 比分空值处理
     scoreCheck(score) {
@@ -205,31 +217,7 @@ export default {
     return {
       lgeChoice: 0,
       dateChoice: ref(''),
-
       match: ref([]),
-
-      /* gameUid: 'PRD13403419',
-      dateTime: '20:00',
-      homeTeamName: '利物浦',
-      guestTeamName: '曼彻斯特联',
-      homeLogo: 'https://img1.gtimg.com/hotarticle/pics/hv1/214/183/2325/151230004.png',
-      guestLogo: 'https://new.inews.gtimg.com/tnews/3c92e66f/12dd/3c92e66f-12dd-4670-a139-7a0936cf4b9f.png',
-      status: 2,
-      homeScore: 7,
-      guestScore: 0,
-      homeRecentGames: [
-        {"gameDate":"2005-05-25","opponentName":"AC米兰","homeScore":6,"opponentScore":5,"opponentLogo":"","gameUid":"SBWJL"},
-        {"gameDate":"2019-05-08","opponentName":"巴塞罗那","homeScore":4,"opponentScore":0,"opponentLogo":"","gameUid":"香草WJL"},
-        {"gameDate":"2019-06-02","opponentName":"热刺","homeScore":2,"opponentScore":0,"opponentLogo":"","gameUid":"我真是只猪啊"},
-      ],
-      guestRecentGames: [
-        {"gameDate":"2022-11-15","opponentName":"AAA","homeScore":3,"opponentScore":2,"opponentLogo":"","gameUid":"EKBNS"},
-        {"gameDate":"2017-08-21","opponentName":"切尔西","homeScore":1,"opponentScore":1,"opponentLogo":"","gameUid":"HGMXV"},
-        {"gameDate":"2020-03-10","opponentName":"皇马","homeScore":2,"opponentScore":3,"opponentLogo":"","gameUid":"TLQWY"}
-
-      ],
-      leagueInfoNum: 1, */
-
     }
 
   }
@@ -429,11 +417,53 @@ export default {
   top: -0rem;
 }
 
+.textLive {
+  position: absolute;
+  font-family: Verdana;
+  font-size: 1rem;
+  color: var(--colors-text-dark-172239100, black);
+  font-weight: 600;
+  top: 12rem;
+  left: 14.7rem;
+}
+
 .picTeam {
   position: absolute;
   width: 13rem;
   height: 13rem;
   top: 0.5rem;
   object-fit: cover;
+}
+
+.intoLiveImg {
+  position: absolute;
+  top: 20rem;
+  left: 32.2rem;
+  height: 23rem;
+  border: 2px solid var(--colors-light-eaeaea-100, #EAEAEA);
+  border-radius: 2rem;
+}
+
+.intoLiveModal {
+  position: absolute;
+  top: 20rem;
+  left: 32.2rem;
+  height: 23.5rem;
+  width: 33.4rem;
+  border: 0px;
+  border-radius: 2rem;
+  background-color: rgba(255, 255, 255, 0.4);
+  transition: background-color 0.8s ease;
+}
+
+.intoLiveModal:hover {
+  background-color: rgba(240, 240, 240, 0.7);
+}
+
+.LiveLogo {
+  position: absolute;
+  left: 12.7rem;
+  top: 6rem;
+  height: 8rem;
 }
 </style>
