@@ -33,23 +33,6 @@ namespace DBwebAPI.Controllers
             {
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
-
-
-                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-                Console.WriteLine("token = " + token);
-
-
-                var valid = new ValidateToken();
-                bool pass = valid.ValidateJwtToken(token, ValidTokenAuthority.Admin);
-                if (pass == false)
-                {
-                    Console.WriteLine("权限不足");
-                    return Ok(new CustomResponse { ok = "no", value = "权限不足" });
-                }
-
-
-
                 var ans = await sqlORM.Queryable<Usr>()
                     .Select(it => new UsrInfo
                     {
@@ -61,7 +44,7 @@ namespace DBwebAPI.Controllers
                     })
                     .ToListAsync();
 
-                return Ok(new CustomResponse { ok = "no", value = ans });
+                return Ok(new CustomResponse { ok = "yes", value = ans });
             }
             catch (Exception ex)
             {
