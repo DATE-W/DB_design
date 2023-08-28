@@ -29,6 +29,7 @@ namespace DBwebAPI.Controllers
             public String account { get; set; }
             public String avatar { get; set; }
             public String signature { get; set; }
+            public int userpoint { get; set; }
         }
         [HttpPost]
         public async Task<IActionResult> profile()
@@ -116,6 +117,7 @@ namespace DBwebAPI.Controllers
                 response.account = account;
                 response.avatar = avatar;
                 response.signature = signature;
+                response.userpoint = tempUsr.FirstOrDefault().userPoint;
                 Console.WriteLine("response.username" + response.username);
                 Console.WriteLine("response.uft:" + response.uft);
                 Console.WriteLine("response.approval_num:" + response.approval_num);
@@ -974,6 +976,7 @@ namespace DBwebAPI.Controllers
             public int user_id { get; set; }
             public String userName { get; set; }
             public String uft { get;set; }
+            public int userpoint { get; set; }
             public String signature { get; set; }
             public int follownum { get;set; }
             public int likenum { get;set; }
@@ -1036,6 +1039,7 @@ namespace DBwebAPI.Controllers
                     t.userName =user.userName;
                     t.signature =user.signature;
                     t.avatar =user.avatar;
+                    t.userpoint = user.userPoint;
                     //主队
                     List<UserFavouriteTeam> tmpUFT_id = new List<UserFavouriteTeam>();
                     tmpUFT_id = await sqlORM.Queryable<UserFavouriteTeam>().Where(it => it.user_id == user.user_id)
@@ -1046,7 +1050,7 @@ namespace DBwebAPI.Controllers
                         .ToListAsync();
                     String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "暂无主队";
                     t.uft = UFT;
-
+                    
                     //点赞数
                     List<PublishPost> tmpPP = new List<PublishPost>();
                     tmpPP = await sqlORM.Queryable<PublishPost>().Where(it => it.user_id == user.user_id)
@@ -1065,7 +1069,7 @@ namespace DBwebAPI.Controllers
 
                     //粉丝数
                     t.fansnum = user.followednumber;
-
+                 
                     //是否关注
                     List<Follow> tmpf = new List<Follow> ();
                     tmpf = await sqlORM.Queryable<Follow>().Where(it => it.follow_id == user.user_id && it.follower_id==user_id)
@@ -1138,6 +1142,7 @@ namespace DBwebAPI.Controllers
                     t.userName = user.userName;
                     t.signature = user.signature;
                     t.avatar = user.avatar;
+                    t.userpoint = user.userPoint;
                     //主队
                     List<UserFavouriteTeam> tmpUFT_id = new List<UserFavouriteTeam>();
                     tmpUFT_id = await sqlORM.Queryable<UserFavouriteTeam>().Where(it => it.user_id == user.user_id)

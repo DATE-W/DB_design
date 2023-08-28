@@ -40,6 +40,7 @@ namespace DBwebAPI.Controllers
         public class PostInfoJson
         {
             public int post_id { get; set; }
+            public int userpoint { get; set; }
             public string title { get; set; }
             public string contains { get;set; }
             public int approvalNum { get; set; }
@@ -254,8 +255,9 @@ namespace DBwebAPI.Controllers
                     IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
                         int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
-                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
-
+                        Usr author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).SingleAsync();
+                        string author_name = author.userName;
+                        int userpoint = author.userPoint;
                         return new PostInfoJson
                         {
                             post_id = post.post_id,
@@ -263,7 +265,8 @@ namespace DBwebAPI.Controllers
                             contains = post.contains,
                             approvalNum = post.approvalNum,
                             collectNum = post.favouriteNum,
-                            author = author // Add the author property here
+                            userpoint = userpoint,
+                            author = author_name // Add the author property here
                         };
                     });
                     PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
@@ -279,7 +282,9 @@ namespace DBwebAPI.Controllers
                     IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
                         int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
-                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+                        Usr author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).SingleAsync();
+                        string author_name = author.userName;
+                        int userpoint = author.userPoint;
 
                         return new PostInfoJson
                         {
@@ -288,7 +293,8 @@ namespace DBwebAPI.Controllers
                             contains = post.contains,
                             approvalNum = post.approvalNum,
                             collectNum = post.favouriteNum,
-                            author = author // Add the author property here
+                            userpoint = userpoint,
+                            author = author_name // Add the author property here
                         };
                     });
                     PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
@@ -359,7 +365,9 @@ namespace DBwebAPI.Controllers
                     IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
                         int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
-                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+                        Usr author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).SingleAsync();
+                        string author_name = author.userName;
+                        int userpoint = author.userPoint;
 
                         return new PostInfoJson
                         {
@@ -368,7 +376,8 @@ namespace DBwebAPI.Controllers
                             contains = post.contains,
                             approvalNum = post.approvalNum,
                             collectNum = post.favouriteNum,
-                            author = author // Add the author property here
+                            userpoint = userpoint,
+                            author = author_name // Add the author property here
                         };
                     });
                     PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
@@ -384,7 +393,9 @@ namespace DBwebAPI.Controllers
                     IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
                         int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
-                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+                        Usr author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).SingleAsync();
+                        string author_name = author.userName;
+                        int userpoint = author.userPoint;
 
                         return new PostInfoJson
                         {
@@ -393,7 +404,8 @@ namespace DBwebAPI.Controllers
                             contains = post.contains,
                             approvalNum = post.approvalNum,
                             collectNum = post.favouriteNum,
-                            author = author // Add the author property here
+                            userpoint = userpoint,
+                            author = author_name // Add the author property here
                         };
                     });
                     PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
@@ -464,7 +476,9 @@ namespace DBwebAPI.Controllers
                     IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
                         int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
-                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+                        Usr author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).SingleAsync();
+                        string author_name = author.userName;
+                        int userpoint = author.userPoint;
 
                         return new PostInfoJson
                         {
@@ -473,7 +487,8 @@ namespace DBwebAPI.Controllers
                             contains = post.contains,
                             approvalNum = post.approvalNum,
                             collectNum = post.favouriteNum,
-                            author = author // Add the author property here
+                            userpoint = userpoint,
+                            author = author_name // Add the author property here
                         };
                     });
                     PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
@@ -489,7 +504,9 @@ namespace DBwebAPI.Controllers
                     IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
                         int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
-                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+                        Usr author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).SingleAsync();
+                        string author_name = author.userName;
+                        int userpoint = author.userPoint;
 
                         return new PostInfoJson
                         {
@@ -498,7 +515,8 @@ namespace DBwebAPI.Controllers
                             contains = post.contains,
                             approvalNum = post.approvalNum,
                             collectNum = post.favouriteNum,
-                            author = author // Add the author property here
+                            userpoint = userpoint,
+                            author = author_name // Add the author property here
                         };
                     });
                     PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
@@ -617,7 +635,9 @@ namespace DBwebAPI.Controllers
                     IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
                         int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
-                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+                        Usr author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).SingleAsync();
+                        string author_name = author.userName;
+                        int userpoint = author.userPoint;
 
                         return new PostInfoJson
                         {
@@ -626,7 +646,8 @@ namespace DBwebAPI.Controllers
                             contains = post.contains,
                             approvalNum = post.approvalNum,
                             collectNum = post.favouriteNum,
-                            author = author // Add the author property here
+                            userpoint = userpoint,
+                            author = author_name // Add the author property here
                         };
                     });
                     PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
@@ -650,7 +671,9 @@ namespace DBwebAPI.Controllers
                     IEnumerable<Task<PostInfoJson>> postTasks = postsForPage.Select(async post =>
                     {
                         int userId = await sqlORM.Queryable<PublishPost>().Where(pp => pp.post_id == post.post_id).Select(pp => pp.user_id).SingleAsync();
-                        string author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).Select(usr => usr.userName).SingleAsync();
+                        Usr author = await sqlORM.Queryable<Usr>().Where(usr => usr.user_id == userId).SingleAsync();
+                        string author_name = author.userName;
+                        int userpoint = author.userPoint;
 
                         return new PostInfoJson
                         {
@@ -659,7 +682,8 @@ namespace DBwebAPI.Controllers
                             contains = post.contains,
                             approvalNum = post.approvalNum,
                             collectNum = post.favouriteNum,
-                            author = author // Add the author property here
+                            userpoint = userpoint,
+                            author = author_name // Add the author property here
                         };
                     });
                     PostInfoJson[] postInfoJsonsArray = await Task.WhenAll(postTasks);
@@ -703,6 +727,7 @@ namespace DBwebAPI.Controllers
             public string ok { get; set; }
             public string name { get; set; }
             public int author_id { get; set; }
+            public int userpoint { get; set; }
             public string title { get; set; }
             public string avatar { get;set; }
             public string contains { get; set; }
@@ -810,6 +835,7 @@ namespace DBwebAPI.Controllers
                 sentpostinfo.islike = tempLike.Count != 0? 1: 0;
                 sentpostinfo.isfollow = follow.Count != 0 ? 1 : 0;
                 sentpostinfo.ok = "yes";
+                sentpostinfo.userpoint = PostUsr.FirstOrDefault().userPoint;
                 sentpostinfo.name = PostUsr.FirstOrDefault().userName;//string
                 sentpostinfo.title = tempPosts.FirstOrDefault().title;//string
                 sentpostinfo.contains = tempPosts.FirstOrDefault().contains;//string
@@ -839,13 +865,6 @@ namespace DBwebAPI.Controllers
                 }
                 sentpostinfo.comments = commentsList.ToArray();
 
-                Console.WriteLine("name: " + sentpostinfo.name);
-                Console.WriteLine("title: " + sentpostinfo.title);
-                Console.WriteLine("contains: " + sentpostinfo.contains);
-                Console.WriteLine("publishDateTime: " + sentpostinfo.publishDateTime);
-                Console.WriteLine("approvalNum: " + sentpostinfo.approvalNum);
-                Console.WriteLine("Like: " + sentpostinfo.islike);
-                Console.WriteLine("Collect: " + sentpostinfo.iscollect);
                 return Ok(sentpostinfo);
             }
             catch (Exception ex)
