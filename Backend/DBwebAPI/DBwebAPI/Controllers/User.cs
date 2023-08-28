@@ -12,6 +12,7 @@ using Dm;
 using System.Reflection.Metadata;
 using System.Security.Principal;
 using Newtonsoft.Json.Linq;
+using static DBwebAPI.Models.NoticeModel;
 
 namespace DBwebAPI.Controllers
 {
@@ -278,7 +279,7 @@ namespace DBwebAPI.Controllers
                         .ToListAsync();
                     if (tmpteam.Count() == 0)
                     {
-                        return Ok(new CustomResponse { ok = "no", value = "查无此队" });//查无此队
+                        return Ok(new CustomResponse { ok = "no", value = "暂无主队" });//查无此队
                     }
                     else
                     {
@@ -697,7 +698,7 @@ namespace DBwebAPI.Controllers
         {
             try
             {
-                Console.WriteLine("--------------------------Get userAction--------------------------");
+                Console.WriteLine("--------------------------Get Notice--------------------------");
                 ORACLEconn ORACLEConnectTry = new ORACLEconn();
                 if (!ORACLEConnectTry.getConn())
                 {
@@ -705,33 +706,34 @@ namespace DBwebAPI.Controllers
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarClient sqlORM = ORACLEConnectTry.sqlORM;
+                
+                 // 从请求头中获取传递的JWT令牌
+                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                 //验证 Authorization 请求头是否包含 JWT 令牌
+                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
+                 {
+                     Console.WriteLine("未提供有效的JWT");
+                     return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
+                 }
+                 //
+                 string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
+                 // 验证并解析JWT令牌
+                 var handler = new JwtSecurityTokenHandler();
+                 var tokenS = handler.ReadJwtToken(jwtToken);
+                 // 获取JWT令牌中的claims信息
+                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                 List<Usr> tempUsr = new List<Usr>();
+                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
+                     .ToListAsync();
+                 //判断用户是否存在
+                 if (tempUsr.Count() == 0)
+                 {
+                     Console.WriteLine("用户不存在");
+                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
+                 }
+                 int user_id = tempUsr.FirstOrDefault().user_id;
                
-                // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
-                //验证 Authorization 请求头是否包含 JWT 令牌
-                if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
-                {
-                    Console.WriteLine("未提供有效的JWT");
-                    return BadRequest(new { ok = "no", value = "未提供有效的JWT" });
-                }
-                //
-                string jwtToken = authorizationHeader.Substring("Bearer ".Length).Trim();
-                // 验证并解析JWT令牌
-                var handler = new JwtSecurityTokenHandler();
-                var tokenS = handler.ReadJwtToken(jwtToken);
-                // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
-                List<Usr> tempUsr = new List<Usr>();
-                tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
-                    .ToListAsync();
-                //判断用户是否存在
-                if (tempUsr.Count() == 0)
-                {
-                    Console.WriteLine("用户不存在");
-                    return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
-                }
-                int user_id = tempUsr.FirstOrDefault().user_id;
-
+                //int user_id = 12;
                 // 创建 NoticeClass 实例
                 List<NoticeClass> noticeList = new List<NoticeClass>();
 
@@ -808,8 +810,20 @@ namespace DBwebAPI.Controllers
                         noticeList.Add(notice);
                     }
                 }
-
-                // 对 points 数组按照 datetime 降序排序
+                //站务通知
+                List<Notice> tmpnotice = new List<Notice>();
+                tmpnotice = await sqlORM.Queryable<Notice>().Where(it=>true).ToListAsync();
+                foreach(var t in tmpnotice)
+                {
+                    NoticeClass notice = new NoticeClass
+                    {
+                        dateTime = t.publishdatetime,
+                        people = "notice",
+                        content = t.text,
+                    };
+                    noticeList.Add(notice);
+                }
+                // 对 notices 数组按照 datetime 降序排序
                 noticeList = noticeList.OrderByDescending(a => a.dateTime).ToList();
 
                 NoticeJson response = new NoticeJson();

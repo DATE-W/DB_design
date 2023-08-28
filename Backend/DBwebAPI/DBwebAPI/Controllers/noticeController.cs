@@ -34,6 +34,7 @@ namespace DBwebAPI.Controllers
                 }
                 notice.notice_id = id;
                 notice.text = json.text;
+                notice.publishdatetime = DateTime.Now;
 
                 adminPublishNotice adminPublishNotice = new adminPublishNotice();
                 adminPublishNotice.notice_id = id;

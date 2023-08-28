@@ -21,6 +21,7 @@ namespace DBwebAPI.Models
             [SugarColumn(IsPrimaryKey = true)]
             public int? notice_id { get; set; }
             public string? text { get; set; }
+            public DateTime publishdatetime { get; set; }
         }
 
         public class adminPublishNotice
