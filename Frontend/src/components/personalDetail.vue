@@ -1,8 +1,8 @@
 <!-- 我的动态 v1.2 -->
 <template>
     <div class="overflow-container">
-        <div class="bg-theme">
-            <img src="../assets/img/carousel1.png" alt="Carousel Image" class="bg-image">
+        <div class="bg-theme" :style="{ backgroundImage: 'url(' + backgroundImage + ')' }">
+            <!-- <img :src="backgroundImage" alt="Carousel Image" class="bg-image"> -->
         </div>
         <!-- 上方展示背景图 -->
         <el-container class="main-container">
@@ -57,7 +57,8 @@ export default {
     data() {
         return {
             dynamics: [
-            ]
+            ],
+            backgroundImage: '',
         };
     },
     computed: {
@@ -76,6 +77,7 @@ export default {
     },
     mounted() {
         this.ShowAction();
+        this.getTheme();
     },
     methods: {
         // 根据动态类型返回相应的文本内容
@@ -161,6 +163,32 @@ export default {
                     type: 'error',
                 });
             }
+        },
+        async getTheme() {
+            const token = localStorage.getItem('token');
+            if (token == null) {
+                this.isAccount = false;
+                console.log(this.isAccount);
+                return;
+            }
+            let response
+            try {
+                const headers = {
+                    Authorization: `Bearer ${token}`,
+                };
+                response = await axios.post('/api/User/gettheme', {}, { headers })
+            } catch (err) {
+                console.log(err);
+                ElMessage({
+                    message: '未知错误',
+                    grouping: false,
+                    type: 'error',
+                })
+                return
+            }
+            console.log(response);
+            this.backgroundImage = response.data.image1;
+            console.log(this.backgroundImage)
         }
     }
 };
