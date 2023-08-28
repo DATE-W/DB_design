@@ -693,6 +693,7 @@ namespace DBwebAPI.Controllers
         }
         public class Comment
         {
+            public int user_id { get; set; }
             public string userName { get; set; }
             public string contains { get; set; }
             public DateTime publishDateTime { get; set; }
@@ -826,6 +827,7 @@ namespace DBwebAPI.Controllers
                     ComUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == comment.user_id)
                         .ToListAsync();
                     Comment tmpComment = new Comment();
+                    tmpComment.user_id = comment.user_id;
                     tmpComment.userName = ComUsr.First().userName;
                     tmpComment.contains = comment.contains;
                     tmpComment.publishDateTime = comment.publishDateTime;
