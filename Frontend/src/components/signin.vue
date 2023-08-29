@@ -230,7 +230,7 @@ export default {
           })
           localStorage.setItem('token', response.data.value)
           console.log("token = " + response.data.value)
-          this.$router.push('/AdminMain')
+          this.$router.push('/AdminUsers')
         }
       }
       else
