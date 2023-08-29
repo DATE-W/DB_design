@@ -15,6 +15,7 @@
             setTimeout(() => {
                 window.location.reload(); // 刷新当前页面
             }, 100); // 2000毫秒后刷新，你可以根据需要调整延迟时间
+            return
         }
     }
 }
@@ -46,10 +47,11 @@
 .nav-header {
     /* background-color: white; */
     background-image: linear-gradient(200deg, #a1c4fd 0%, #c2e9fb 100%);
-    position: relative;
+    position: fixed;
     height: 8vh;
-    width: 99%;
+    width: 80vw;
     border-radius: 10px;
+    left: 10vw;
     display: flex;
 }
 /*导航栏左侧容器*/

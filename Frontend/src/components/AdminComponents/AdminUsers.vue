@@ -1,9 +1,12 @@
 <script>
 import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
-    export default {
+import dashboard from './AdminDashBoard.vue';
+import headerview from './AdminNav.vue';
+export default {
     components:{
-      
+        dashboard:dashboard,
+        headerview:headerview,
     },
     data() {
         return {
@@ -49,6 +52,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
                 this.Users.sort((a, b) => a.user_id - b.user_id);
                 });
             }
+            return
         },
         async deleteUser(index)
         {
@@ -83,13 +87,14 @@ import { ElMessage, ElMessageBox } from 'element-plus';
             else {
                ElMessage.error("未找到相关用户信息");
             }
+            return
         },
     }
 }
 </script>
 
 <template>
-    <el-container class="main-lower-box">
+    <!-- <el-container class="main-lower-box">
         <el-table :data="Users" border height="300" style="width: 100%;border-radius: 10px;">
             <el-table-row label="111"/>
             <el-table-column align="center" prop="user_id" label="用户Id" width="100" />
@@ -103,10 +108,54 @@ import { ElMessage, ElMessageBox } from 'element-plus';
                 </template>
             </el-table-column>
         </el-table>
-    </el-container>
+    </el-container> -->
+    <div id="building">
+        <el-container class="rooter-box">
+        <el-header class="hide-header">
+            <headerview/>
+        </el-header>
+        <el-container>
+            <el-aside width="20vw" class="hide-aside">
+            <dashboard/>
+            </el-aside>
+            <el-main style="overflow-y: auto;background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;">
+            <el-container>
+                撰写用户板块
+            </el-container>
+            </el-main>
+        </el-container>
+        </el-container>
+    </div>
 </template>
 
 <style scoped>
+@media (max-width: 768px) { /* 设置适当的最大宽度值 */
+  .hide-aside {
+    display: none;
+  }
+  .hide-header {
+    display: none;
+  }
+}
+
+#building{
+    background-color:#eee;
+    left:0px;
+    top:0px;
+    width:100vw;			
+    height:100vh;		
+    position: fixed;
+}
+
+.rooter-box{
+    position: fixed;
+    width:80vw;
+    height:100vh;
+    left: 10vw;
+}
+</style>
+
+<!-- <style scoped>
 .main-lower-box{
     margin-top: 2vh;
     margin-right:1vw;
@@ -117,4 +166,4 @@ import { ElMessage, ElMessageBox } from 'element-plus';
     background-color: white;
 }
 
-</style>
+</style> -->
