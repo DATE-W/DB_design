@@ -1,9 +1,12 @@
 <script>
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
-    export default {
+import dashboard from './AdminDashBoard.vue';
+import headerview from './AdminNav.vue';
+export default {
     components:{
-      
+        dashboard:dashboard,
+        headerview:headerview,
     },
     data() {
         return {
@@ -14,6 +17,7 @@ import { ElMessage } from 'element-plus';
         clearAnnouncementInput()
         {
             this.announcement='';
+            return
         },
         async subbmitAnnouncement()
         {
@@ -49,46 +53,73 @@ import { ElMessage } from 'element-plus';
                ElMessage.error("发布失败");
             }
             this.announcement='';
+            return
         }
     }
 }
 </script>
 
 <template>
-    <el-container class="aside-lower-box">
-        <!--发布公告-->
-        <el-container style="height:20%;width:100%;text-align: center;position: absolute;"><p class="announcement-tittle">发布公告</p></el-container>
-        <el-container style="height:50%;width:100%;position: absolute;top:10vh;">
-            <el-input  
-                class="announcement-input-box"
-                v-model="announcement"
-                :rows="8"
-                type="textarea"
-                placeholder="请输入公告内容"
-            />
+    <div id="building">
+        <el-container class="rooter-box">
+        <el-header class="hide-header">
+            <headerview/>
+        </el-header>
+        <el-container>
+            <el-aside width="20vw" class="hide-aside">
+            <dashboard/>
+            </el-aside>
+            <el-main style="background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;display: flex;flex-direction: column;justify-content: center;">
+                <span class="announcement-tittle">发布公告</span>
+                <el-container style="height:20vh;position: relative;top:10vh;left:3vw;">
+                    <el-input  
+                        class="announcement-input-box"
+                        v-model="announcement"
+                        :rows="8"
+                        type="textarea"
+                        placeholder="请输入公告内容"
+                    />
+                </el-container>
+                <el-container style="height:20vh;position: relative;left:13vw;">
+                    <el-button class="announcement-btn" @click=" clearAnnouncementInput">
+                        <span class="announcement-btn-text">清空</span>
+                    </el-button>
+                    <el-button class="announcement-btn" @click="subbmitAnnouncement">
+                        <span class="announcement-btn-text">发布</span>
+                    </el-button>
+                </el-container>
+            </el-main>
         </el-container>
-        <el-container style="height:30%;width:100%;position: absolute;top:40vh;">
-            <el-button class="announcement-btn" style="margin-left:1vw;" @click=" clearAnnouncementInput">
-                <span class="announcement-btn-text">清空</span>
-            </el-button>
-            <el-button class="announcement-btn" @click="subbmitAnnouncement">
-                <span class="announcement-btn-text">发布</span>
-            </el-button>
         </el-container>
-    </el-container>
+    </div>
 </template>
 
 <style scoped>
-/*发布公告栏*/
-.aside-lower-box{
-    margin-top: 2vh;
-    margin-left:1vw;
-    border-radius: 10px;
-    position: relative;
-    width:95%;
-    height:57%;
-    background-color: white;
+@media (max-width: 768px) { /* 设置适当的最大宽度值 */
+  .hide-aside {
+    display: none;
+  }
+  .hide-header {
+    display: none;
+  }
 }
+
+#building{
+    background-color:#eee;
+    left:0px;
+    top:0px;
+    width:100vw;			
+    height:100vh;		
+    position: fixed;
+}
+
+.rooter-box{
+    position: fixed;
+    width:80vw;
+    height:100vh;
+    left: 10vw;
+}
+/*发布公告栏*/
 .announcement-tittle{
     font-family: 'Courier New', Courier, monospace;
     color: #555555;
@@ -96,11 +127,9 @@ import { ElMessage } from 'element-plus';
     font-size: 1.5rem;
     text-align: center;
     margin-top: 2vh;
-    margin-left: 13vw;
     position: relative;
 }
 .announcement-input-box{
-    margin-left: 1.5vw;
     position: relative;
     width:90%;
 }

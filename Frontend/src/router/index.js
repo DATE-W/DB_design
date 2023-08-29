@@ -55,8 +55,20 @@ const router = createRouter({
       component: () => import('../components/Players.vue')
     },
     {
-      path: '/AdminMain',
-      component: () => import('../components/AdminMain.vue')
+      path: '/AdminPosts',
+      component: () => import('../components/AdminComponents/AdminPosts.vue')
+    },
+    {
+      path: '/AdminUsers',
+      component: () => import('../components/AdminComponents/AdminUsers.vue')
+    },
+    {
+      path: '/AdminNews',
+      component: () => import('../components/AdminComponents/AdminNews.vue')
+    },
+    {
+      path: '/AdminAnnouncement',
+      component: () => import('../components/AdminComponents/AdminAnnouncement.vue')
     },
     {
       path: '/teamMsg',

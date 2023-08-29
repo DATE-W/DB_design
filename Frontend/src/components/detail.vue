@@ -88,6 +88,7 @@ export default {
                 this.isAccount = true;  
             }
             console.log("isAccount = " + this.isAccount);
+            return;
         },
         analyse_date(date){
             // 创建一个 Date 对象来解析时间字符串
@@ -169,6 +170,7 @@ export default {
             console.log("response.data.isfollow = " + response.data.isfollow);
             console.log("response.data.approvalNum = " + response.data.approvalNum);
             console.log("response.data.avatar = "+ response.data.avatar);
+            return;
         },
         async approvePost()
         {
@@ -215,6 +217,7 @@ export default {
                 this.approvalNum++;
             }
             console.log("isApproved2 = " + this.isApproved);
+            return;
         },
         async PostJudge()
         {
@@ -249,6 +252,7 @@ export default {
             if(response.data.ok=='yes'){
                 location.reload();
             }
+            return;
         },
         async collectPost()
         {
@@ -290,6 +294,7 @@ export default {
             }else{
                 ElMessage.error("收藏失败");
             }
+            return;
         },
         async reportPost()
         {
@@ -329,6 +334,7 @@ export default {
             }
             this.report_descriptions="";
             this.goBack();
+            return
         },
         async follow()
         {
@@ -368,6 +374,7 @@ export default {
             }else{
                 ElMessage.error("关注失败");
             }
+            return
         },
         goBack()
         {
@@ -376,6 +383,7 @@ export default {
             }else{
                 this.$router.push('/forum');
             }
+            return
         },
         async showUserInfo(id) {
             console.log("show user info")
@@ -444,6 +452,7 @@ export default {
                 this.follow()
             }).catch(() => {
             });
+            return
         },
     }
 }
