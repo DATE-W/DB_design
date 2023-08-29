@@ -61,13 +61,16 @@
 import { ElMessage, ElMessageBox } from 'element-plus';
 import axios from 'axios';
 export default {
+    props: {
+        backgroundImage: String, // 声明一个名为 backgroundImage 的 String 类型的 props
+    },
     data() {
         return {
             line1: '回到',
             line2: '顶部',
             dynamics: [
             ],
-            backgroundImage: '',
+            //backgroundImage: '',
         };
     },
     computed: {
@@ -86,7 +89,8 @@ export default {
     },
     mounted() {
         this.ShowAction();
-        this.getTheme();
+        //this.getTheme();
+        console.log(this.backgroundImage)
     },
     methods: {
         scrollToTop() {
@@ -229,8 +233,7 @@ export default {
     width: 100%;
     height: 250px;
     background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
+    background-size: cover;
 }
 
 .right-profile {

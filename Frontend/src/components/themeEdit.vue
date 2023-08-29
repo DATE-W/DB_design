@@ -9,7 +9,7 @@
         <!-- 主题选项 -->
         <el-row class="frame-options">
             <el-col :span="8" v-for="(theme, index) in themeList" :key="index">
-                <div class="frame-option">
+                <div class="frame-option" v-if="index < themeList.length - 1">
                     <div class="theme-item" @click="showThemePreview(theme)">
                         <div class="theme-circle" :style="`background-image: url(${theme.image4})`"
                             :class="{ 'selected-frame': selectedTheme === theme }"></div>

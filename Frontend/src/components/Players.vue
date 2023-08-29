@@ -175,6 +175,7 @@ export default {
       }
     },
     async getTeam(SelectedLeague) {
+      this.PlayersinLeague = [];
       let response
       try {
         response = await axios.post('/api/updateTeam/searchTeamInGameType', {

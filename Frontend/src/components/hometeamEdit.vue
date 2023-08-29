@@ -95,6 +95,7 @@ export default {
             }).catch(() => {
                 this.previewImageUrl = '';
             });
+            return
         },
         async selectteam(team) {
             this.selectedteam = team;
@@ -118,6 +119,7 @@ export default {
                 return
             }
             console.log(response);
+            return
         },
         async recover() {
             ElMessageBox({
@@ -156,6 +158,7 @@ export default {
             }).catch(() => {
                 this.previewImageUrl = '';
             });
+            return
         }
     }
 };
