@@ -18,6 +18,7 @@ namespace DBwebAPI.Controllers
             public string title { get; set; }
             public string? contains { get; set; }
             public DateTime publishtime { get; set; }
+            public int approvalnum { get; set; }
             public int isbanned { get; set; }
         }
 
@@ -51,7 +52,7 @@ namespace DBwebAPI.Controllers
                     t.publishtime = post.publishDateTime;
                     t.author_avatar=user.avatar;
                     t.author_name = user.userName;
-
+                    t.approvalnum = post.approvalNum;
                     adminPosts.Add(t);
                 }
                 adminPosts=adminPosts.OrderByDescending(it => it.post_id).ToList();
