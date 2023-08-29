@@ -61,7 +61,7 @@
                 <el-carousel-item v-if="carouselRecommendItems.length != 0"
                   v-for="(item, index) in carouselRecommendItems" :key="index">
                   <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
-                    :src="item.pictureRoutes" alt="carousel image" class="imgANO" @click="openNewsDetails(item)">
+                    :src="item.pictureRoutes[0]" alt="carousel image" class="imgANO" @click="openNewsDetails(item)">
                   <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer' ref="videoPlayer"
                     :src="item.pictureRoutes[0]" class="imgANO" @click="openNewsDetails(item)" controls />
                   <div class="description" @click="openNewsDetails(item)">{{
@@ -74,9 +74,9 @@
               <el-row>
                 <el-col :span="12" v-if="recommendItems1.length != 0" v-for="(item, index) in recommendItems1"
                   :key="index">
-                  <div class="imgItem1">
+                  <div class="imgItem1" @click="openNewsDetails(item)">
                     <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
-                      :src="item.pictureRoutes" alt="Image" class="imgRecommend">
+                      :src="item.pictureRoutes[0]" alt="Image" class="imgRecommend">
                     <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer' ref="videoPlayer"
                       :src="item.pictureRoutes[0]" class="imgRecommend" controls />
                     <div class="descriptionRecommend">{{ truncateText(item.newsBody.title, 16) }}</div>
@@ -95,7 +95,7 @@
                   <el-carousel-item v-if="recommendItems1.length != 0" v-for="(item, index) in carouselVideoItems"
                     :key="index">
                     <img referrerPolicy='no-referrer' :src="item.cover" alt="carousel image" class="imgANO"
-                      @click="openLink(item.urlink)">
+                      @click="openLink(item.urllink)">
                     <div class="description" @click="openLink(item.urllink)">{{ truncateText(item.title, 16) }}
                     </div>
                   </el-carousel-item>
@@ -107,7 +107,7 @@
                   <el-col :span="12" v-if="recommendItems1.length != 0" v-for="(item, index) in videoItems1" :key="index">
                     <div class="imgItem1">
                       <img referrerPolicy='no-referrer' :src="item.cover" alt="Image" class="imgRecommend"
-                        @click="openLink(item.urlink)">
+                        @click="openLink(item.urllink)">
                       <div class="descriptionRecommend" @click="openLink(item.urllink)">{{ truncateText(item.title,
                         16) }}</div>
                     </div>
@@ -118,10 +118,10 @@
               <div class="videoText">
                 <el-row v-if="recommendItems1.length != 0" v-for="(item, index) in videoItems2" :key="index">
                   <div class="textItem">
-                    <el-icon style="font-size: 23px;" @click="openLink(item.urlink)">
+                    <el-icon style="font-size: 23px;" @click="openLink(item.urllink)">
                       <VideoPlay />
                     </el-icon>
-                    <a class="Text" @click="openLink(item.link)">{{ truncateText(item.title, 16) }}</a>
+                    <a class="Text" @click="openLink(item.urllink)">{{ truncateText(item.title, 16) }}</a>
                   </div>
                 </el-row>
               </div>
@@ -139,11 +139,11 @@
                     <div class="recommendText">
                       <p class="CenterMainTitle">热门推荐</p>
                       <el-row v-if="recommendItems1.length != 0" v-for="(item, index) in recommendItems2" :key="index">
-                        <div class="textItem">
-                          <el-icon style="font-size: 23px;" @click="openLink(item.link)">
+                        <div class="textItem" @click="openNewsDetails(item)">
+                          <el-icon style="font-size: 23px;" @click="openNewsDetails(item)">
                             <Football />
                           </el-icon>
-                          <a class="Text" @click="openLink(item.link)">{{ truncateText(item.newsBody.title, 16) }}</a>
+                          <a class="Text" @click="openNewsDetails(item)">{{ truncateText(item.newsBody.title, 16) }}</a>
                         </div>
                       </el-row>
                     </div>
@@ -151,11 +151,11 @@
                     <div class="CenterNews">
                       <p class="CenterTitle">中超</p>
                       <el-row v-if="recommendItems1.length != 0" v-for="(item, index) in ChinaItems" :key="index">
-                        <div class="textItem">
-                          <el-icon style="font-size: 23px;" @click="openLink(item.link)">
+                        <div class="textItem" @click="openNewsDetails(item)">
+                          <el-icon style="font-size: 23px;" @click="openNewsDetails(item)">
                             <Football />
                           </el-icon>
-                          <a class="Text" @click="openLink(item.link)">{{ truncateText(item.newsBody.title, 16) }}</a>
+                          <a class="Text" @click="openNewsDetails(item)">{{ truncateText(item.newsBody.title, 16) }}</a>
                         </div>
                       </el-row>
                     </div>
@@ -163,11 +163,11 @@
                     <div class="CenterNews">
                       <p class="CenterTitle">英超</p>
                       <el-row v-if="recommendItems1.length != 0" v-for="(item, index) in ENGLANDItems" :key="index">
-                        <div class="textItem">
-                          <el-icon style="font-size: 23px;" @click="openLink(item.link)">
+                        <div class="textItem" @click="openNewsDetails(item)">
+                          <el-icon style="font-size: 23px;" @click="openNewsDetails(item)">
                             <Football />
                           </el-icon>
-                          <a class="Text" @click="openLink(item.link)">{{ truncateText(item.newsBody.title, 16) }}</a>
+                          <a class="Text" @click="openNewsDetails(item)">{{ truncateText(item.newsBody.title, 16) }}</a>
                         </div>
                       </el-row>
                     </div>
@@ -175,11 +175,11 @@
                     <div class="CenterNews">
                       <p class="CenterTitle">西甲</p>
                       <el-row v-if="recommendItems1.length != 0" v-for="(item, index) in SpainItems" :key="index">
-                        <div class="textItem">
-                          <el-icon style="font-size: 23px;" @click="openLink(item.link)">
+                        <div class="textItem" @click="openNewsDetails(item)">
+                          <el-icon style="font-size: 23px;" @click="openNewsDetails(item)">
                             <Football />
                           </el-icon>
-                          <a class="Text" @click="openLink(item.link)">{{ truncateText(item.newsBody.title, 16) }}</a>
+                          <a class="Text" @click="openNewsDetails(item)">{{ truncateText(item.newsBody.title, 16) }}</a>
                         </div>
                       </el-row>
                     </div>
@@ -187,11 +187,11 @@
                     <div class="CenterNews">
                       <p class="CenterTitle">德甲</p>
                       <el-row v-if="recommendItems1.length != 0" v-for="(item, index) in GermanyItems" :key="index">
-                        <div class="textItem">
-                          <el-icon style="font-size: 23px;" @click="openLink(item.link)">
+                        <div class="textItem" @click="openNewsDetails(item)">
+                          <el-icon style="font-size: 23px;" @click="openNewsDetails(item)">
                             <Football />
                           </el-icon>
-                          <a class="Text" @click="openLink(item.link)">{{ truncateText(item.newsBody.title, 16) }}</a>
+                          <a class="Text" @click="openNewsDetails(item)">{{ truncateText(item.newsBody.title, 16) }}</a>
                         </div>
                       </el-row>
                     </div>
@@ -199,11 +199,11 @@
                     <div class="CenterNews">
                       <p class="CenterTitle">意甲</p>
                       <el-row v-if="recommendItems1.length != 0" v-for="(item, index) in ItalyItems" :key="index">
-                        <div class="textItem">
-                          <el-icon style="font-size: 23px;" @click="openLink(item.link)">
+                        <div class="textItem" @click="openNewsDetails(item)">
+                          <el-icon style="font-size: 23px;" @click="openNewsDetails(item)">
                             <Football />
                           </el-icon>
-                          <a class="Text" @click="openLink(item.link)">{{ truncateText(item.newsBody.title, 16) }}</a>
+                          <a class="Text" @click="openNewsDetails(item)">{{ truncateText(item.newsBody.title, 16) }}</a>
                         </div>
                       </el-row>
                     </div>
@@ -223,39 +223,46 @@
                       <el-carousel-item v-if="recommendItems1.length != 0" v-for="(item, index) in carouselGossipItems"
                         :key="index">
                         <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
-                          :src="item.pictureRoutes[0]" alt="carousel image" class="imgANO" @click="openLink(item.link)">
+                          :src="item.pictureRoutes[0]" alt="carousel image" class="imgANO" @click="openNewsDetails(item)">
                         <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer'
-                          ref="videoPlayer" :src="item.pictureRoutes[0]" class="imgANO" controls />
-                        <div class="description" @click="openLink(item.link)">{{ truncateText(item.newsBody.title, 16) }}
+                          ref="videoPlayer" :src="item.pictureRoutes[0]" class="imgANO" @click="openNewsDetails(item)"
+                          controls />
+                        <div class="description" @click="openNewsDetails(item)">{{ truncateText(item.newsBody.title, 16)
+                        }}
                         </div>
                       </el-carousel-item>
                     </el-carousel>
                   </div>
                   <!-- 图文八卦新闻 -->
                   <div class="imgList2">
-                    <div v-if="recommendItems1.length != 0" v-for="(item, index) in gossipItems1" :key="index"
+                    <div v-if="recommendItems1.length != 0" v-for="(item, index) in  gossipItems1 " :key="index"
                       class="imgItem2">
                       <el-row :gutter="20">
                         <el-col :span="11">
-                          <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
-                            :src="item.pictureRoutes[0]" alt="Image" class="imgGossip">
-                          <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer'
-                            ref="videoPlayer" :src="item.pictureRoutes[0]" class="imgGossip" controls />
+                          <img v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == false"
+                            referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="Image" class="imgGossip"
+                            @click="openNewsDetails(item)">
+                          <video v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true"
+                            referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]"
+                            @click="openNewsDetails(item)" class="imgGossip" controls />
                         </el-col>
                         <el-col :span="8">
-                          <div class="descriptionGossip">{{ truncateText(item.newsBody.title, 16) }}</div>
+                          <div v-if="item.newsBody != null" class="descriptionGossip" @click="openNewsDetails(item)">{{
+                            truncateText(item.newsBody.title,
+                              16) }}</div>
                         </el-col>
                       </el-row>
                     </div>
                   </div>
                   <!-- 八卦推荐部分 -->
                   <div class="RightNews">
-                    <el-row v-if="recommendItems1.length != 0" v-for="(item, index) in gossipItems2" :key="index">
+                    <el-row v-if="gossipItems2.length != 0" v-for="( item, index ) in  gossipItems2 " :key="index">
                       <div class="textItem" style="top:-10vh">
-                        <el-icon style="font-size: 23px;" @click="openLink(item.link)">
+                        <el-icon style="font-size: 23px;" @click="openNewsDetails(item)">
                           <ToiletPaper />
                         </el-icon>
-                        <a class="Text" @click="openLink(item.link)">{{ truncateText(item.newsBody.title, 16) }}</a>
+                        <a v-if="item.newsBody != null" class="Text" @click="openNewsDetails(item)">{{
+                          truncateText(item.newsBody.title, 16) }}</a>
                       </div>
                     </el-row>
                   </div>
@@ -266,12 +273,12 @@
                   <!-- 法甲新闻 -->
                   <div class="RightNews" style="top:-4.5vh">
                     <p class="CenterTitle">法甲</p>
-                    <el-row v-if="recommendItems1.length != 0" v-for="(item, index) in FranceItems" :key="index">
-                      <div class="textItem" style="top:-10vh">
-                        <el-icon style="font-size: 23px;" @click="openLink(item.link)">
+                    <el-row v-if="FranceItems.length != 0" v-for="( item, index ) in  FranceItems " :key="index">
+                      <div class="textItem" style="top:-10vh" @click="openNewsDetails(item)">
+                        <el-icon style="font-size: 23px;">
                           <Football />
                         </el-icon>
-                        <a class="Text" @click="openLink(item.link)">{{ truncateText(item.newsBody.title, 16) }}</a>
+                        <a class="Text">{{ truncateText(item.newsBody.title, 16) }}</a>
                       </div>
                     </el-row>
                   </div>
@@ -290,15 +297,15 @@
               <!-- 左侧动态 -->
               <el-col :span="18" class="leftLeague">
                 <p class="titleLeagueLeft">{{ LeagueTitle1 }}</p>
-                <div class="line" style="width: 40vw;height: 0.2px;top:-12vh;left:9%;"></div>
-                <div v-if="recommendItems1.length != 0" v-for="item in LeagueNews" :key="item.id" class="itemLeague">
-                  <div class="imgWrapper">
+                <div class="line" style="width: 40vw;height: 0.2px;top:-12vh;left:5vw;"></div>
+                <div v-if="recommendItems1.length != 0" v-for=" item  in  LeagueNews " :key="item.id" class="itemLeague">
+                  <div class="imgWrapper" @click="openNewsDetails(item)">
                     <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
                       :src="item.pictureRoutes[0]" alt="Image" class="imgSearch">
                     <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer' ref="videoPlayer"
                       :src="item.pictureRoutes[0]" class="imgSearch" controls />
                   </div>
-                  <div class="TextWrapper">
+                  <div class="TextWrapper" @click="openNewsDetails(item)" style="left:-8vw;">
                     <div class="titleSearch">{{ truncateText(item.newsBody.title, 20) }}</div>
                     <div class="descriptionSearch">{{ item.newsBody.summary }}</div>
                   </div>
@@ -307,27 +314,30 @@
               </el-col>
               <!-- 右侧球队一览+排行榜 -->
               <el-col :span="6" class="rightLeague" :class="{ 'fixedLeague': isFixed }">
-                <div class="floating-block">
-                  <p class="titleLeagueLeft" style="font-size: 25px;left:3%;">{{ LeagueTitle2 }}</p>
-                  <div class="line" style="width: 22vw;height: 0.2px;top:-12.5vh;left:3%;"></div>
+                <!-- <div class="Top-Block" :class="{ 'fixedLeague': isFixed }"> -->
+                <div class="Top-Block">
+                  <p class="titleLeagueLeft" style="font-size: 25px;left:1vw;">{{ LeagueTitle2 }}</p>
+                  <div class="line" style="width: 22vw;height: 0.2px;top:-12.5vh;left:1vw;"></div>
                   <div class="Teamcontainer">
-                    <el-row :gutter="10" v-if="recommendItems1.length != 0" v-for="(row, index) in LeagueTeam.length"
+                    <el-row :gutter="10" v-if="recommendItems1.length != 0" v-for="( row, index ) in  LeagueTeam.length "
                       :key="index">
                       <el-col :span="6" v-if="recommendItems1.length != 0"
-                        v-for="(item, index) in LeagueTeam.slice((row - 1) * 4, row * 4)" :key="index">
-                        <img referrerPolicy='no-referrer' :src="item.teamLogo" class="imgTeam" alt="image" />
-                        <div class="textTeam">{{ truncateText(item.teamName, 6) }}</div>
+                        v-for="( item, index ) in  LeagueTeam.slice((row - 1) * 4, row * 4) " :key="index">
+                        <img referrerPolicy='no-referrer' :src="item.teamLogo" @click="openTeamDetails(item.teamName)"
+                          class="imgTeam" alt="image" />
+                        <div class="textTeam" @click="openTeamDetails(item.teamName)">{{ truncateText(item.teamName, 6) }}
+                        </div>
                       </el-col>
                     </el-row>
                   </div>
                 </div>
-                <div class="remaining-content">
-                  <p class="titleLeagueLeft" style="font-size: 25px;left:-15%;">射手榜</p>
-                  <div class="line" style="width: 22vw;height: 0.2px;top:-13vh;left:-15%;"></div>
-                  <el-table :data="LeagueShooter" stripe style="width: 150%" class="shooter">
+                <div class="Down-Block">
+                  <p class="titleLeagueLeft" style="font-size: 25px;left:-4vw;">射手榜</p>
+                  <div class="line" style="width: 22vw;height: 0.2px;top:-13vh;left:-4vw;"></div>
+                  <el-table :data="LeagueShooter" stripe style="width: 22vw" class="shooter">
                     <el-table-column label="排名" type="index" width="55" />
-                    <el-table-column prop="playerName" label="球员姓名" width="120" />
-                    <el-table-column prop="teamName" label="所属球队" width="120" />
+                    <el-table-column prop="playerName" label="球员姓名" @click="openPlayerDetails(playerName)" width="120" />
+                    <el-table-column prop="teamName" label="所属球队" @click="openTeamDetails(teamName)" width="120" />
                     <el-table-column prop="goals" label="进球数" />
                   </el-table>
                 </div>
@@ -343,16 +353,16 @@
             <p class="titleLeagueLeft" style="left:3vw;">搜索结果</p>
             <div class="line" style="width: 40vw;height: 0.2px;top:4vh;left:-19vw;"></div>
             <el-col :span="18">
-              <div v-if="searchNewsResults.length != 0" v-for="item in searchNewsResults" :key="item.id"
+              <div v-if="searchNewsResults.length != 0" v-for=" item  in  searchNewsResults " :key="item.id"
                 class="itemSearch">
-                <div class="imgWrapper" style=" position: relative;top: -10vh;left: -4vw;">
+                <div class="imgWrapper" style=" position: relative;top: -10vh;left: -4vw;" @click="openNewsDetails(item)">
                   <img v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == false"
                     referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="Image" class="imgSearch">
                   <video v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true"
                     referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]" class="imgSearch"
                     controls />
                 </div>
-                <div class="TextWrapper">
+                <div class="TextWrapper" @click="openNewsDetails(item)">
                   <div v-if="item.newsBody != null" class="titleSearch" style="top:-9vh;left:-11vw;">{{
                     truncateText(item.newsBody.title, 20) }}
                   </div>
@@ -370,15 +380,16 @@
               </el-icon>
               <div class="line" style="width: 22vw;height: 0.2px;top:-23vh;left:-3%;"></div>
               <div class="imgListSearch">
-                <div v-if="searchVideoResults.length != 0" v-for="(item, index) in searchVideoResults" :key="index"
+                <div v-if="searchVideoResults.length != 0" v-for="( item, index ) in  searchVideoResults " :key="index"
                   class="imgItemSearch">
                   <el-row :gutter="20">
                     <el-col :span="11">
                       <img v-if="item.cover != null" referrerPolicy='no-referrer' :src="item.cover" alt="Image"
-                        class="imgVideoSearch">
+                        class="imgVideoSearch" @click="openLink(item.urllink)">
                     </el-col>
                     <el-col :span="8">
-                      <div v-if="item.title != null" class="descriptionVideoSearch">{{ truncateText(item.title, 20) }}
+                      <div v-if="item.title != null" class="descriptionVideoSearch" @click="openLink(item.urllink)">{{
+                        truncateText(item.title, 20) }}
                       </div>
                     </el-col>
                   </el-row>
@@ -394,7 +405,7 @@
   </div>
   <div class="line" style="left:5%; width: 80%;height: 0.05px;"></div>
 
-  <a @click="openNewsDetails(test)">测试数据交互</a>
+  <el-backtop :right="100" :bottom="100" />
 </template>
 
 <script>
@@ -415,19 +426,6 @@ export default {
   data() {
     return {
       ok: '',
-
-      test: {
-        newsbody: {
-          matchTag: "1",
-          propertyTag: "2",
-          title: "3",
-          summary: "4",
-          contains: "5",
-          news_id: 0,
-          publishDateTime: '6',
-        },
-        pictureRoutes: ['图片1', '图片2', '图片3', '图片4', '图片5']
-      },
 
       //当前联赛
       LeagueTitle1: '',  //**动态
@@ -467,24 +465,25 @@ export default {
 
   //进入页面后调取接口，从而获得一组数据
   created() {
-    this.getData(4, '', '普通', this.carouselRecommendItems);    //主页面左上角走马灯
-    this.getData(2, '', '普通', this.recommendItems1);          //主页面左上角走马灯下推荐内容
-    this.getData(2, '', '普通', this.recommendItems2);          //主页面中部推荐内容
+    // this.getData(4, '', '普通', this.carouselRecommendItems);    //主页面左上角走马灯
+    // this.getData(2, '', '普通', this.recommendItems1);          //主页面左上角走马灯下推荐内容
+    // this.getData(2, '', '普通', this.recommendItems2);          //主页面中部推荐内容
 
-    this.getVideoData(4, '', '', this.carouselVideoItems);      //主页面视频走马灯
-    this.getVideoData(2, '', '', this.videoItems1);            //主页面视频图文
-    this.getVideoData(5, '', '', this.videoItems2);            //主页面视频纯文字
+    // this.getVideoData(4, '', '', this.carouselVideoItems);      //主页面视频走马灯
+    // this.getVideoData(2, '', '', this.videoItems1);            //主页面视频图文
+    // this.getVideoData(5, '', '', this.videoItems2);            //主页面视频纯文字
 
-    this.getData(4, '中超', '普通', this.ChinaItems);            //主页面中超新闻
-    this.getData(4, '英超', '普通', this.ENGLANDItems);          //主页面英超新闻
-    this.getData(4, '西甲', '普通', this.SpainItems);          //主页面西甲新闻
-    this.getData(4, '德甲', '普通', this.GermanyItems);          //主页面德甲新闻
-    this.getData(4, '意甲', '普通', this.ItalyItems);          //主页面意甲新闻
-    this.getData(4, '法甲', '普通', this.FranceItems);          //主页面法甲新闻
+    // this.getData(4, '中超', '普通', this.ChinaItems);            //主页面中超新闻
+    // this.getData(4, '英超', '普通', this.ENGLANDItems);          //主页面英超新闻
+    // this.getData(4, '西甲', '普通', this.SpainItems);          //主页面西甲新闻
+    // this.getData(4, '德甲', '普通', this.GermanyItems);          //主页面德甲新闻
+    // this.getData(4, '意甲', '普通', this.ItalyItems);          //主页面意甲新闻
+    // this.getData(4, '法甲', '普通', this.FranceItems);          //主页面法甲新闻
 
-    this.getData(4, '', '八卦', this.carouselGossipItems);      //主页面右侧八卦走马灯
-    this.getData(3, '', '八卦', this.gossipItems1);      //主页面右侧八卦图文
-    this.getData(5, '', '八卦', this.gossipItems2);      //主页面右侧八卦纯文字
+    // this.getData(4, '', '八卦', this.carouselGossipItems);      //主页面右侧八卦走马灯
+    // this.getData(3, '', '八卦', this.gossipItems1);      //主页面右侧八卦图文
+    // this.getData(5, '', '八卦', this.gossipItems2);      //主页面右侧八卦纯文字
+    this.initNewsData();
   },
 
   mounted() {
@@ -495,6 +494,37 @@ export default {
   },
 
   methods: {
+    //初始化数据
+    async initNewsData() {
+      try {
+        const response = await axios.get('/api/News/Init', '', {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }); // 发送POST请求，并将请求数据作为 JSON 对象发送
+
+        console.log(response.data.value);
+        this.carouselRecommendItems = response.data.value.news[0];
+        this.recommendItems1 = response.data.value.news[1];
+        this.recommendItems2 = response.data.value.news[2];
+        this.ChinaItems = response.data.value.news[3];
+        this.ENGLANDItems = response.data.value.news[4];
+        this.SpainItems = response.data.value.news[5];
+        this.GermanyItems = response.data.value.news[6];
+        this.ItalyItems = response.data.value.news[7];
+        this.FranceItems = response.data.value.news[8];
+        this.carouselGossipItems = response.data.value.news[9];
+        this.gossipItems1 = response.data.value.news[10];
+        this.gossipItems2 = response.data.value.news[11];
+
+        this.carouselVideoItems = response.data.value.videos[0];
+        this.videoItems1 = response.data.value.videos[1];
+        this.videoItems2 = response.data.value.videos[2];
+      } catch (error) {
+        // console.error(error);
+      };
+      return;
+    },
     //搜索
     search() {
       this.activeTab = 'Search';
@@ -722,16 +752,37 @@ export default {
       this.getShooter(gameType);
     },
 
+
     //打开新闻详情页
     openNewsDetails(item) {
+      console.log(item);
       const queryString = encodeURIComponent(JSON.stringify(item));
       this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
+    },
+
+    //打开球队详情页
+    openTeamDetails(teamName) {
+      this.$router.push({
+        path: '/teamMsg',
+        query: {
+          teamName: teamName
+        }
+      });
+    },
+    //打开球员详情页
+    openPlayerDetails(playerName) {
+      this.$router.push({
+        path: '/detailedPlayerMsg',
+        query: {
+          playerName: playerName
+        }
+      });
     }
   }
 }
 </script>
                 
-<style>
+<style  scoped>
 .total {
   position: relative;
   width: 85%;
@@ -1099,25 +1150,28 @@ export default {
   /* align-items: center; */
   margin-bottom: 10px;
   position: relative;
-  left: 10%;
+  left: 6vw;
   top: -5vh;
   margin-top: 5%;
 }
 
 .imgWrapper {
   margin-right: 10px;
-  width: 60%;
+  width: 60vw;
 }
 
 .TextWrapper {
   display: flex;
   flex-direction: column;
+  position: relative;
+  left: -3vw;
+  top: 0;
 }
 
 /* 图片样式 */
 .imgSearch {
   top: 0vh;
-  left: 0%;
+  left: 0;
   width: 30vw;
   height: 30vh;
   position: relative;
@@ -1239,7 +1293,6 @@ export default {
 
 .rightLeague {
   flex: 1;
-
   position: relative;
   /* 设置为相对定位，以便内部元素使用绝对定位 */
   height: 30vh;
@@ -1248,27 +1301,24 @@ export default {
 
 .fixedLeague {
   position: fixed;
-  /* 设置为固定定位 */
   top: 0;
-  /* 固定在页面顶部 */
-  right: 0;
-  /* 固定在页面右侧 */
+  left: 80vw;
 }
 
-.floating-block {
-  position: absolute;
-  /* 设置为绝对定位 */
+.Top-Block {
+  position: relative;
   top: 25px;
   /* 设置悬浮块的初始位置 */
-  right: 50px;
+  left: -13vw;
   /* 设置悬浮块的初始位置 */
-
 }
 
-.remaining-content {
-  margin-top: 120vh;
+.Down-Block {
+  margin-top: 50vh;
   /* 为了避免悬浮块覆盖内容，设置内容的上边距 */
   height: 20vh;
+  position: relative;
+  left: -7vw;
 }
 
 .titleLeagueLeft {
@@ -1291,7 +1341,7 @@ export default {
   /* align-items: center; */
   margin-bottom: 10px;
   position: relative;
-  left: 9%;
+  left: 4vw;
   top: -15vh;
   margin-top: 5vh;
 }
@@ -1335,7 +1385,7 @@ export default {
   position: relative;
   top: -12vh;
   left: -3.5vw;
-  width: 10vw;
+  width: 12vw;
 }
 
 /* <--<--联赛样式结束-->--> */

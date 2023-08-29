@@ -22,15 +22,15 @@
           </div>
           <div class="line" style="width: 40vw;height: 0.2px;top:-9vh;left:8%;"></div>
           <div v-if="GossipNews.length != 0" v-for="item in GossipNews" :key="item.id" class="itemSearch">
-            <div class="imgWrapper">
+            <div class="imgWrapper" @click="openNewsDetails(item)">
               <img v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == false"
                 referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="Image" class="imgSearch">
               <video v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true"
                 referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]" class="imgSearch" controls />
             </div>
-            <div class="TextWrapper">
+            <div class="TextWrapper" @click="openNewsDetails(item)">
               <div class="titleSearch">{{ item.newsBody.title }}</div>
-              <div class="descriptionSearch">{{ truncateText(item.newsBody.summary, 28) }}</div>
+              <div class="descriptionSearch">{{ truncateText(item.newsBody.summary, 60) }}</div>
             </div>
           </div>
           <div class="NoMore">No More ......</div>
@@ -47,10 +47,11 @@
               class="imgItemSearch">
               <el-row :gutter="20">
                 <el-col :span="11">
-                  <img referrerPolicy='no-referrer' :src="item.cover" alt="Image" class="imgVideoSearch">
+                  <img referrerPolicy='no-referrer' :src="item.cover" alt="Image" class="imgVideoSearch"
+                    @click=" openLink(urllink)">
                 </el-col>
                 <el-col :span="8">
-                  <div class="descriptionVideoSearch">{{ truncateText(item.title, 25) }}</div>
+                  <div class="descriptionVideoSearch" @click=" openLink(urllink)">{{ truncateText(item.title, 25) }}</div>
                 </el-col>
               </el-row>
             </div>
@@ -152,6 +153,18 @@ export default {
       return text;
     },
 
+    //打开新闻详情页
+    openNewsDetails(item) {
+      console.log(item);
+      const queryString = encodeURIComponent(JSON.stringify(item));
+      this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
+    },
+
+    //打开链接的页面
+    openLink(url) {
+      window.open(url, '_blank');
+    },
+
     //匹配mp4字符，用于判断视频还是图片的渲染
     matchMP4(str) {
       return str.includes('mp4');
@@ -161,7 +174,7 @@ export default {
 
 </script>
 
-<style>
+<style  scoped>
 .itemSearch {
   display: flex;
   /* align-items: center; */
@@ -180,14 +193,17 @@ export default {
 .TextWrapper {
   display: flex;
   flex-direction: column;
+  position: relative;
+  left: -7vw;
+  top: 1vh;
 }
 
 /* 图片样式 */
 .imgSearch {
   top: 0vh;
   left: 0%;
-  width: 30vw;
-  height: 40vh;
+  width: 25vw;
+  height: 30vh;
   position: relative;
 }
 
@@ -210,7 +226,7 @@ export default {
 
 /* 描述样式 */
 .descriptionSearch {
-  width: 60%;
+  width: 20vw;
   /* 设置容器的宽度 */
   max-height: 120px;
   /* 设置最大高度 */
@@ -219,8 +235,10 @@ export default {
   text-overflow: ellipsis;
   /* 使用省略号表示超出的文本 */
   margin-top: 5px;
+  font-size: 18px;
   position: relative;
-  left: 8%;
+  left: -12vw;
+  top: 2vh;
 }
 
 .iconSearch {

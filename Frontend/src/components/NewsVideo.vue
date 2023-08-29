@@ -167,7 +167,7 @@ export default {
 
 </script>
 
-<style>
+<style  scoped>
 .VideoCarousel {
   position: relative;
   top: 2vh;
