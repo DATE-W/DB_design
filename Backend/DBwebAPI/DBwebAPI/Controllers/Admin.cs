@@ -1,0 +1,190 @@
+using DBwebAPI.Models;
+using Microsoft.AspNetCore.Mvc;
+using SqlSugar;
+using DBwebAPI.Models;
+
+namespace DBwebAPI.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]/[action]")]
+    public class AdiminController : ControllerBase
+    {
+        public class AdminPost
+        {
+            public int post_id { get; set; }
+            public string? author_avatar { get; set; }
+            public string? author_name { get; set; }
+            public string title { get; set; }
+            public string? contains { get; set; }
+            public DateTime publishtime { get; set; }
+            public int isbanned { get; set; }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPost()
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get GetAllPost--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
+                
+                List<Posts> posts = new List<Posts>();
+                posts = await sqlORM.Queryable<Posts>().ToListAsync();
+                List<AdminPost> adminPosts = new List<AdminPost>();
+                foreach (Posts post in posts)
+                {
+                    PublishPost publishPost = await sqlORM.Queryable<PublishPost>().SingleAsync(it => it.post_id == post.post_id);
+                    Usr user = await sqlORM.Queryable<Usr>().SingleAsync(it=>it.user_id==publishPost.user_id);
+
+                    AdminPost t = new AdminPost();
+                    t.post_id = post.post_id;
+                    t.title = post.title;
+                    t.contains = post.contains;
+                    t.isbanned = post.isBanned;
+                    t.publishtime = post.publishDateTime;
+                    t.author_avatar=user.avatar;
+                    t.author_name = user.userName;
+
+                    adminPosts.Add(t);
+                }
+                adminPosts=adminPosts.OrderByDescending(it => it.post_id).ToList();
+                return Ok(adminPosts.ToArray());
+                //return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("数据库错误：" + ex.Message);
+                return BadRequest(new { error = "数据库错误" });
+            }
+        }
+        public class postjson
+        {
+            public int post_id { get;set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> BanPostbyID(postjson json)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get BanPostbyID--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
+
+                int post_id = json.post_id;
+                Posts posts = await sqlORM.Queryable<Posts>().SingleAsync(it=>it.post_id == post_id);
+                if (posts == null)
+                    return Ok(new { ok = "no" });
+                posts.isBanned = 1;
+                int count = await sqlORM.Updateable(posts).ExecuteCommandAsync();
+                if(count == 0)
+                    return Ok(new { ok = "no" });
+                return Ok(new { ok = "yes" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("数据库错误：" + ex.Message);
+                return BadRequest(new { error = "数据库错误" });
+            }
+        }
+        public class BannedUsrJson
+        {
+            public int user_id { get; set; }
+            public string username { get; set; }
+            public int userpoint { get; set; }
+            public DateTime? regdate { get;set; }
+            public int followednumber { get; set; }
+            public string uft { get;set; }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetBannedUser()
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get GetBannedUser--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
+                List<BannedUsrJson> bannedUsrJsons = new List<BannedUsrJson>();
+                List<Usr> usrs = new List<Usr>();
+                usrs = await sqlORM.Queryable<Usr>().Where(it=>it.isBanned==1).ToListAsync();
+                foreach (Usr usr in usrs)
+                {
+                    BannedUsrJson t=new BannedUsrJson();
+                    t.user_id = usr.user_id;
+                    t.username = usr.userName;
+                    t.userpoint = usr.userPoint;
+                    t.regdate = usr.createDateTime;
+                    t.followednumber = usr.followednumber;
+                    UserFavouriteTeam UFT = new UserFavouriteTeam();
+                    UFT = await sqlORM.Queryable<UserFavouriteTeam>().SingleAsync(it => it.user_id == usr.user_id);
+                    if (UFT == null)
+                    {
+                        t.uft = "暂无主队";
+                    }else
+                    {
+                        Team team = new Team();
+                        team = await sqlORM.Queryable<Team>().SingleAsync(it => it.team_id == UFT.team_id);
+                        t.uft = team.chinesename;
+                    }
+                    bannedUsrJsons.Add(t);
+                }
+                return Ok(bannedUsrJsons.ToArray());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("数据库错误：" + ex.Message);
+                return BadRequest(new { error = "数据库错误" });
+            }
+        }
+        public class banneduserjson
+        {
+            public int user_id { get; set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> LiftUser(banneduserjson json)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get LiftUser--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
+
+                int user_id = json.user_id;
+                Usr usr = await sqlORM.Queryable<Usr>().SingleAsync(it => it.user_id == user_id);
+                if (usr == null)
+                    return Ok(new { ok = "no" });
+                usr.isBanned = 0;
+                int count = await sqlORM.Updateable(usr).ExecuteCommandAsync();
+                if (count == 0)
+                    return Ok(new { ok = "no" });
+                return Ok(new { ok = "yes" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("数据库错误：" + ex.Message);
+                return BadRequest(new { error = "数据库错误" });
+            }
+        }
+    }
+
+}
