@@ -2,12 +2,13 @@ using DBwebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using SqlSugar;
 using DBwebAPI.Models;
+using DBwebAPI.Relations;
 
 namespace DBwebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class AdiminController : ControllerBase
+    public class AdminController : ControllerBase
     {
         public class AdminPost
         {
@@ -178,6 +179,65 @@ namespace DBwebAPI.Controllers
                 if (count == 0)
                     return Ok(new { ok = "no" });
                 return Ok(new { ok = "yes" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("数据库错误：" + ex.Message);
+                return BadRequest(new { error = "数据库错误" });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllNews()
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get GetAllNews--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
+
+                List<News> news = new List<News>();
+                news = await sqlORM.Queryable<News>().ToListAsync();
+                return Ok(news.ToArray());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("数据库错误：" + ex.Message);
+                return BadRequest(new { error = "数据库错误" });
+            }
+        }
+        public class deleteNewsJson
+        {
+            public int id { get; set;}
+        }
+        [HttpDelete]
+        public async Task<IActionResult> DeleteNews(deleteNewsJson json)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get GetAllNews--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
+
+                int id = json.id;
+                int count1 = await sqlORM.Deleteable<NewsHavePicture>()
+                    .Where(it => it.news_id == id)
+                    .ExecuteCommandAsync();
+                int count2 = await sqlORM.Deleteable<News>()
+                    .Where(it => it.news_id == id)
+                    .ExecuteCommandAsync();
+                if (count1 == 0 && count2==0)
+                    return Ok(new { ok = "no" });
+                return Ok(new { ok = "yes"});
             }
             catch (Exception ex)
             {
