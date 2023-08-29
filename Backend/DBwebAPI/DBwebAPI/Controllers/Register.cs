@@ -32,7 +32,7 @@ namespace DBwebAPI.Controllers
             {
                 try
                 {
-                    SqlSugarClient sqlOrm = ORACLEConnectTry.sqlORM;
+                    SqlSugarScope sqlOrm = ORACLEConnectTry.sqlORM;
                     //进行用户查询
 
                     int user_id = sqlOrm.Queryable<Usr>().Max(it => it.user_id) + 1;

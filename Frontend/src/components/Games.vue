@@ -1,4 +1,4 @@
-<!-- 2154314_郑楷_赛事列表 2023.08.28 11:30 v2.1.0
+<!-- 2154314_郑楷_赛事列表 2023.08.28 14:40 v2.2.0
  v1.0.0 页面画了一半 
   v1.1.0 画出了左侧的联赛选择器（未添加逻辑），布局了中部的比赛列表（已添加跳转逻辑），增加了各大联赛LOGO素材图，日期选择器和广告区待实现
   v1.2.0 优化了联赛选择器组件的代码、视觉效果、功能、数据通路
@@ -9,7 +9,8 @@
   v1.7.0 添加显示主队近期三场比赛功能，添加队标显示功能，美化页面
   v1.8.0 调用获取当前用户状态的接口，未登录时跳转到登陆界面 
  v2.0.0 正式版首版，所有功能均已完成，删去了冗余代码
-  v2.1.0 优化主队近期赛事板块，在用户无主队时跳转到设置主队界面 -->
+  v2.1.0 优化主队近期赛事板块，在用户无主队时跳转到设置主队界面
+  v2.2.0 显示主队按钮优化，bug修复 -->
 
 <template>
   <my-nav></my-nav>
@@ -69,13 +70,16 @@
     <button @click="getRecentMatches('利物浦');">2</button> -->
     <div class="showMainTeam" v-show="mainTeamButton" @click="mainTeamButtonAction">
       <div v-if="!onAccount">
-        <p>没登陆</p>
+        <p class="textTypoInfo">未检测到账号</p>
+        <p class="textTypoInfo">点击此处登录</p>
       </div>
-      <div v-else-if="this.mainTeam == '查无此队'">
-        <p>无主队</p>
+      <div v-else-if="this.mainTeam == '暂无主队'">
+        <p class="textTypoInfo">目前暂无主队</p>
+        <p class="textTypoInfo">点击此处设置</p>
       </div>
       <div v-else>
-        <p>有主队</p>
+        <p class="textTypoInfo">点击此处查看</p>
+        <p class="textTypoInfo">主队近期赛果</p>
       </div>
     </div>
     <div v-show="this.onAccount && this.mainTeam && (!mainTeamButton)">
@@ -214,7 +218,7 @@ export default {
       if (!this.onAccount) {
         this.redirectToLogin();
       }
-      else if (this.mainTeam == '查无此队') {
+      else if (this.mainTeam == '暂无主队') {
         this.redirectToEdit();
       }
       else {
@@ -439,7 +443,7 @@ export default {
 .showMainTeam {
   position: absolute;
   width: 17rem;
-  height: 8rem;
+  height: 9rem;
   flex-shrink: 0;
   border-radius: 1.5rem;
   border: 0.05rem solid var(--colors-light-eaeaea-100, #d1d1d1);
@@ -502,6 +506,15 @@ export default {
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+}
+
+.textTypoInfo {
+  font-family: Verdana;
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  color: darkblue;
 }
 
 .textTypoMatchTime {

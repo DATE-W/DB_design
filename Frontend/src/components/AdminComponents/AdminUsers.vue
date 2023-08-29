@@ -1,15 +1,16 @@
 <script>
 import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
-    export default {
+import dashboard from './AdminDashBoard.vue';
+import headerview from './AdminNav.vue';
+export default {
     components:{
-      
+        dashboard:dashboard,
+        headerview:headerview,
     },
     data() {
         return {
-            Users: [
-                { user_id: 0,userName: "U 1",userPoint: 0,regDate: "2023-08-17",followedNumber:0 },
-            ],
+            Users: [],
         };
     },
     mounted(){
@@ -19,14 +20,9 @@ import { ElMessage, ElMessageBox } from 'element-plus';
         async getAllUsers()
         {
             console.log("start get all users")
-            const token = localStorage.getItem('token');
-            console.log("token = " + token)
             let response
             try {
-                const headers = {
-                     Authorization: `Bearer ${token}`,
-                };
-                response = await axios.get('api/report/getUsrInfo',{},{headers});
+                response = await axios.get('api/report/getUsrInfo');
             } catch (err) {
                 console.error(err);
                 if (err.response.data.result == 'fail') {
@@ -42,7 +38,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
                 ElMessage.error("获取用户列表失败");
             }else if(response.data.ok=='yes'){
                // 遍历传来的数据并进行转换
-                response.value.forEach(item => {
+                response.data.value.forEach(item => {
                     const convertedItem = {
                         user_id: item.user_id,
                         userName: item.userName,
@@ -52,8 +48,11 @@ import { ElMessage, ElMessageBox } from 'element-plus';
                     };
                 // 将转换后的数据添加到 reportedPost 数组中
                 this.Users.push(convertedItem);
+                 // 对 Users 数组按照 user_id 进行排序
+                this.Users.sort((a, b) => a.user_id - b.user_id);
                 });
             }
+            return
         },
         async deleteUser(index)
         {
@@ -62,8 +61,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
             let response
             try {
                 response = await axios.post('api/report/banUsr',  {
-                    // user_id:this.Users[index].user_id,
-                    user_id:5,
+                    user_id:this.Users[index].user_id,
                 });
             } catch (err) {
                 if (err.response.data.result == 'fail') {
@@ -89,13 +87,14 @@ import { ElMessage, ElMessageBox } from 'element-plus';
             else {
                ElMessage.error("未找到相关用户信息");
             }
+            return
         },
     }
 }
 </script>
 
 <template>
-    <el-container class="main-lower-box">
+    <!-- <el-container class="main-lower-box">
         <el-table :data="Users" border height="300" style="width: 100%;border-radius: 10px;">
             <el-table-row label="111"/>
             <el-table-column align="center" prop="user_id" label="用户Id" width="100" />
@@ -109,10 +108,54 @@ import { ElMessage, ElMessageBox } from 'element-plus';
                 </template>
             </el-table-column>
         </el-table>
-    </el-container>
+    </el-container> -->
+    <div id="building">
+        <el-container class="rooter-box">
+        <el-header class="hide-header">
+            <headerview/>
+        </el-header>
+        <el-container>
+            <el-aside width="20vw" class="hide-aside">
+            <dashboard/>
+            </el-aside>
+            <el-main style="overflow-y: auto;background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;">
+            <el-container>
+                撰写用户板块
+            </el-container>
+            </el-main>
+        </el-container>
+        </el-container>
+    </div>
 </template>
 
 <style scoped>
+@media (max-width: 768px) { /* 设置适当的最大宽度值 */
+  .hide-aside {
+    display: none;
+  }
+  .hide-header {
+    display: none;
+  }
+}
+
+#building{
+    background-color:#eee;
+    left:0px;
+    top:0px;
+    width:100vw;			
+    height:100vh;		
+    position: fixed;
+}
+
+.rooter-box{
+    position: fixed;
+    width:80vw;
+    height:100vh;
+    left: 10vw;
+}
+</style>
+
+<!-- <style scoped>
 .main-lower-box{
     margin-top: 2vh;
     margin-right:1vw;
@@ -123,4 +166,4 @@ import { ElMessage, ElMessageBox } from 'element-plus';
     background-color: white;
 }
 
-</style>
+</style> -->

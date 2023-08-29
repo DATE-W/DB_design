@@ -1,56 +1,65 @@
 <!-- 消息通知 v1.2 -->
 <template>
-  <div class="notice-container">
-    <div class="title-container">
-      <el-icon class="message-icon">
-        <Message />
-      </el-icon>
-      <span class="notice-title">通知中心</span>
-      <el-button class="clear-button" type="text" @click="clearConfirm">清空通知</el-button>
-    </div>
-    <hr class="separator">
-    <div class="message-container">
-      <div>
-        <span class="message-title">最近收到的通知</span>
-        <el-dropdown class="message-menu">
-          <span class="el-dropdown-link">
-            {{ selectedCategory }}
-            <el-icon class="el-icon--right">
-              <arrow-down />
-            </el-icon>
-          </span>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="selectCategory('全部类别')">全部类别</el-dropdown-item>
-              <el-dropdown-item @click="selectCategory('赞同&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')">赞同</el-dropdown-item>
-              <el-dropdown-item @click="selectCategory('评论&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')">评论</el-dropdown-item>
-              <el-dropdown-item @click="selectCategory('站务通知')">站务通知</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+  <div class="overflow-container">
+    <div class="notice-container">
+      <div class="title-container">
+        <el-icon class="message-icon">
+          <Message />
+        </el-icon>
+        <span class="notice-title">通知中心</span>
+        <el-button class="clear-button" type="text" @click="clearConfirm">清空通知</el-button>
       </div>
       <hr class="separator">
-      <div v-for="(date, index) in filteredDates" :key="index">
-        <div class="notice-date">
-          <span>{{ date }}</span>
+      <div class="message-container">
+        <div>
+          <span class="message-title">最近收到的通知</span>
+          <el-dropdown class="message-menu">
+            <span class="el-dropdown-link">
+              {{ selectedCategory }}
+              <el-icon class="el-icon--right">
+                <arrow-down />
+              </el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="selectCategory('全部类别')">全部类别</el-dropdown-item>
+                <el-dropdown-item @click="selectCategory('赞同&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')">赞同</el-dropdown-item>
+                <el-dropdown-item @click="selectCategory('评论&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')">评论</el-dropdown-item>
+                <el-dropdown-item @click="selectCategory('收藏&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')">收藏</el-dropdown-item>
+                <el-dropdown-item @click="selectCategory('站务通知')">站务通知</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
-        <div v-for="(notificationIndex, innerIndex) in getNotificationsByDate(date)" :key="innerIndex">
-          <div class="notice-item">
-            <el-icon v-if="isLikeContent(notice_contents[notificationIndex])" class="icon-likes">
-              <Mouse />
-            </el-icon>
-            <el-icon v-else-if="isCommentContent(notice_contents[notificationIndex])" class="icon-comment">
-              <ChatLineSquare />
-            </el-icon>
-            <el-icon v-else-if="isOfficialContent(notice_people[notificationIndex])" class="icon-official">
-              <ChromeFilled />
-            </el-icon>
-            <span class="notice-people">{{ notice_people[notificationIndex] }}</span>
-            <span>&nbsp;&nbsp;</span>
-            <span class="notice-content">{{ getContentByType(notice_contents[notificationIndex]) }}</span>
+        <hr class="separator">
+        <div v-for="(date, index) in filteredDates" :key="index">
+          <div class="notice-date">
+            <span>{{ date }}</span>
           </div>
+          <div v-for="(notificationIndex, innerIndex) in getNotificationsByDate(date)" :key="innerIndex">
+            <div class="notice-item">
+              <el-icon v-if="isLikeContent(notice_contents[notificationIndex])" class="icon-likes">
+                <Mouse />
+              </el-icon>
+              <el-icon v-else-if="isCommentContent(notice_contents[notificationIndex])" class="icon-comment">
+                <ChatLineSquare />
+              </el-icon>
+              <el-icon v-else-if="isOfficialContent(notice_people[notificationIndex])" class="icon-official">
+                <ChromeFilled />
+              </el-icon>
+              <el-icon v-else-if="isCollectContent(notice_contents[notificationIndex])" class="icon-star">
+                <Star />
+              </el-icon>
+              <span class="notice-people">{{ notice_people[notificationIndex] === 'notice' ? '站务通知' :
+                notice_people[notificationIndex] }}</span>
+              <span>&nbsp;&nbsp;</span>
+              <span class="notice-content">{{
+                getContentByType(notice_contents[notificationIndex], notice_people[notificationIndex], notificationIndex)
+              }}</span>
+            </div>
+          </div>
+          <hr class="separator" v-if="index !== filteredDates.length - 1">
         </div>
-        <hr class="separator" v-if="index !== filteredDates.length - 1">
       </div>
     </div>
   </div>
@@ -96,8 +105,16 @@ export default {
           }
           return result;
         }, []);
-      } else if (this.selectedCategory.includes('站务通知')) {
+      } else if (this.selectedCategory.includes('收藏')) {
         return this.notice_contents.reduce((result, content, index) => {
+          if (this.isCollectContent(content)) {
+            result.push(index);
+          }
+          return result;
+        }, []);
+      }
+      else if (this.selectedCategory.includes('站务通知')) {
+        return this.notice_people.reduce((result, content, index) => {
           if (this.isOfficialContent(content)) {
             result.push(index);
           }
@@ -126,6 +143,9 @@ export default {
     isOfficialContent(content) {
       return content.includes('notice');
     },
+    isCollectContent(content) {
+      return content.includes('collect');
+    },
     clearConfirm() {
       ElMessageBox.confirm('点击确认以清空所有通知记录', '提示', {
         confirmButtonText: '确认',
@@ -148,14 +168,17 @@ export default {
       this.notice_people = [];
       this.notice_contents = [];
     },
-    getContentByType(contentType) {
-      if (contentType === 'like') {
+    getContentByType(content, people, notificationIndex) {
+      if (content === 'like') {
         return '赞同了您的帖子';
-      } else if (contentType === 'comment') {
+      } else if (content === 'comment') {
         return '发表了一条评论';
-      } else if (contentType === 'collect') {
+      } else if (content === 'collect') {
         return '收藏了您的帖子';
-      } else {
+      } else if (people === 'notice') {
+        return this.notice_contents[notificationIndex];
+      }
+      else {
         return '未知通知类型';
       }
     },
@@ -177,9 +200,10 @@ export default {
         this.notice_dates = response.data.notice_dates.map(date => this.StandardDate(date));
         this.notice_people = response.data.notice_people;
         this.notice_contents = response.data.notice_contents;
+        console.log('通知', response);
       } catch (err) {
         ElMessage({
-          message: '失败',
+          message: '获取通知失败',
           grouping: false,
           type: 'error',
         });
@@ -190,6 +214,15 @@ export default {
 </script>
   
 <style scoped>
+.overflow-container {
+  overflow-y: auto;
+  max-height: 625px;
+}
+
+.overflow-container::-webkit-scrollbar {
+  width: 0;
+}
+
 .notice-container {
   align-items: center;
   font-weight: bold;
@@ -284,6 +317,17 @@ export default {
 .icon-official {
   font-size: 20px;
   background-color: #99ffbb;
+  border-radius: 50%;
+  padding: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+
+.icon-star {
+  font-size: 20px;
+  background-color: #82f977;
   border-radius: 50%;
   padding: 10px;
   display: inline-flex;

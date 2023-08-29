@@ -1,9 +1,12 @@
 <script>
 import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import dashboard from './AdminDashBoard.vue';
+import headerview from './AdminNav.vue';
 export default {
     components:{
-        
+        dashboard:dashboard,
+        headerview:headerview,
     },
     mounted(){
         this.getReportedPost();
@@ -11,6 +14,8 @@ export default {
     data() {
         return {
             reportedPost: [],
+            tittle:"",
+            contains:"",
         };
     },
     methods:{
@@ -47,15 +52,43 @@ export default {
             else {
                ElMessage.error("未找到相关举报信息");
             }
+            return
         },
-        toPost(postId){
-            this.$router.push({
-                path: '/detail',
-                query: { 
-                    fromAdmin: 1,
-                    clickedPostID: postId,
+        async toPost(postId){
+            console.log("getPost")
+            let response
+            try {
+                response = await axios.post('/api/Post/getPostInfo',  {
+                    post_id: postId,
+                });
+            } catch (err) {
+                if (err.response.data.result == 'fail') {
+                    ElMessage({
+                        message: err.response.data.msg,
+                        grouping: false,
+                        type: 'error',
+                    })
+                } else {
+                    ElMessage({
+                        message: '未知错误',
+                        grouping: false,
+                        type: 'error',
+                    })
                 }
-            });
+                return
+            }
+            console.log("getPostInfo - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
+            if (response.data.ok == 'yes') {
+               this.tittle=response.data.value.title;
+               this.contains=response.data.value.contains;
+            }
+            else {
+               ElMessage.error("获取帖子信息失败");
+            }
+            ElMessageBox.alert(this.contains, this.tittle, {
+                confirmButtonText: 'OK',
+            })
+            return
         },
         async getReportedPost(){
             console.log("start get reported post")
@@ -88,8 +121,10 @@ export default {
                     };
                 // 将转换后的数据添加到 reportedPost 数组中
                 this.reportedPost.push(convertedItem);
+                this.reportedPost.sort((a, b) => a.post_id - b.post_id);
                 });
             }
+            return
         },
         async cancelReport(index){
             console.log("cancelReport")
@@ -126,13 +161,14 @@ export default {
             else {
                ElMessage.error("未找到相关举报信息");
             }
+            return
         },
     }
 }
 </script>
 
 <template>
-    <el-container class="main-upper-box">
+    <!-- <el-container class="main-upper-box">
         <el-table :data="reportedPost" border height="300" style="width: 100%;border-radius: 10px;">
             <el-table-column align="center" prop="post_id" label="帖子Id" width="100" />
             <el-table-column prop="tittle" label="帖子标题" width="150" />
@@ -147,10 +183,54 @@ export default {
                 </template>
             </el-table-column>
         </el-table>
-    </el-container>
+    </el-container> -->
+    <div id="building">
+      <el-container class="rooter-box">
+        <el-header class="hide-header">
+          <headerview/>
+        </el-header>
+        <el-container>
+          <el-aside width="20vw" class="hide-aside">
+            <dashboard/>
+          </el-aside>
+          <el-main style="overflow-y: auto;background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;">
+            <el-container>
+              撰写论坛版块
+            </el-container>
+          </el-main>
+        </el-container>
+      </el-container>
+    </div>
 </template>
 
 <style scoped>
+@media (max-width: 768px) { /* 设置适当的最大宽度值 */
+  .hide-aside {
+    display: none;
+  }
+  .hide-header {
+    display: none;
+  }
+}
+
+#building{
+    background-color:#eee;
+    left:0px;
+    top:0px;
+    width:100vw;			
+    height:100vh;		
+    position: fixed;
+}
+
+.rooter-box{
+    position: fixed;
+    width:80vw;
+    height:100vh;
+    left: 10vw;
+}
+</style>
+
+<!-- <style scoped>
 .main-upper-box{
     margin-top: 2.3vh;
     margin-right:1vw;
@@ -167,4 +247,4 @@ export default {
 .cancelReport:hover{
     color:red;
 }
-</style>
+</style> -->

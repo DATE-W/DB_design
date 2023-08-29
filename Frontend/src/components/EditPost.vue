@@ -1,4 +1,4 @@
-<!-- 发帖界面v2.1 -->
+<!-- 发帖界面v2.2 -->
 <template>
   <div class="common-layout">
     <my-nav></my-nav>
@@ -56,11 +56,18 @@
         </div>
 
         <div class="user-container">
-          <el-button type="primary" @click="openFilePicker">上传图片</el-button>
+          <el-button v-if="selectedPics.length < 3" type="primary" @click="uploadPics">
+            上传图片
+            <input ref="fileInput" type="file" style="display: none" @change="handleFileChange" accept="image/*"
+              multiple />
+          </el-button>
+          <el-button v-else type="primary" @click="showMaxImageAlert">
+            上传图片
+          </el-button>
           <el-button type="text" icon="Delete" class="delete-button" @click="deleteDraft">删除草稿</el-button>
           <div class="pic-wrapper"></div>
           <div class="selected-pics-container">
-            <div v-for="pic in selectedPics" :key="pic.name">
+            <div v-for="pic in showPics" :key="pic.name">
               <img :src="pic" alt="Selected Pic" width="100" height="100">
             </div>
           </div>
@@ -77,8 +84,8 @@
 </template>
   
 <script>
-import MyNav from './nav.vue';
 import axios from 'axios';
+import MyNav from './nav.vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 
 export default {
@@ -87,40 +94,40 @@ export default {
   },
   data() {
     return {
+      postPicsUrl: [],
       postTitle: '',
       postText: '',
       //postTime: '',
       selectedTags: [],
       selectedPics: [],
+      showPics: [],
       diyTagInput: '', //用于存储自定义标签的输入内容
     };
   },
   methods: {
-    openFilePicker() {
-      if (this.selectedPics.length >= 3) {
-        alert('最多只能上传3张图片');
-        return;
-      }
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.multiple = true;
-      input.addEventListener('change', this.handleFileSelect);
-      input.click();
+    uploadPics() {
+      this.$refs.fileInput.click();
     },
-    handleFileSelect(event) {
+    handleFileChange(event) {
       const files = event.target.files;
-      const remainingSlots = 3 - this.selectedPics.length;
-      const filesToUpload = Array.from(files).slice(0, remainingSlots);
-
-      for (let i = 0; i < filesToUpload.length; i++) {
-        const file = filesToUpload[i];
+      for (const file of files) {
+        if (this.selectedPics.length >= 3) {
+          break;
+        }
+        this.selectedPics.push(file);
+        this.showPics.push(URL.createObjectURL(file));
         const reader = new FileReader();
         reader.onload = (e) => {
-          this.selectedPics.push(e.target.result);
+          this.postPicsUrl.push(e.target.result);
         };
         reader.readAsDataURL(file);
       }
+    },
+    showMaxImageAlert() {
+      this.$message({
+        message: '最多只能上传三张图片',
+        type: 'warning'
+      });
     },
     //以上为选择图片
     addDIYTag(index) {
@@ -134,7 +141,7 @@ export default {
     handleCommand(command) {
       if (command === 'diy') {
         // Custom tag handling
-        this.selectedTags.push(''); // Add an empty tag to show the input box
+        this.selectedTags.push('');
       } else {
         const tag = `${command}`;
         if (!this.selectedTags.includes(tag)) {
@@ -143,7 +150,9 @@ export default {
       }
     },
     async post_to_forum() {
-      console.log(this.selectedTags);
+      if (this.selectedPics.length > 0) {
+        await this.submitPics();
+      };
       const token = localStorage.getItem('token');
       let response
       try {
@@ -154,7 +163,9 @@ export default {
           title: String(this.postTitle),
           contains: String(this.postText),
           tags: this.selectedTags,
+          pic: this.postPicsUrl,
         }, { headers });
+        console.log('response', response);
       } catch (err) {
         if (err.response.data.result == 'fail') {
           ElMessage({
@@ -172,7 +183,6 @@ export default {
         }
         return
       }
-      console.log(response);
       if (response.data.ok == 'yes') {
         ElMessageBox.alert('发帖成功', '提示', {
           confirmButtonText: '确定',
@@ -188,6 +198,26 @@ export default {
           type: 'error',
         });
       }
+    },
+    async submitPics() {
+      let response
+      const formData = new FormData();
+      for (const file of this.selectedPics) {
+        formData.append('files', file);
+      };
+      try {
+        response = await axios.post('/api/Picture/SaveFile', formData, { 'Content-Type': 'multipart/form-data' });
+      } catch (err) {
+        console.log(err);
+        ElMessage({
+          message: '未知错误',
+          grouping: false,
+          type: 'error',
+        })
+        return
+      };
+      this.postPicsUrl = response.data.value;
+      console.log('图片链接为', this.postPicsUrl);
     },
     deleteDraft() {
       this.postText = '';

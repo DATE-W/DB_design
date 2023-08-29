@@ -53,11 +53,23 @@
                             <div :class="['post-box', 'normal-post-box']" @click="goToDetail(post_id[index])">
                                 <div class="post-title">{{ title }}</div>
                                 <div class="post-contain">{{ post_contains[index] }}</div>
-                                <div class="post-author">
-                                    <el-icon>
-                                        <Avatar />
-                                    </el-icon>
-                                    {{ post_author[index] }}
+                                <div class="post-footer">
+                                    <div class="approval-collect">
+                                        <el-icon>
+                                            <CircleCheck />
+                                        </el-icon>
+                                        <span class="post-approval">{{ post_approval[index] }}</span>
+                                        <el-icon>
+                                            <Star />
+                                        </el-icon>
+                                        <span>{{ post_collect[index] }}</span>
+                                    </div>
+                                    <div class="post-author">
+                                        <el-icon>
+                                            <Avatar />
+                                        </el-icon>
+                                        {{ post_author[index] }}
+                                    </div>
                                 </div>
                             </div>
                             <hr v-if="index <= post_title.length - 1" :key="`separator-${index}`" class="separator">
@@ -112,7 +124,8 @@ export default {
             post_title: [],  //存储返回的帖子标题
             post_contains: [],  //存储返回的帖子内容
             post_author: [],  //存储返回的帖子作者
-            post_time: [],  //存储返回的发帖时间
+            post_approval: [],  //存储帖子点赞数
+            post_collect: [],  //存储帖子收藏数
             currentTag: 'ALL',  //向后端传递当前页面的帖子类型 初始为全部 不受tag影响
         };
     },
@@ -258,6 +271,8 @@ export default {
             this.post_title = [];
             this.post_contains = [];
             this.post_author = [];
+            this.post_approval = [];
+            this.post_collect = [];
             this.totalPosts = response.data.count;
             if (response.data.postInfoJsons && Array.isArray(response.data.postInfoJsons)) {
                 response.data.postInfoJsons.forEach((postInfo) => {
@@ -265,6 +280,8 @@ export default {
                     this.post_title.push(postInfo.title);
                     this.post_contains.push(postInfo.contains);
                     this.post_author.push(postInfo.author);
+                    this.post_approval.push(postInfo.approvalNum);
+                    this.post_collect.push(postInfo.collectNum);
                 });
             }
             else {
@@ -294,6 +311,8 @@ export default {
             this.post_title = [];
             this.post_contains = [];
             this.post_author = [];
+            this.post_approval = [];
+            this.post_collect = [];
             this.totalPosts = response.data.count;
             if (response.data.postInfoJsons && Array.isArray(response.data.postInfoJsons)) {
                 response.data.postInfoJsons.forEach((postInfo) => {
@@ -301,6 +320,8 @@ export default {
                     this.post_title.push(postInfo.title);
                     this.post_contains.push(postInfo.contains);
                     this.post_author.push(postInfo.author);
+                    this.post_approval.push(postInfo.approvalNum);
+                    this.post_collect.push(postInfo.collectNum);
                 });
             }
             else {
@@ -333,6 +354,8 @@ export default {
             this.post_title = [];
             this.post_contains = [];
             this.post_author = [];
+            this.post_approval = [];
+            this.post_collect = [];
             this.totalPosts = response.data.count;
             if (response.data.postInfoJsons && Array.isArray(response.data.postInfoJsons)) {
                 response.data.postInfoJsons.forEach((postInfo) => {
@@ -340,6 +363,8 @@ export default {
                     this.post_title.push(postInfo.title);
                     this.post_contains.push(postInfo.contains);
                     this.post_author.push(postInfo.author);
+                    this.post_approval.push(postInfo.approvalNum);
+                    this.post_collect.push(postInfo.collectNum);
                 });
             }
             else {
@@ -535,12 +560,22 @@ export default {
     font-weight: 400;
 }
 
-.post-author {
-    align-self: flex-end;
+.post-footer {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    font-size: 0.8rem;
+    margin-top: 10px;
     color: #888;
-    margin-bottom: 2px;
+    font-size: 0.8rem;
+}
+
+.post-approval {
+    margin-right: 10px;
+}
+
+.post-author {
+    align-items: center;
+    display: flex;
 }
 
 .normal-post-box {

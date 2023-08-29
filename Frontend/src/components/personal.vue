@@ -5,7 +5,10 @@
     </el-header>
 
     <el-container>
-      <el-aside style="background-image: url('http://110.40.206.206/test/e67a05d7abaea46ec26613ddf5d4161e.jpg');">
+      <el-aside :style="{
+        backgroundImage: 'url(' + backgroundImage + ')',
+        backgroundSize: 'cover', backgroundRepeat: 'no-repeat',
+      }">
         <!-- 左侧一列 -->
         <!-- 用户信息与邮箱 -->
         <el-card class="personal-card" style="opacity:0.8">
@@ -154,11 +157,12 @@ export default {
       followCnt: 0,       // 关注数
       befollowCnt: 0,     // 被关注数
       likeCnt: 0,         // 被点赞总数
-
+      backgroundImage: '', //左侧竖
     };
   },
   mounted() {
     this.JudgeAccount();
+    this.getTheme();
   },
   methods: {
     showedit() {
@@ -242,9 +246,33 @@ export default {
         console.log(this.isAccount)
       }
     },
+    async getTheme() {
+      const token = localStorage.getItem('token');
+      if (token == null) {
+        this.isAccount = false;
+        console.log(this.isAccount);
+        return;
+      }
+      let response
+      try {
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        response = await axios.post('/api/User/gettheme', {}, { headers })
+      } catch (err) {
+        console.log(err);
+        ElMessage({
+          message: '未知错误',
+          grouping: false,
+          type: 'error',
+        })
+        return
+      }
+      console.log(response);
+      this.backgroundImage = response.data.image2;
+    }
   }
 }
-
 </script>
 
 <style scoped>

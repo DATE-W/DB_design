@@ -14,7 +14,7 @@ namespace DBwebAPI.Models
         public string userPassword { get; set; }
         public string userAccount { get; set; }
         public int isBanned { get; set; } = 0;
-        public int? userPoint { get; set; } = 0;
+        public int userPoint { get; set; } = 0;
         public int? themeType { get; set; }
         public string avatar { get; set; }
         public string signature { get; set; }
