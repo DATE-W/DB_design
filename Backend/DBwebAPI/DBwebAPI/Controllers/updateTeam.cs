@@ -1128,10 +1128,6 @@ namespace DBwebAPI.Controllers
 
 
         //lq特供
-        public class showRecentGamesPara
-        {
-            public int gameType { get; set; }
-        }
         public class showRecentGamesVal
         {
             public string? status { get; set; }
@@ -1145,8 +1141,8 @@ namespace DBwebAPI.Controllers
             public string? gameName { get; set; }
             public string? gameTime { get; set; }
         }
-        [HttpPost]
-        public async Task<List<showRecentGamesVal>> showRecentGames([FromBody] showRecentGamesPara json)
+        [HttpGet]
+        public async Task<List<showRecentGamesVal>> showRecentGames()
         {
             Console.WriteLine("--------------------------showRecentGames--------------------------");
             ORACLEconn ORACLEConnectTry = new ORACLEconn();
@@ -1155,27 +1151,50 @@ namespace DBwebAPI.Controllers
             {
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 List<showRecentGamesVal> ans = new List<showRecentGamesVal>();
-                List<string> gameNames = new List<string> { "", "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
-                int gameType = json.gameType;
+                List<string> gameNames = new List<string> { "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
 
-                ans = await sqlORM.Queryable<Game>()
-                    .LeftJoin<Team>((g, home) => g.homeTeam == home.team_id)
-                    .LeftJoin<Team>((g, home, guest) => g.guestTeam == guest.team_id)
-                    .Where((g, home, guest) => ((gameType != 0 && g.type == gameNames[gameType]) || gameType == 0) && g.status == "Played")
-                    .OrderBy((g, home, guest) => g.startTime, OrderByType.Desc)
-                    .Take(6)
-                    .Select((g, home, guest) => new showRecentGamesVal
-                    {
-                        gameName = g.type,
-                        gameTime = g.startTime.Value.ToString("yyyy-mm-dd"),
-                        gameUid = g.game_id.ToString(),
-                        homeTeamName = home.chinesename,
-                        homeTeam = home.team_id,
-                        guestTeam = guest.team_id,
-                        guestTeamName = guest.chinesename,
-                        status = g.status
-                    })
-                    .ToListAsync();
+                for (int i = 0; i < 6; i++)
+                {
+                    DBconn orm = new DBconn();
+                    List<showRecentGamesVal> temp=await orm.Db.Queryable<Game>()
+                        .LeftJoin<Team>((g, home) => g.homeTeam == home.team_id)
+                        .LeftJoin<Team>((g, home, guest) => g.guestTeam == guest.team_id)
+                        .Where((g, home, guest) => ((g.type == gameNames[i]) && g.status == "Played"))
+                        .OrderBy((g, home, guest) => g.startTime, OrderByType.Desc)
+                        .Take(6)
+                        .Select((g, home, guest) => new showRecentGamesVal
+                        {
+                            gameName = g.type,
+                            gameTime = g.startTime.Value.ToString("yyyy-mm-dd"),
+                            gameUid = g.game_id.ToString(),
+                            homeTeamName = home.chinesename,
+                            homeTeam = home.team_id,
+                            guestTeam = guest.team_id,
+                            guestTeamName = guest.chinesename,
+                            status = g.status
+                        })
+                        .ToListAsync();
+                    ans.AddRange(temp);
+                }
+
+                //ans = await sqlORM.Queryable<Game>()
+                //    .LeftJoin<Team>((g, home) => g.homeTeam == home.team_id)
+                //    .LeftJoin<Team>((g, home, guest) => g.guestTeam == guest.team_id)
+                //    .Where((g, home, guest) => ((gameType != 0 && g.type == gameNames[gameType]) || gameType == 0) && g.status == "Played")
+                //    .OrderBy((g, home, guest) => g.startTime, OrderByType.Desc)
+                //    .Take(6)
+                //    .Select((g, home, guest) => new showRecentGamesVal
+                //    {
+                //        gameName = g.type,
+                //        gameTime = g.startTime.Value.ToString("yyyy-mm-dd"),
+                //        gameUid = g.game_id.ToString(),
+                //        homeTeamName = home.chinesename,
+                //        homeTeam = home.team_id,
+                //        guestTeam = guest.team_id,
+                //        guestTeamName = guest.chinesename,
+                //        status = g.status
+                //    })
+                //    .ToListAsync();
 
                 Console.WriteLine("ansCnt = " + ans.Count().ToString());
 
@@ -1187,8 +1206,8 @@ namespace DBwebAPI.Controllers
                     int? game_id = int.Parse(ans[i].gameUid);
                     int? homeTeam = ans[i].homeTeam;
                     int? guestTeam = ans[i].guestTeam;
-                    Console.WriteLine("homeTeam is " + ans[i].homeTeam);
-                    Console.WriteLine("guestTeam is " + ans[i].guestTeam);
+                    //Console.WriteLine("homeTeam is " + ans[i].homeTeam);
+                    //Console.WriteLine("guestTeam is " + ans[i].guestTeam);
 
                     ans[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
                         .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == homeTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
@@ -1211,6 +1230,8 @@ namespace DBwebAPI.Controllers
 
 
                 }
+
+                Console.WriteLine("recent games count = "+ans.Count);
 
                 return ans;
 
