@@ -10,18 +10,18 @@ namespace DBwebAPI.Models
     {
         [SugarColumn(IsPrimaryKey = true)]
         public int user_id { get; set; }
-        public string userName { get; set; }
-        public string userPassword { get; set; }
-        public string userAccount { get; set; }
+        public string userName { get; set; } = "";
+        public string userPassword { get; set; } = "";
+        public string userAccount { get; set; } = "";
         public int isBanned { get; set; } = 0;
         public int userPoint { get; set; } = 0;
         public int? themeType { get; set; }
-        public string avatar { get; set; }
-        public string signature { get; set; }
+        public string avatar { get; set; } = "";
+        public string signature { get; set; } = "";
         public DateTime? signDate { get; set; }
         public DateTime? createDateTime { get; set; }
-        public string userSecQue { get; set; }
-        public string userSecAns { get; set; }
+        public string userSecQue { get; set; } = "";
+        public string userSecAns { get; set; } = "";
         public int follownumber { get; set; }
         public int followednumber { get; set; }
     }
@@ -67,10 +67,10 @@ namespace DBwebAPI.Models
     {
         [SugarColumn(IsPrimaryKey = true)]
         public int id { get; set; }
-        public string name { get; set; }
-        public string image1 { get; set; }
-        public string image2 { get; set; }
-        public string image3 { get; set; }
-        public string image4 { get; set; }
+        public string name { get; set; } = "";
+        public string image1 { get; set; } = "";
+        public string image2 { get; set; } = "";
+        public string image3 { get; set; } = "";
+        public string image4 { get; set; } = "";
     }
 }
