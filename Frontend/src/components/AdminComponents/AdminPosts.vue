@@ -168,22 +168,6 @@ export default {
 </script>
 
 <template>
-    <!-- <el-container class="main-upper-box">
-        <el-table :data="reportedPost" border height="300" style="width: 100%;border-radius: 10px;">
-            <el-table-column align="center" prop="post_id" label="帖子Id" width="100" />
-            <el-table-column prop="tittle" label="帖子标题" width="150" />
-            <el-table-column prop="publisherName" label="发帖人" width="100" />
-            <el-table-column prop="reporterName" label="举报人" width="100" />
-            <el-table-column prop="description" label="举报理由" width="200" />
-            <el-table-column fixed="right" label="操作">
-                <template #default="scope">
-                    <el-button link type="primary" size="small" @click="toPost(reportedPost[scope.$index].post_id)">查看帖子</el-button>
-                    <el-button link type="primary" size="small" @click="killPost(scope.$index)">删除帖子</el-button>
-                    <el-button link type="primary" size="small" @click="cancelReport(scope.$index)">取消举报</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-    </el-container> -->
     <div id="building">
       <el-container class="rooter-box">
         <el-header class="hide-header">
@@ -195,7 +179,22 @@ export default {
           </el-aside>
           <el-main style="overflow-y: auto;background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;">
             <el-container>
-              撰写论坛版块
+                <el-table :data="reportedPost" border height="300" style="width: 100%;border-radius: 10px;">
+                    <el-table-column :label="`被举报帖子列表`" align="center">
+                        <el-table-column align="center" prop="post_id" label="帖子Id" width="100" />
+                        <el-table-column prop="tittle" label="帖子标题" width="150" />
+                        <el-table-column prop="publisherName" label="发帖人" width="100" />
+                        <el-table-column prop="reporterName" label="举报人" width="100" />
+                        <el-table-column prop="description" label="举报理由" width="200" />
+                        <el-table-column fixed="right" label="操作">
+                            <template #default="scope">
+                                <el-button link type="primary" size="small" @click="toPost(reportedPost[scope.$index].post_id)">查看帖子</el-button>
+                                <el-button link type="primary" size="small" @click="killPost(scope.$index)">删除帖子</el-button>
+                                <el-button link type="primary" size="small" @click="cancelReport(scope.$index)">取消举报</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table-column>
+                </el-table>
             </el-container>
           </el-main>
         </el-container>

@@ -1292,7 +1292,7 @@ namespace DBwebAPI.Controllers
                     return BadRequest("数据库连接失败");
                 };
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
-
+                
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
                 //验证 Authorization 请求头是否包含 JWT 令牌
@@ -1340,7 +1340,7 @@ namespace DBwebAPI.Controllers
                     tmp.image4 = t.image4;
                     tmpThemes.Add(tmp);
                 }
-                tmpThemes.OrderBy(t => t.id).ToList();
+                tmpThemes=tmpThemes.OrderBy(t => t.id).ToList();
 
                 Theme userTheme = await sqlORM.Queryable<Theme>().SingleAsync(it => it.id == tempUsr.FirstOrDefault().themeType);
                 ThemeJson userThemejson = new ThemeJson();
@@ -1573,7 +1573,7 @@ namespace DBwebAPI.Controllers
                     {
                 JoinType.Inner, p.post_id == pp.post_id
                     })
-                    .Where((p, pp) => pp.user_id == user_id)
+                    .Where((p, pp) => pp.user_id == user_id && p.isBanned != 1)
                     .Select((p, pp) => p)
                     .ToListAsync();
                 List< PostinfoJson> postinfo = new List<PostinfoJson>();
@@ -1647,7 +1647,7 @@ namespace DBwebAPI.Controllers
                     {
                 JoinType.Inner, p.post_id == pp.post_id
                     })
-                    .Where((p, pp) => pp.user_id == user_id)
+                    .Where((p, pp) => pp.user_id == user_id && p.isBanned!=1)
                     .Select((p, pp) => p)
                     .ToListAsync();
                 List<PostinfoJson> postinfo = new List<PostinfoJson>();

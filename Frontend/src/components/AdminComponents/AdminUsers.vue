@@ -10,7 +10,8 @@ export default {
     },
     data() {
         return {
-            Users: [],
+            AllUsers: [],
+            ReportedUsers:[],
         };
     },
     mounted(){
@@ -46,10 +47,10 @@ export default {
                         regDate: item.regDate,
                         followedNumber: item.followedNumber || 0
                     };
-                // 将转换后的数据添加到 reportedPost 数组中
-                this.Users.push(convertedItem);
-                 // 对 Users 数组按照 user_id 进行排序
-                this.Users.sort((a, b) => a.user_id - b.user_id);
+                // 将转换后的数据添加到 AllUsers 数组中
+                this.AllUsers.push(convertedItem);
+                 // 对 AllUsers 数组按照 user_id 进行排序
+                this.AllUsers.sort((a, b) => a.user_id - b.user_id);
                 });
             }
             return
@@ -61,7 +62,7 @@ export default {
             let response
             try {
                 response = await axios.post('api/report/banUsr',  {
-                    user_id:this.Users[index].user_id,
+                    user_id:this.AllUsers[index].user_id,
                 });
             } catch (err) {
                 if (err.response.data.result == 'fail') {
@@ -94,21 +95,6 @@ export default {
 </script>
 
 <template>
-    <!-- <el-container class="main-lower-box">
-        <el-table :data="Users" border height="300" style="width: 100%;border-radius: 10px;">
-            <el-table-row label="111"/>
-            <el-table-column align="center" prop="user_id" label="用户Id" width="100" />
-            <el-table-column prop="userName" label="用户昵称" width="150" />
-            <el-table-column align="center" prop="regDate" label="注册时间" width="200" />
-            <el-table-column align="center" prop="userPoint" label="积分" width="150" />
-            <el-table-column align="center" prop="followedNumber" label="粉丝数" width="150" />
-            <el-table-column fixed="right" label="操作">
-                <template #default="scope">
-                        <el-button link type="primary" size="small" @click="deleteUser(scope.$index)">封禁用户</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-    </el-container> -->
     <div id="building">
         <el-container class="rooter-box">
         <el-header class="hide-header">
@@ -119,9 +105,34 @@ export default {
             <dashboard/>
             </el-aside>
             <el-main style="overflow-y: auto;background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;">
-            <el-container>
-                撰写用户板块
-            </el-container>
+                <el-table :data="AllUsers" border height="300" style="width: 100%;border-radius: 10px;">
+                    <el-table-column :label="`所有用户名单`" align="center">
+                        <el-table-column align="center" prop="user_id" label="用户Id" width="100" />
+                        <el-table-column prop="userName" label="用户昵称" width="150" />
+                        <el-table-column align="center" prop="regDate" label="注册时间" width="200" />
+                        <el-table-column align="center" prop="userPoint" label="积分" width="150" />
+                        <el-table-column align="center" prop="followedNumber" label="粉丝数" width="150" />
+                        <el-table-column fixed="right" label="操作">
+                            <template #default="scope">
+                                    <el-button link type="primary" size="small" @click="deleteUser(scope.$index)">封禁用户</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table-column>
+                </el-table>
+                <el-table :data="ReportedUsers" border height="300" style="width: 100%;border-radius: 10px;margin-top: 5vh;">
+                    <el-table-column :label="`被举报用户名单`" align="center">
+                        <el-table-column align="center" prop="user_id" label="用户Id" width="100" />
+                        <el-table-column prop="userName" label="用户昵称" width="150" />
+                        <el-table-column align="center" prop="regDate" label="注册时间" width="200" />
+                        <el-table-column align="center" prop="userPoint" label="积分" width="150" />
+                        <el-table-column align="center" prop="followedNumber" label="粉丝数" width="150" />
+                        <el-table-column fixed="right" label="操作">
+                            <template #default="scope">
+                                    <el-button link type="primary" size="small" @click="deleteUser(scope.$index)">封禁用户</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table-column>
+                </el-table>
             </el-main>
         </el-container>
         </el-container>

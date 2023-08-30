@@ -11,7 +11,6 @@
         public string propertyTag { get; set; }
         //public List<string>? pictureRoutes { get; set; }
     }
-
     public class NewsWithIndex
     {
         public int news_id { get; set; }

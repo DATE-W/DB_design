@@ -242,13 +242,13 @@ namespace DBwebAPI.Controllers
                 List<PostInfoJson> postInfoJsons = new List<PostInfoJson>();
                 if (!tag.Equals("ALL"))
                 {
-                    List<Tag> allTags = await sqlORM.Queryable<Tag>().Where(it => true).ToListAsync();
+                    List<Tag> allTags = await sqlORM.Queryable<Tag>().ToListAsync();
                     foreach (Tag t in allTags)
                     {
                         Console.WriteLine("Post_id: " + t.post_id + "   Tag: " + t.tagName);
                     }
                     List<int> matchingPostIds = allTags.Where(t => t.tagName.Equals(tag)).Select(t => t.post_id).ToList();
-                    filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id))
+                    filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id) && post.isBanned != 1)
                             .OrderByDescending(post => post.publishDateTime).ToListAsync();
                     total = filteredPosts.Count();
                     IEnumerable<Posts> postsForPage = filteredPosts.Skip(startIndex).Take(count);
@@ -274,7 +274,7 @@ namespace DBwebAPI.Controllers
                 }
                 else
                 {
-                    allPosts = await sqlORM.Queryable<Posts>().Where(it => true).OrderByDescending(post => post.publishDateTime).ToListAsync();
+                    allPosts = await sqlORM.Queryable<Posts>().Where(it =>it.isBanned!=1).OrderByDescending(post => post.publishDateTime).ToListAsync();
                     total = allPosts.Count();
                     // Retrieve the posts for the current page
                     IEnumerable<Posts> postsForPage = allPosts.Skip(startIndex).Take(count);
@@ -358,7 +358,7 @@ namespace DBwebAPI.Controllers
                         Console.WriteLine("Post_id: " + t.post_id + "   Tag: " + t.tagName);
                     }
                     List<int> matchingPostIds = allTags.Where(t => t.tagName.Equals(tag)).Select(t => t.post_id).ToList();
-                    filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id))
+                    filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id) && post.isBanned != 1)
                             .OrderBy(post => post.publishDateTime).ToListAsync();
                     total= filteredPosts.Count;
                     IEnumerable<Posts> postsForPage = filteredPosts.Skip(startIndex).Take(count);
@@ -385,7 +385,7 @@ namespace DBwebAPI.Controllers
                 }
                 else
                 {
-                    allPosts = await sqlORM.Queryable<Posts>().Where(it => true).OrderBy(post => post.publishDateTime).ToListAsync();
+                    allPosts = await sqlORM.Queryable<Posts>().Where(it=>it.isBanned != 1).OrderBy(post => post.publishDateTime ).ToListAsync();
                     total = allPosts.Count;
                     // Retrieve the posts for the current page
                     IEnumerable<Posts> postsForPage = allPosts.Skip(startIndex).Take(count);
@@ -468,7 +468,7 @@ namespace DBwebAPI.Controllers
                         Console.WriteLine("Post_id: " + t.post_id + "   Tag: " + t.tagName);
                     }
                     List<int> matchingPostIds = allTags.Where(t => t.tagName.Equals(tag)).Select(t => t.post_id).ToList();
-                    filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id))
+                    filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id) && post.isBanned!=1)
                             .OrderByDescending(post => post.approvalNum).ToListAsync();
                    
                     total = filteredPosts.Count();
@@ -496,7 +496,7 @@ namespace DBwebAPI.Controllers
                 }
                 else
                 {
-                    allPosts = await sqlORM.Queryable<Posts>().Where(it => true).OrderByDescending(post => post.approvalNum).ToListAsync();
+                    allPosts = await sqlORM.Queryable<Posts>().Where(it => it.isBanned!=1).OrderByDescending(post => post.approvalNum).ToListAsync();
                     total = allPosts.Count();
                     // Retrieve the posts for the current page
                     IEnumerable<Posts> postsForPage = allPosts.Skip(startIndex).Take(count);
@@ -619,7 +619,7 @@ namespace DBwebAPI.Controllers
                         Console.WriteLine("Post_id: " + t.post_id + "   Tag: " + t.tagName);
                     }
                     List<int> matchingPostIds = allTags.Where(t => t.tagName.Equals(tag)).Select(t => t.post_id).ToList();
-                    filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id))
+                    filteredPosts = await sqlORM.Queryable<Posts>().Where(post => matchingPostIds.Contains(post.post_id) && post.isBanned!=1)
                             .OrderByDescending(post => post.approvalNum).ToListAsync();
 
                     //json.key为关键词，需要在post的title和contain中筛选出与key存在关联度的帖子，并按关联度从高到低排序
@@ -655,7 +655,7 @@ namespace DBwebAPI.Controllers
                 }
                 else
                 {
-                    allPosts = await sqlORM.Queryable<Posts>().Where(it => true).OrderByDescending(post => post.approvalNum).ToListAsync();
+                    allPosts = await sqlORM.Queryable<Posts>().Where(it => it.isBanned!=1).OrderByDescending(post => post.approvalNum).ToListAsync();
                     //json.key为关键词，需要在post的title和contain中筛选出与key存在关联度的帖子，并按关联度从高到低排序
                     //以下为实现的代码
                     string keyword = json.key.ToLower(); // Convert the keyword to lowercase for case-insensitive comparison

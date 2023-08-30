@@ -86,7 +86,7 @@
         <div v-if="showtabs">
           <el-tabs type="border-card" tab-position="top" class="maintabs">
             <el-tab-pane label="我的动态">
-              <detail />
+              <detail :backgroundImage="detailBackgroundimage" />
             </el-tab-pane>
             <el-tab-pane label="我的帖子">
               <post />
@@ -158,6 +158,7 @@ export default {
       befollowCnt: 0,     // 被关注数
       likeCnt: 0,         // 被点赞总数
       backgroundImage: '', //左侧竖
+      detailBackgroundimage: '',//右侧横
     };
   },
   mounted() {
@@ -245,6 +246,7 @@ export default {
         this.isAccount = false;
         console.log(this.isAccount)
       }
+      return
     },
     async getTheme() {
       const token = localStorage.getItem('token');
@@ -270,6 +272,8 @@ export default {
       }
       console.log(response);
       this.backgroundImage = response.data.image2;
+      this.detailBackgroundimage = response.data.image1;
+      return
     }
   }
 }

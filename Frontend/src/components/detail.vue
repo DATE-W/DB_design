@@ -529,10 +529,12 @@ export default {
                 </el-aside>
                 <el-main>
                     <!-- 主帖 -->
-                    <div class="rooter-post">
+                    <div>
                         {{ uText }}
-                        <div v-for="item in pic">
-                            <img style="width:30vw;height:30vw;margin-top: 5vh;margin-left: 10vw;" :src='item'>
+                        <div style="display: flex;flex-direction: row;">
+                            <div v-for="item in pic">
+                                <img style="width:12vw;height:12vw;margin-top: 5vh;margin-left: 2vw;" :src='item'>
+                            </div>
                         </div>
                         <!-- <div class="bottom-detail">
                             <div>{{ date }}</div>
