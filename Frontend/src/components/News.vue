@@ -522,6 +522,8 @@ export default {
         this.videoItems2 = response.data.value.videos[2];
       } catch (error) {
         // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       };
       return;
     },
@@ -561,7 +563,9 @@ export default {
         // console.log(this.searchNewsResults);
         // console.log(this.searchVideoResults);
       } catch (error) {
-        console.error(error);
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       };
       return;
     },
@@ -632,7 +636,9 @@ export default {
         console.log(dataItems);
         // console.log(this.items);
       } catch (error) {
-        console.error(error);
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       };
       return;
     },
@@ -658,13 +664,9 @@ export default {
         // console.log(dataItems);
         // console.log(this.items);
       } catch (error) {
-        console.error(error);
-
-        ElMessage({
-          message: err.response.data.msg,
-          grouping: false,
-          type: 'error',
-        })
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       }
       return;
     },
@@ -688,13 +690,9 @@ export default {
         // console.log(dataItems);
         // console.log(this.LeagueTeam);
       } catch (error) {
-        console.error(error);
-        ElMessage({
-          message: err.response.data.msg,
-          grouping: false,
-          type: 'error',
-        })
-        return
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       }
       return;
     },
@@ -718,13 +716,9 @@ export default {
         // console.log(dataItems);
         // console.log(this.LeagueShooter);
       } catch (error) {
-        console.error(error);
-        ElMessage({
-          message: err.response.data.msg,
-          grouping: false,
-          type: 'error',
-        })
-        return;
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       }
       return;
     },

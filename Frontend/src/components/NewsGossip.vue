@@ -107,7 +107,9 @@ export default {
         // console.log(dataItems);
         // console.log(this.items);
       } catch (error) {
-        console.error(error);
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       };
       return;
     },
@@ -134,7 +136,9 @@ export default {
         console.log(dataItems);
         // console.log(this.items);
       } catch (error) {
-        console.error(error);
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       };
       return;
     },
