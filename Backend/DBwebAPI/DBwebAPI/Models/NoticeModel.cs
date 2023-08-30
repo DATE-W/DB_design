@@ -22,6 +22,7 @@ namespace DBwebAPI.Models
             public int? notice_id { get; set; }
             public string? text { get; set; }
             public DateTime publishdatetime { get; set; }
+            public int? receiver { get; set; }
         }
 
         public class adminPublishNotice

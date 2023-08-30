@@ -817,13 +817,26 @@ namespace DBwebAPI.Controllers
                 tmpnotice = await sqlORM.Queryable<Notice>().Where(it=>true).ToListAsync();
                 foreach(var t in tmpnotice)
                 {
-                    NoticeClass notice = new NoticeClass
+                    if (t.receiver == 0)
                     {
-                        dateTime = t.publishdatetime,
-                        people = "notice",
-                        content = t.text,
-                    };
-                    noticeList.Add(notice);
+                        NoticeClass notice = new NoticeClass
+                        {
+                            dateTime = t.publishdatetime,
+                            people = "notice",
+                            content = t.text,
+                        };
+                        noticeList.Add(notice);
+                    }
+                    if(t.receiver == user_id)
+                    {
+                        NoticeClass notice = new NoticeClass
+                        {
+                            dateTime = t.publishdatetime,
+                            people = "notice",
+                            content = "你的帖子："+t.text+" 已被管理员删除，请注意遵守社区秩序",
+                        };
+                        noticeList.Add(notice);
+                    }
                 }
                 // 对 notices 数组按照 datetime 降序排序
                 noticeList = noticeList.OrderByDescending(a => a.dateTime).ToList();
