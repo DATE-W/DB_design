@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SqlSugar;
 using DBwebAPI.Models;
 using DBwebAPI.Relations;
+using static DBwebAPI.Models.NoticeModel;
 
 namespace DBwebAPI.Controllers
 {
@@ -85,11 +86,22 @@ namespace DBwebAPI.Controllers
 
                 int post_id = json.post_id;
                 Posts posts = await sqlORM.Queryable<Posts>().SingleAsync(it=>it.post_id == post_id);
+                PublishPost publishPost = await sqlORM.Queryable<PublishPost>().SingleAsync(it=>it.post_id == post_id);
                 if (posts == null)
                     return Ok(new { ok = "no" });
                 posts.isBanned = 1;
                 int count = await sqlORM.Updateable(posts).ExecuteCommandAsync();
-                if(count == 0)
+
+                Notice notice = new Notice();
+                int? id = sqlORM.Queryable<Notice>().Max(it => it.notice_id);
+                if (id.HasValue) id++; else id = 0;
+                notice.notice_id = id;
+                notice.text = posts.title;
+                notice.publishdatetime = DateTime.Now;
+                notice.receiver = publishPost.user_id;
+                int count2 = await sqlORM.Insertable(notice).ExecuteCommandAsync();
+
+                if (count == 0 || count2==0)
                     return Ok(new { ok = "no" });
                 return Ok(new { ok = "yes" });
             }
