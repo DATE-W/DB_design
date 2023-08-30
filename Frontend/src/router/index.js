@@ -86,6 +86,18 @@ const router = createRouter({
       path: '/Games',
       component: () => import('../components/Games.vue')
     },
+    {
+      path: '/NewsVideo',
+      component: () => import('../components/NewsVideo.vue')
+    },
+    {
+      path: '/NewsGossip',
+      component: () => import('../components/NewsGossip.vue')
+    },
+    {
+      path: '/NewsDetails',
+      component: () => import('../components/NewsDetails.vue')
+    },
   ]
 })
 
