@@ -1332,11 +1332,11 @@ namespace DBwebAPI.Controllers
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
                 int user_id = tempUsr.First().user_id;
-                /*
+                
                 int user_id = 4;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
-                    .ToListAsync();*/
+                    .ToListAsync();
                 List<Theme> allthemes = new List<Theme>();
                 allthemes = await sqlORM.Queryable<Theme>().ToListAsync();
                 List<ThemeJson> tmpThemes = new List<ThemeJson>();
