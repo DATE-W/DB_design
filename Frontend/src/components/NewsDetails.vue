@@ -175,6 +175,5 @@ export default {
     left: 0;
     border-radius: 6px;
     width: 50vw;
-    height: 60vh;
 }
 </style>

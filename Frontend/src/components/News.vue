@@ -465,24 +465,7 @@ export default {
 
   //进入页面后调取接口，从而获得一组数据
   created() {
-    // this.getData(4, '', '普通', this.carouselRecommendItems);    //主页面左上角走马灯
-    // this.getData(2, '', '普通', this.recommendItems1);          //主页面左上角走马灯下推荐内容
-    // this.getData(2, '', '普通', this.recommendItems2);          //主页面中部推荐内容
-
-    // this.getVideoData(4, '', '', this.carouselVideoItems);      //主页面视频走马灯
-    // this.getVideoData(2, '', '', this.videoItems1);            //主页面视频图文
-    // this.getVideoData(5, '', '', this.videoItems2);            //主页面视频纯文字
-
-    // this.getData(4, '中超', '普通', this.ChinaItems);            //主页面中超新闻
-    // this.getData(4, '英超', '普通', this.ENGLANDItems);          //主页面英超新闻
-    // this.getData(4, '西甲', '普通', this.SpainItems);          //主页面西甲新闻
-    // this.getData(4, '德甲', '普通', this.GermanyItems);          //主页面德甲新闻
-    // this.getData(4, '意甲', '普通', this.ItalyItems);          //主页面意甲新闻
-    // this.getData(4, '法甲', '普通', this.FranceItems);          //主页面法甲新闻
-
-    // this.getData(4, '', '八卦', this.carouselGossipItems);      //主页面右侧八卦走马灯
-    // this.getData(3, '', '八卦', this.gossipItems1);      //主页面右侧八卦图文
-    // this.getData(5, '', '八卦', this.gossipItems2);      //主页面右侧八卦纯文字
+    // if (this.SpainItems.length == 0)
     this.initNewsData();
   },
 
@@ -751,7 +734,9 @@ export default {
     openNewsDetails(item) {
       console.log(item);
       const queryString = encodeURIComponent(JSON.stringify(item));
-      this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
+      // this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
+      const url = `${window.location.origin}/NewsDetails?data=${queryString}`;
+      window.open(url, '_blank');
     },
 
     //打开球队详情页
