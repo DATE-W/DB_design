@@ -2,8 +2,19 @@
   <div class="my-posts-container">
     <div class="posts-section">
       <h2>我的收藏</h2>
+      <div class="overflow-container"> 
       <div class="post-list">
-        <div v-for="(post, index) in post_id" :key="post.id" class="post-item">
+        <div class="center-wrapper" v-if="post_id.length === 0">
+          <div class="no-posts">
+            <div class="icon-wrapper">
+              <el-icon size="120"><DocumentRemove /></el-icon>
+            </div>
+            <div class="text-wrapper">
+              <p class="no-posts-text">您还没有收藏过帖子</p>
+            </div>
+          </div>
+        </div>
+        <div v-for="(post, index) in post_id" :key="post.id" class="post-item" @click="goToDetail(post_id[index])">
           <div class="post-title">{{ post_title[index] }}</div>
           <div class="post-content">{{ post_content[index] }}</div>
           <div class="info-group">
@@ -19,11 +30,13 @@
           </div>
         </div>
       </div>
+      </div>
     </div>
     <div class="points-section">
       <div class="points-box">
         <h3 style="color: aliceblue;">我的积分</h3>
         <div class="points">{{ myPoints }}</div>
+        <div class="user-title" style="margin-top: 15px;color:rgb(255, 255, 255) ;font-weight: bold;">{{ getUserTitle(myPoints) }}</div>
       </div>
     </div>
   </div>
@@ -54,6 +67,12 @@ export default {
     this.getPoint(); 
   },
   methods: {
+    goToDetail(postId) {
+      this.$router.push({
+          path: '/detail',
+          query: { clickedPostID: postId }
+      });
+    },
     handleMouseOver(index) {
       this.postList[index].hovered = true;
     },
@@ -145,9 +164,19 @@ export default {
 
   
 <style scoped>
+.overflow-container {
+  overflow-y: auto;
+  max-height: 625px;
+}
+
+.overflow-container::-webkit-scrollbar {
+  width:0;
+}
 .my-posts-container {
   display: flex;
   width: 100%;
+  background: #d7ecffeb;
+  border-radius: 20px;
 }
 
 .posts-section {
@@ -158,10 +187,28 @@ export default {
 .post-list {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 20px;
-  overflow-y: auto;
   max-height: 500px;
   align-items: center;
+  text-align: center;
+}
+.center-wrapper {
+  display: inline-block;
+}
+
+.no-posts {
+  font-size: 20px;
+  color: #999;
+  display: inline-block;
+}
+
+.icon-wrapper {
+  margin-bottom: 10px;
+}
+
+.no-posts-text {
+  margin-top: 10px;
 }
 
 .post-item {
@@ -170,12 +217,17 @@ export default {
   padding: 10px;
   border-radius: 8px;
   transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+  position: relative;
+  cursor: pointer;
 }
 
-.post-item.hovered {
-  background-color: #f9f9f9;
-  transform: scale(1.02);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.post-item:hover {
+  transform: scale(1.05); /* 缩放效果，可以根据需要进行调整 */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+}
+
+.post-item:hover .post-content {
+  color: #3498db; /* 浅蓝色 */
 }
   
 .post-title {
@@ -188,13 +240,12 @@ export default {
 }
 
 .post-item:nth-child(odd) {
-  background: linear-gradient(45deg, #B3E0FF, #66CCFF);
+  background:#f8f8f8;
 }
 
 .post-item:nth-child(even) {
-  background: linear-gradient(45deg, #66CCFF, #33B5FF);
+  background:#ffffff;
 }
-
 .info-group {
   display: flex;
   align-items: center; 
@@ -234,7 +285,7 @@ export default {
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  background: linear-gradient(45deg, #008cff, #366ff4);
+  background:#0058fc6f;
 }
 
 .points {
