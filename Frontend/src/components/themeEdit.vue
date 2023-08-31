@@ -70,13 +70,12 @@ export default {
         },
         showThemePreview(theme) {
             this.previewImageUrl = theme.image3;
-
             ElMessageBox({
                 title: '切换主题',
                 message: `
                     <div>
                         <p>是否切换到主题 ${theme.name}？</p>
-                        <img src="${theme.image3}" alt="Theme Preview" style="max-width: 100%;">
+                        <img src=${theme.image3} alt="Theme Preview" style="max-width: 100%;">
                     </div>
                 `,
                 showCancelButton: true,
