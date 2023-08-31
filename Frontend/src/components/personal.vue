@@ -66,7 +66,7 @@
 
             <!-- 退出登录 -->
             <div style="display: flex; justify-content: center;">
-              <el-button class="logout-button" type="danger" @click="logout">登出</el-button>
+              <el-button class="logout-button" style="opacity: 1;" type="danger" @click="logout">登出</el-button>
             </div>
           </div>
           <div v-else>
