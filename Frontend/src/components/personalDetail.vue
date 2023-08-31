@@ -87,14 +87,25 @@ export default {
         scrollToTop() {
             // 获取元素的引用
             const container = this.$refs.scrollContainer;
-            // 使用元素的滚动方法来滚动到顶部
             if (container) {
-                // 使用 scrollTop 来滚动到顶部
                 this.isScrollingToTop = true;
-                container.scrollTop = 0;
-                setTimeout(() => {
-                    this.isScrollingToTop = false; // 动画完成
-                }, 1000);
+                const duration = 1000; // 滚动持续时间，单位：毫秒
+                const startTime = performance.now();
+                const startTop = container.scrollTop;
+                const targetTop = 0; // 目标滚动位置（顶部）
+                const animateScroll = (timestamp) => {
+                    const elapsedTime = timestamp - startTime;
+                    if (elapsedTime >= duration) {
+                        container.scrollTop = targetTop;
+                        this.isScrollingToTop = false;
+                        return;
+                    }
+                    const easeInOutCubic = (t) => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+                    const scrollProgress = easeInOutCubic(elapsedTime / duration);
+                    container.scrollTop = startTop + (targetTop - startTop) * scrollProgress;
+                    requestAnimationFrame(animateScroll);
+                };
+                requestAnimationFrame(animateScroll);
             }
         },
         // 根据动态类型返回相应的文本内容
