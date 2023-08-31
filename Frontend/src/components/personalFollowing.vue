@@ -55,7 +55,7 @@ export default {
                 return truncatedText + '...';
             }
         },
-        showUserInfo(index) {
+        async showUserInfo(index) {
             const confirmText = this.followList[index].isfollowed ? '取消关注' : '关注';
             // 构建用户信息的 HTML 字符串
             const userInfoHTML = `
@@ -67,6 +67,7 @@ export default {
         <div>
           <p style="font-weight: bold; margin-bottom: 5px;">用户名：${this.followList[index].userName}</p>
           <p style="color: #666; margin-bottom: 5px;">喜欢的主队：${this.followList[index].uft}</p>
+          <p style="color: #666; margin-bottom: 5px;">个人称号：${await this.getUserTitle(this.followList[index].userpoint)}</p>
           <p style="color: #666; margin-bottom: 5px;">个性签名：${this.followList[index].signature || '未填写'}</p>
         </div>
       </div>
@@ -88,6 +89,14 @@ export default {
                 this.followOnclick(index)
             }).catch(() => {
             });
+        },
+        async getUserTitle(mypoint) {
+            if (mypoint >= 0 && mypoint <= 9) return '平平无奇';
+            if (mypoint >= 10 && mypoint <= 49) return '普通用户';
+            if (mypoint >= 50 && mypoint <= 99) return '一贴成名';
+            if (mypoint >= 100 && mypoint <= 499) return '球场金童';
+            if (mypoint >= 500 && mypoint <= 999) return '明日之星';
+            if (mypoint >= 1000) return '名人堂';
         },
         // 点击 关注/取消关注
         async followOnclick(index) {

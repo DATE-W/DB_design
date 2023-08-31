@@ -12,7 +12,7 @@
                 <div class="frame-option" v-if="index < themeList.length - 1">
                     <div class="theme-item" @click="showThemePreview(theme)">
                         <div class="theme-circle" :style="`background-image: url(${theme.image4})`"
-                            :class="{ 'selected-frame': selectedTheme === theme }"></div>
+                            :class="{ 'selected-frame': selectedTheme.id === theme.id }"></div>
                         <div class="theme-name">{{ theme.name }}</div>
                     </div>
                 </div>
@@ -65,6 +65,8 @@ export default {
             }
             console.log(response);
             this.themeList = response.data;
+            this.selectedTheme = response.data[response.data.length - 1];
+            console.log(this.selectedTheme)
         },
         showThemePreview(theme) {
             this.previewImageUrl = theme.image3;

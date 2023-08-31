@@ -18,10 +18,10 @@
             <el-carousel style="height: 76vh; z-index: 1; width: 86vw; margin: auto; position: relative;" arrow="never">
             <!-- Images to display above the carousel -->
             <div style="position: absolute; top: 5%; left: 0; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
-              <img src="../assets/img/home_slogan1.png" style="max-width: 600px; width: 50%; margin: 10px; z-index: 2;">
+              <img src="../assets/img/home_slogan1.png" style="max-width: 600px; width: 50%; margin: 1.333vw; z-index: 2;">
             </div> 
             <div style="position: absolute; top: 55%; left: 0; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
-              <img src="../assets/img/home_slogan2.png" style="max-width: 600px; width: 50%; margin: 10px; z-index: 2;">
+              <img src="../assets/img/home_slogan2.png" style="max-width: 600px; width: 50%; margin: 1.333vw; z-index: 2;">
             </div> 
             <!-- Replace the v-for loop with your custom carousel items -->
             <el-carousel-item v-for="item in 3" :key="item" style="width: 86vw; height: 76vh; display: flex; justify-content: center; align-items: center;">
@@ -33,39 +33,34 @@
           <!-- 赛事信息筛选菜单 -->
           <el-menu class="Games-menu" mode="horizontal" @select="handleMenuSelect">
             <div class="menu-wrapper">
-              <el-menu-item class="menu-item" index="1" @click="GamesAll">
+              <el-menu-item class="menu-item" index="2" >
                 <div class="menu-item-content">
-                  <p class="menu-title">全部</p>
+                  <p class="menu-title" @click="selectLeague('中超')">中超</p>
                 </div>
               </el-menu-item>
-              <el-menu-item class="menu-item" index="2" @click="GamesZC">
+              <el-menu-item class="menu-item" index="3">
                 <div class="menu-item-content">
-                  <p class="menu-title">中超</p>
+                  <p class="menu-title" @click="selectLeague('英超')">英超</p>
                 </div>
               </el-menu-item>
-              <el-menu-item class="menu-item" index="3" @click="GamesYC">
+              <el-menu-item class="menu-item" index="4" >
                 <div class="menu-item-content">
-                  <p class="menu-title">英超</p>
+                  <p class="menu-title" @click="selectLeague('意甲')">意甲</p>
                 </div>
               </el-menu-item>
-              <el-menu-item class="menu-item" index="4" @click="GamesYJ">
+              <el-menu-item class="menu-item" index="5">
                 <div class="menu-item-content">
-                  <p class="menu-title">意甲</p>
+                  <p class="menu-title" @click="selectLeague('西甲')">西甲</p>
                 </div>
               </el-menu-item>
-              <el-menu-item class="menu-item" index="5" @click="GamesXJ">
+              <el-menu-item class="menu-item" index="6">
                 <div class="menu-item-content">
-                  <p class="menu-title">西甲</p>
+                  <p class="menu-title" @click="selectLeague('德甲')">德甲</p>
                 </div>
               </el-menu-item>
-              <el-menu-item class="menu-item" index="6" @click="GamesDJ">
+              <el-menu-item class="menu-item" index="7">
                 <div class="menu-item-content">
-                  <p class="menu-title">德甲</p>
-                </div>
-              </el-menu-item>
-              <el-menu-item class="menu-item" index="7" @click="GamesFJ">
-                <div class="menu-item-content">
-                  <p class="menu-title">法甲</p>
+                  <p class="menu-title" @click="selectLeague('法甲')">法甲</p>
                 </div>
               </el-menu-item>
               <el-menu-item class="menu-item" index="8" @click="redirectToGames">
@@ -76,19 +71,103 @@
             </div>
           </el-menu>
 
-
           <!-- 赛事信息卡片 -->
-          <el-row class="Game-col-container">
-            <el-card shadow="hover" class="Game-card" v-for="item in getLimitedGames()" :key=item.index
-            style="border-radius: 10px; border: none; margin: 5px;background-color: #edebeb;">
-              <div class="Game-content">
-                <div class="column-status">{{ item.status }}</div>
-                <div class="column-team1">{{ item.team1 }} {{ item.score1 }}</div>
-                <div class="column-team1">{{ item.team2 }} {{ item.score2 }}</div>
-                <el-button class="button" text>详细赛事信息</el-button>
-              </div>
-            </el-card>
-          </el-row>
+          <div v-if="selectedLeague === '中超'||selectedLeague===''">
+            <el-row class="Game-col-container">
+              <el-card shadow="hover" class="Game-card" v-for="(game, index) in ZCgame_id" :key="game.id"
+              style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
+                <div class="Game-content" >
+                  <div class="column-status" style="padding-bottom: 0.5rem;">
+                    {{ ZCgame_status[index] === 'Played' ? '已结束' : ZCgame_status[index] }}  
+                  </div>
+                  <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
+                  <div class="column-team1">{{ ZCteam1_name[index] }} {{ ZCteam1_score[index] }}</div>
+                  <div class="column-team1">{{ ZCteam2_name[index] }} {{ ZCteam2_score[index] }}</div>
+                  <el-button class="button" @click="goToGameDetail(ZCgame_id[index])" text>详细赛事信息</el-button>
+                </div>
+              </el-card>
+            </el-row>
+          </div>
+          <div v-if="selectedLeague === '英超'">
+            <el-row class="Game-col-container">
+              <el-card shadow="hover" class="Game-card" v-for="(game, index) in YCgame_id" :key="game.id"
+              style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
+                <div class="Game-content">
+                  <div class="column-status" style="padding-bottom: 0.5rem;">
+                    {{ YCgame_status[index] === 'Played' ? '已结束' : YCgame_status[index] }}  
+                  </div>
+                  <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
+                  <div class="column-team1">{{ YCteam1_name[index] }} {{ YCteam1_score[index] }}</div>
+                  <div class="column-team1">{{ YCteam2_name[index] }} {{ YCteam2_score[index] }}</div>
+                  <el-button class="button" @click="goToGameDetail(YCgame_id[index])" text>详细赛事信息</el-button>
+                </div>
+              </el-card>
+            </el-row>
+          </div>
+          <div v-if="selectedLeague === '意甲'">
+            <el-row class="Game-col-container">
+              <el-card shadow="hover" class="Game-card" v-for="(game, index) in YJgame_id" :key="game.id"
+              style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
+                <div class="Game-content">
+                  <div class="column-status" style="padding-bottom: 0.5rem;">
+                    {{ YJgame_status[index] === 'Played' ? '已结束' : YJgame_status[index] }}  
+                  </div>
+                  <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
+                  <div class="column-team1">{{ YJteam1_name[index] }} {{ YJteam1_score[index] }}</div>
+                  <div class="column-team1">{{ YJteam2_name[index] }} {{ YJteam2_score[index] }}</div>
+                  <el-button class="button" @click="goToGameDetail(YJgame_id[index])" text>详细赛事信息</el-button>
+                </div>
+              </el-card>
+            </el-row>
+          </div>
+          <div v-if="selectedLeague === '西甲'">
+            <el-row class="Game-col-container">
+              <el-card shadow="hover" class="Game-card" v-for="(game, index) in XJgame_id" :key="game.id"
+              style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
+                <div class="Game-content">
+                  <div class="column-status" style="padding-bottom: 0.5rem;">
+                    {{ XJgame_status[index] === 'Played' ? '已结束' : XJgame_status[index] }}  
+                  </div>
+                  <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
+                  <div class="column-team1">{{ XJteam1_name[index] }} {{ XJteam1_score[index] }}</div>
+                  <div class="column-team1">{{ XJteam2_name[index] }} {{ XJteam2_score[index] }}</div>
+                  <el-button class="button" @click="goToGameDetail(XJgame_id[index])" text>详细赛事信息</el-button>
+                </div>
+              </el-card>
+            </el-row>
+          </div>
+          <div v-if="selectedLeague === '德甲'">
+            <el-row class="Game-col-container">
+              <el-card shadow="hover" class="Game-card" v-for="(game, index) in DJgame_id" :key="game.id"
+              style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
+                <div class="Game-content">
+                  <div class="column-status" style="padding-bottom: 0.5rem;">
+                    {{ DJgame_status[index] === 'Played' ? '已结束' : DJgame_status[index] }}  
+                  </div>
+                  <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
+                  <div class="column-team1">{{ DJteam1_name[index] }} {{ DJteam1_score[index] }}</div>
+                  <div class="column-team1">{{ DJteam2_name[index] }} {{ DJteam2_score[index] }}</div>
+                  <el-button class="button" @click="goToGameDetail(DJgame_id[index])" text>详细赛事信息</el-button>
+                </div>
+              </el-card>
+            </el-row>
+          </div>
+          <div v-if="selectedLeague === '法甲'">
+            <el-row class="Game-col-container">
+              <el-card shadow="hover" class="Game-card" v-for="(game, index) in FJgame_id" :key="game.id"
+              style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
+                <div class="Game-content">
+                  <div class="column-status" style="padding-bottom: 0.5rem;">
+                    {{ FJgame_status[index] === 'Played' ? '已结束' : FJgame_status[index] }}  
+                  </div>
+                  <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
+                  <div class="column-team1">{{ FJteam1_name[index] }} {{ FJteam1_score[index] }}</div>
+                  <div class="column-team1">{{ FJteam2_name[index] }} {{ FJteam2_score[index] }}</div>
+                  <el-button class="button" @click="goToGameDetail(FJgame_id[index])" text>详细赛事信息</el-button>
+                </div>
+              </el-card>
+            </el-row>
+          </div>
         </div>
         <!-- 下中半部分 -->
         <div class="bottom-middle-section">
@@ -96,79 +175,95 @@
           <div class="news-container">
             <div class="hot-news">热点资讯</div>
             <div class="news-row">
-              <div v-for="(news, index) in getLimitedNews()" :key="index" class="news-item">
+              <div v-for="(news, index) in dataItems" :key="index" 
+                class="news-item" :class="{ 'two-columns': (index + 2) % 5 === 0 }">
                 <a :href="news.link" target="_blank" class="news-link">
-                  <el-row align="middle"  @click="goToLink(news.link)">
+                  <el-row align="middle" @click="openNewsDetails(news)">
                     <el-col :span="24" style="display: flex; align-items: center;">
-                      <!-- Image -->
-                      <div class="news-item-wrapper">
-                        <img :src="news.image" alt="News Image" class="news-image">
-                        <!-- News Content -->
-                        <div class="news-content">
-                          <h4 class="news-title">{{ news.title }}</h4>
-                          <p class="news-summary">{{ truncateText(news.summary, 50) }}</p>
+                      <div class="news-item-wrapper" style="position: relative;">
+                        <img :src="news.pictureRoutes[0]" alt="News Image" 
+                        class="news-image" :class="{ 'news-image2': (index + 2) % 5 === 0 }">
+                        <div class="news-content-overlay" v-if="(index + 2) % 5 === 0"
+                            style="position: absolute; top: 70%; left: 0; width: 32vw; text-align: center; color: white; background-color: rgba(0, 0, 0, 0.281); padding: 1.333vw;">
+                          <p class="news-summary">{{ truncateText(news.newsBody.title, 20) }}</p>
+                        </div>
+                        <div v-else class="news-content" style="text-align: center;">
+                          <p class="news-summary">{{ truncateText(news.newsBody.title, 26) }}</p>
                         </div>
                       </div>
                     </el-col>
                   </el-row>
                 </a>
-            </div>
+              </div>
             </div>
           </div>
 
            <!-- 添加一个缝隙 -->
-          <div class="spacer" style="width: 30px;"></div>
+          <div class="spacer" style="width: 4vw;"></div>
 
           <!-- 右侧社区板块 -->
           <div class="forum-container">
-            <div class="hot-posts">热门帖子</div>
+            <div class="hot-posts">精选热帖</div>
             <div class="posts-column">
-              <div v-for="(posts, index) in getLimitedPosts()" :key="index" class="posts-item">
-              <a :href="posts.link" target="_blank" class="posts-link">
-                <el-row align="middle" class="posts-row" @click="goToLink(posts.link)">
-                  <el-col :span="24" style="display: flex; align-items: center;height: 100px;">
-                    <!-- Image -->
+              <div v-for="(post, index) in post_id" :key="post.id" class="posts-item">
+                <el-row align="middle" class="posts-row" @click="goToDetail(post_id[index])">
+                  <el-col :span="24" style="display: flex; align-items: center;height: 8vw;">
                     <div class="posts-item-wrapper">
-                      <img :src="posts.image" alt="Posts Image" class="posts-image">
                       <!-- News Content -->
-                      <div class="posts-content">
-                        <h4 class="posts-title">{{ posts.title }}</h4>
-                        <p class="posts-summary">{{ truncateText(posts.summary, 50) }}</p>
-                      </div>
+                        <div class="posts-content" >
+                          <p :class="['posts-summary', { 'hovered-summary': hoveredIndex === index }]"
+                            @mouseenter="hoveredIndex = index"
+                            @mouseleave="hoveredIndex = -1">
+                            <span :class="['post-number', getColorClass(index)]">
+                              {{ index + 1 }}.
+                            </span>
+                            {{ truncateText(post_content[index] , 50) }}
+                          </p>
+                          <div class="info-group">
+                            <span class="like-container">
+                              <el-icon size="medium"><Pointer /></el-icon>
+                              <span class="like-number">{{ post_likes[index] }}</span>
+                            </span>
+                            <span class="space-between"></span> <!-- Add a spacer with desired gap -->
+                            <span class="star-container">
+                              <el-icon size="medium"><Star /></el-icon>
+                              <span class="star-number">{{ post_stars[index] }}</span>
+                            </span>
+                          </div>
+                        </div>
                     </div>
                   </el-col>
                 </el-row>
-              </a>
-            </div>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- 下半部分 -->
         <div class="bottom-section">
-            <div class="module" @click="redirectToNews" @mouseover="hideContent" @mouseout="showContent">
-                <p class="module-text">致力于分享最有价值的新闻</p>
-                <div class="circle">N</div>
-                <div class="overlay-background">
-                  <p class="overlay-text">一览足球热讯<br>->新闻</p>
-                </div>
-            </div>
+          <div class="module" @click="redirectToNews" @mouseover="hideContent" @mouseout="showContent">
+              <p class="module-text">致 力 于 分 享<br>最 有 价 值 的 新闻</p>
+              <el-icon class="news-icon" ><VideoCamera /></el-icon>
+              <div class="overlay-background">
+                <p class="overlay-text">一览足球热讯<br>->新闻</p>
+              </div>
+          </div>
 
-            <div class="module" @click="redirectToGames" @mouseover="hideContent" @mouseout="showContent">
-                <p class="module-text">一场场足球的视觉盛宴</p>
-                <div class="circle">G</div>
-                <div class="overlay-background">
-                  <p class="overlay-text">享受足球魅力<br>->赛事</p>
-                </div>
-            </div>
+          <div class="module" @click="redirectToGames" @mouseover="hideContent" @mouseout="showContent">
+              <p class="module-text">一 场 场 足 球<br>视 觉 盛 宴</p>
+              <el-icon class="football-icon" ><Football /></el-icon>
+              <div class="overlay-background">
+                <p class="overlay-text">享受足球魅力<br>->赛事</p>
+              </div>
+          </div>
 
-            <div class="module" @click="redirectToForum" @mouseover="hideContent" @mouseout="showContent">
-                <p class="module-text">一个充满热情的思想空间</p>
-                <div class="circle">F</div>
-                <div class="overlay-background">
-                  <p class="overlay-text">表达真挚热爱<br>->论坛</p>
-                </div>
-            </div>
+          <div class="module" @click="redirectToForum" @mouseover="hideContent" @mouseout="showContent">
+              <p class="module-text">一 个 充 满 热 情<br>的 思 想 空 间</p>
+              <el-icon class="posts-icon" ><ChatDotSquare /></el-icon>
+              <div class="overlay-background">
+                <p class="overlay-text">表达真挚热爱<br>->论坛</p>
+              </div>
+          </div>
         </div>
       </div>
     </el-main>
@@ -177,116 +272,296 @@
   
 <script>
 import MyNav from './nav.vue';
+import axios from 'axios';
+import { ElIcon, ElMessage } from 'element-plus';
 import carousel1 from '../assets/img/home_slider1.jpg';
 import carousel2 from '../assets/img/home_slider2.jpg';
 import carousel3 from '../assets/img/home_slider3.jpg';
 
+
 export default {
   data() {
     return {
+      selectedLeague: '', // Store the selected league
+      hoveredIndex: -1, //帖子内容变色
       line1: '回到',
       line2: '顶部',
-      newsList: [
-        {
-          title: "王晗天天拉屎",
-          summary: "有消息人士称301寝室的wh一天能拉三泡屎，请跟随小编一起来看看吧",
-          image: "../src/assets/img/carousel1.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "lll今天又睡过头了",
-          summary: "猪王lll今天无故缺席，斩立决",
-          image: "../src/assets/img/carousel2.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "wyh好帅",
-          summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
-          image: "../src/assets/img/carousel3.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "王晗天天拉屎",
-          summary: "有消息人士称301寝室的wh一天能拉三泡屎，请跟随小编一起来看看吧",
-          image: "../src/assets/img/carousel1.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "lll今天又睡过头了",
-          summary: "猪王lll今天无故缺席，斩立决",
-          image: "../src/assets/img/carousel2.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "wyh好帅",
-          summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
-          image: "../src/assets/img/carousel3.png",
-          link: "https://sse.tongji.edu.cn/"
-        }
-      ],
-      postsList: [
-        {
-          title: "王晗天天拉屎",
-          summary: "有消息人士称301寝室的wh一天能拉三泡屎，请跟随小编一起来看看吧",
-          image: "../src/assets/img/carousel1.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "lll今天又睡过头了",
-          summary: "猪王lll今天无故缺席，斩立决",
-          image: "../src/assets/img/carousel2.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "wyh好帅",
-          summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
-          image: "../src/assets/img/carousel3.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "王晗天天拉屎",
-          summary: "有消息人士称301寝室的wh一天能拉三泡屎，请跟随小编一起来看看吧",
-          image: "../src/assets/img/carousel1.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "lll今天又睡过头了",
-          summary: "猪王lll今天无故缺席，斩立决",
-          image: "../src/assets/img/carousel2.png",
-          link: "https://sse.tongji.edu.cn/"
-        },
-        {
-          title: "wyh好帅",
-          summary: "wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅wyh好帅",
-          image: "../src/assets/img/carousel3.png",
-          link: "https://sse.tongji.edu.cn/"
-        }
-      ],
-      GamesMsg: [
-        { Game: "中超", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
-        { Game: "英超", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
-        { Game: "德甲", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
-        { Game: "中超", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
-        { Game: "中超", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
-        { Game: "中超", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
-        { Game: "意甲", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
-        { Game: "法甲", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
-        { Game: "法甲", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
-        { Game: "法甲", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
-        { Game: "中超", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 },
-        { Game: "中超", time: "", status: "已结束", team1: "中国", score1: 74, team2: "澳大利亚", score2: 60 }
-      ],
-      maxGamesItems: 8,
-      maxNewsItems: 6,
-      maxPostsItems: 6,
+      maxGamesItems: 6,
+      maxNewsItems: 13,
+      maxPostsItems: 10,
       maxNewsLength: 30,
-      GameSelect: "ALL"
+      activeName: 'second',
+      pageNumber: 1,
+      pageSize: 10,  
+      totalPosts: 0,
+      showPage: false, //初始为false 向后端请求完数据后变为true 更换tag页面暂时变为false
+      post_id: [],  //存储返回的帖子id
+      post_title: [],  //存储返回的帖子标题
+      post_content:[],
+      post_likes:[],
+      post_stars:[],
+      currentTag: 'ALL',  //向后端传递当前页面的帖子类型 初始为全部 不受tag影响
+      ZCgame_id: [], 
+      ZCgame_status: [], 
+      ZCgame_kind:[],
+      ZCteam1_name: [],  
+      ZCteam2_name:[],
+      ZCteam1_score:[],
+      ZCteam2_score:[],
+      ZCgame_time: [],
+
+      YCgame_id: [], 
+      YCgame_status: [], 
+      YCgame_kind:[],
+      YCteam1_name: [],  
+      YCteam2_name:[],
+      YCteam1_score:[],
+      YCteam2_score:[],
+      YCgame_time: [],
+
+      YJgame_id: [], 
+      YJgame_status: [], 
+      YJgame_kind:[],
+      YJteam1_name: [],  
+      YJteam2_name:[],
+      YJteam1_score:[],
+      YJteam2_score:[],
+      YJgame_time: [],
+
+      DJgame_id: [], 
+      DJgame_status: [], 
+      DJgame_kind:[],
+      DJteam1_name: [],  
+      DJteam2_name:[],
+      DJteam1_score:[],
+      DJteam2_score:[],
+      DJgame_time: [],
+
+      XJgame_id: [], 
+      XJgame_status: [], 
+      XJgame_kind:[],
+      XJteam1_name: [],  
+      XJteam2_name:[],
+      XJteam1_score:[],
+      XJteam2_score:[],
+      XJgame_time: [],
+
+      FJgame_id: [], 
+      FJgame_status: [], 
+      FJgame_kind:[],
+      FJteam1_name: [],  
+      FJteam2_name:[],
+      FJteam1_score:[],
+      FJteam2_score:[],
+      FJgame_time: [],
+
+      news_id:[],
+      news_title:[],
+      news_content:[],
+      news_picture:[],
+      news_num:13,
+      dataItems:[],
+      matchTag:"",
+      propertyTag:"",
     }
   },
   components: {
     'my-nav': MyNav
   },
+  created() {
+    this.getData(13, '', '', this.dataItems);            
+  },
+  mounted() {
+    this.getPosts(1, this.pageSize, this.currentTag);
+    this.getRecentGames();
+  },
   methods: {
+    selectLeague(league) {
+        this.selectedLeague = league; // Update the selected league
+      },
+    //打开新闻详情页
+    openNewsDetails(item) {
+      console.log(item);
+      const queryString = encodeURIComponent(JSON.stringify(item));
+      this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
+    },
+    goToGameDetail(gameId) {
+      this.$router.push({
+          path: '/detailedMatch',
+          query: { gameUid: gameId }
+      });
+    },
+    goToDetail(postId) {
+      this.$router.push({
+          path: '/detail',
+          query: { clickedPostID: postId }
+      });
+    },
+    //从后端获取新闻数据
+    async getData(newsQuantity, tag1, tag2, dataItems) {
+      try {
+        const requestData = {
+          num: newsQuantity,
+          matchTag: String(tag1),
+          propertyTag: String(tag2),
+        };
+
+        const response = await axios.post('/api/News/GetNews', requestData, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }); // 发送POST请求，并将请求数据作为 JSON 对象发送
+
+        console.log(response.data.value);
+        console.log(tag1);
+
+        this.ok = response.data.ok;
+        // 将数组存贮于传入的数组名中
+        dataItems.splice(0, dataItems.length, ...response.data.value);
+        console.log(dataItems);
+        // console.log(this.items);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async getRecentGames() {
+      let response
+          try {
+            response = await axios({
+                method: 'GET',
+                url: '/api/updateTeam/showRecentGames',
+              })
+          } 
+        catch (err) {
+            ElMessage({
+                message: '获取最近赛事信息失败',
+                grouping: false,
+                type: 'error',
+            });
+        }
+        //console.log(response);
+        if ( Array.isArray(response.data)) {
+            response.data.forEach((postInfo) => {
+              if(postInfo.gameName==="中超"){
+                this.ZCgame_status.push(postInfo.status);
+                this.ZCgame_kind.push(postInfo.gameName);
+                this.ZCgame_id.push(postInfo.gameUid);
+                this.ZCteam1_name.push(postInfo.homeTeamName);
+                this.ZCteam2_name.push(postInfo.guestTeamName);
+                this.ZCteam1_score.push(postInfo.homeScore);
+                this.ZCteam2_score.push(postInfo.guestScore);
+                this.ZCgame_time.push(postInfo.gameTime);
+              }
+              if(postInfo.gameName==="英超"){
+                this.YCgame_status.push(postInfo.status);
+                this.YCgame_kind.push(postInfo.gameName);
+                this.YCgame_id.push(postInfo.gameUid);
+                this.YCteam1_name.push(postInfo.homeTeamName);
+                this.YCteam2_name.push(postInfo.guestTeamName);
+                this.YCteam1_score.push(postInfo.homeScore);
+                this.YCteam2_score.push(postInfo.guestScore);
+                this.YCgame_time.push(postInfo.gameTime);
+              }
+              if(postInfo.gameName==="意甲"){
+                this.YJgame_status.push(postInfo.status);
+                this.YJgame_kind.push(postInfo.gameName);
+                this.YJgame_id.push(postInfo.gameUid);
+                this.YJteam1_name.push(postInfo.homeTeamName);
+                this.YJteam2_name.push(postInfo.guestTeamName);
+                this.YJteam1_score.push(postInfo.homeScore);
+                this.YJteam2_score.push(postInfo.guestScore);
+                this.YJgame_time.push(postInfo.gameTime);
+              }
+              if(postInfo.gameName==="西甲"){
+                this.XJgame_status.push(postInfo.status);
+                this.XJgame_kind.push(postInfo.gameName);
+                this.XJgame_id.push(postInfo.gameUid);
+                this.XJteam1_name.push(postInfo.homeTeamName);
+                this.XJteam2_name.push(postInfo.guestTeamName);
+                this.XJteam1_score.push(postInfo.homeScore);
+                this.XJteam2_score.push(postInfo.guestScore);
+                this.XJgame_time.push(postInfo.gameTime);
+              }
+              if(postInfo.gameName==="德甲"){
+                this.DJgame_status.push(postInfo.status);
+                this.DJgame_kind.push(postInfo.gameName);
+                this.DJgame_id.push(postInfo.gameUid);
+                this.DJteam1_name.push(postInfo.homeTeamName);
+                this.DJteam2_name.push(postInfo.guestTeamName);
+                this.DJteam1_score.push(postInfo.homeScore);
+                this.DJteam2_score.push(postInfo.guestScore);
+                this.DJgame_time.push(postInfo.gameTime);
+              }
+              if(postInfo.gameName==="法甲"){
+                this.FJgame_status.push(postInfo.status);
+                this.FJgame_kind.push(postInfo.gameName);
+                this.FJgame_id.push(postInfo.gameUid);
+                this.FJteam1_name.push(postInfo.homeTeamName);
+                this.FJteam2_name.push(postInfo.guestTeamName);
+                this.FJteam1_score.push(postInfo.homeScore);
+                this.FJteam2_score.push(postInfo.guestScore);
+                this.FJgame_time.push(postInfo.gameTime);
+              } 
+            });
+        }
+        else {
+            ElMessage({
+                message: '后端返回的赛事数据格式错误',
+                grouping: false,
+                type: 'error',
+            });
+        }
+        //console.log(this.game_kind);
+    },
+    async getPosts(pageNumber, pageSize, currentTag) {
+            let response
+            try {
+                response = await axios.post('/api/Forum/GetPostbyLike', {
+                    page: pageNumber,
+                    count: pageSize,
+                    tag: String(currentTag),
+                }, {})
+            } catch (err) {
+                ElMessage({
+                    message: '获取帖子失败',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+            //console.log('response:', response.data);
+            this.post_id = [];
+            this.post_title = [];
+            this.post_content=[];
+            this.post_likes=[];
+            this.post_stars=[];
+            if ( response.data.postInfoJsons) {
+                response.data.postInfoJsons.forEach((postInfo) => {
+                    this.post_id.push(postInfo.post_id);
+                    this.post_title.push(postInfo.title);
+                    this.post_content.push(postInfo.contains);
+                    this.post_likes.push(postInfo.approvalNum);
+                    this.post_stars.push(postInfo.collectNum);
+                });
+            }
+            else {
+                ElMessage({
+                    message: '后端返回的帖子数据格式错误',
+                    grouping: false,
+                    type: 'error',
+                });
+            }
+            
+            //console.log('得到的帖子id为:', this.post_id);
+            //console.log('得到的帖子title为:', this.post_title);
+        },
+    getColorClass(index) {    //设置热帖序号颜色
+      if (index < 3) {
+        const colors = ['color-red', 'color-green', 'color-blue']; // Add your desired colors here
+        return colors[index];
+      } else {
+        return 'color-gray'; // Default gray color for other numbers
+      }
+    },
     scrollToTop() {
       // Scroll to top logic
       window.scrollTo({
@@ -318,16 +593,12 @@ export default {
             return '';
         }
     },
-
-    getLimitedGames() {
-      return this.GamesMsg.filter(item => item.Game === this.GameSelect || this.GameSelect === "ALL").slice(0, this.maxGamesItems);
-    },
     getLimitedNews() {
       return this.newsList.slice(0, this.maxNewsItems);
     },
-    getLimitedPosts() {
-      return this.postsList.slice(0, this.maxPostsItems);
-    },
+    // getLimitedPosts() {
+    //   return this.postsList.slice(0, this.maxPostsItems);
+    // },
     truncateText(text, limit) {
       if (text.length <= limit) {
         return text;
@@ -336,41 +607,13 @@ export default {
         return truncatedText + '...';
       }
     },
-    GamesAll() {
-      //选择全部赛事
-      this.GameSelect = "ALL";
-    },
-    GamesZC() {
-      //选择中超赛事
-      this.GameSelect = "中超";
-    },
-    GamesYC() {
-      //选择英超赛事
-      this.GameSelect = "英超";
-    },
-    GamesYJ() {
-      //选择意甲赛事
-      this.GameSelect = "意甲";
-    },
-    GamesXJ() {
-      //选择西甲赛事
-      this.GameSelect = "西甲";
-    },
-    GamesDJ() {
-      //选择德甲赛事
-      this.GameSelect = "德甲";
-    },
-    GamesFJ() {
-      //选择法甲赛事
-      this.GameSelect = "法甲";
-    },
+    
     redirectToGames() {
       //跳转到个人中心页面的逻辑
       this.$router.push('/Games')
     }
   },
 };
-
 </script>
 
 <style scoped>
@@ -386,7 +629,7 @@ export default {
 }
 /* 赛事种类选择栏 */
 .Games-menu {
-  padding: 10px;
+  padding: 1.333vw;
   background-color: #78b9fa;
 }
 
@@ -405,16 +648,16 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center; /* 将菜单项居中显示 */
-  max-width: 600px; /* 限定父容器的最大宽度 */
+  max-width: 80vw; /* 限定父容器的最大宽度 */
   margin: 0 auto; /* 居中显示父容器 */
 }
 
 .menu-title {
-  font-size: 16px;
+  font-size: 1.5vw;
   color: #333;
   margin: 0;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 1.333vw;
+  border-radius: 1.067vw;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -427,25 +670,27 @@ export default {
 .Game-col-container {
   display: flex;
   flex-wrap: nowrap;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  justify-content: space-between;
+  padding-top: 1.333vw;
+  padding-bottom: 1.333vw;
   /* 防止列折行 */
 }
 
 .Game-col {
   flex: 0 0 20%;
   /* 一行显示六个列，每个列占比16.66% */
-  padding: 10px;
+  padding: 1.333vw;
 }
 
 
 .bottom-middle-section {
   display: flex;
-  flex: 2;
-  padding-top: 10px;
+  padding-top: 1.333vw;
   justify-content: space-between;
   width: 86vw;
+  align-items: flex-start; /* Align items at the top */
 }
+
 /* 论坛模块 */
 /* Center the forum container and set some spacing */
 .forum-container {
@@ -455,84 +700,124 @@ export default {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
-  margin-top: 20px;
+  gap: 2.667vw;
+  margin-top: 2.667vw;
+  overflow: hidden; /* Hide overflow content */
 }
 
 .posts-column {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2.667vw; 
+}
+
+.post-number {
+  font-weight: bold;
+  margin-right: 0.667vw;
+}
+
+.color-red {
+  color: #e74c3c; /* Your desired color for the first number */
+}
+
+.color-green {
+  color: #27ae60; /* Your desired color for the second number */
+}
+
+.color-blue {
+  color: #3498db; /* Your desired color for the third number */
+}
+
+.color-gray {
+  color: #8e8e8e; /* Default gray color for other numbers */
+}
+
+
 .posts-item {
+  margin-bottom: 1.333vw;
   width: 100%;
-  background-color: #f9f9f9;
   border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform 0.2s ease;
-  height: 150px;
+  background-color: #fff;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  border-radius:1.333vw;
 }
 
 .posts-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.posts-image {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  margin-right: 10px;
-  border-radius: 50%; /* Add this line to make the element circular */
+.posts-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+  color: #333;
 }
 
 .posts-item-wrapper {
   display: flex;
-  align-items: center;
-  width: 100%;
-  margin: 0; /* Remove default margin */
-  padding: 0; /* Remove default padding */
+  align-items: stretch;
+  padding: 1.333vw;
 }
 
 .posts-content {
-  padding: 10px;
-  max-width: 400px;
-  flex: 1; /* Make the content take the remaining width */
-}
-
-.posts-item-wrapper:hover {
-  background-color: #f2f2f2; /* Light gray background color on hover */
-}
-
-.posts-link {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  color: #333;
-}
-
-.posts-row {
-  padding: 10px;
+  flex-grow: 1;
 }
 
 .posts-title {
   font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 5px;
+  margin: 0;
 }
 
 .posts-summary {
-  font-size: 14px;
-  color: #666;
+  margin: 10px 0;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.posts-summary.hovered-summary {
+  color: #3498db; /* Light blue color when hovered */
+}
+
+.info-group {
+  display: flex;
+  align-items: center; 
+  margin-top: 10px; 
+}
+
+.space-between {
+  width: 2.667vw; 
+}
+
+.like-container,
+.star-container {
+  display: flex; /* Display icon and number in the same line */
+  align-items: center;
+  gap: 5px; /* Adjust the gap between icon and number */
+}
+
+.like-number,
+.star-number {
+  font-size: 14px; /* Adjust the font size as needed */
 }
 
 .hot-posts {
-  font-size: 36px;
+  font-size: 3.5vw;
   font-weight: bold;
-  color: #ffd64f;
+  color: #4fb3ffc7;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   text-align: center;
   display: flex;
@@ -541,16 +826,20 @@ export default {
 }
 
 /* 新闻模块 */
-.news-container{
+
+.news-container {
   width: 60%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 2.667vw;
+  margin-top: 2.667vw;
+  justify-content: center;
 }
+
 .hot-news {
-  font-size: 36px;
+  font-size: 3.5vw;
   font-weight: bold;
-  color: #fc9069;
+  color: #4fb3ffc7;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   text-align: center;
   display: flex;
@@ -558,65 +847,85 @@ export default {
   align-items: center;
 }
 
+
 .news-row {
-  /* Add styles for the row of news items */
+  margin-top: 1.333vw;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  gap: 1.333vw;
 }
 
 .news-item {
-  width: calc(50% - 10px);
-  margin-bottom: 20px;
-
+  width: 15vw;
+  height: 50vh;
+  border: 1px solid #ccc;
+  overflow: hidden;
+  background-color: #fff;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  margin-bottom: 1.333vw;
+  border-radius:1.333vw;
+  box-sizing: border-box;
 }
 
-/* 调整一行中的新闻模块间距 */
-.news-row.adjusted {
-  justify-content: space-between; /* 居中并减少中间间距 */
+.news-item.two-columns {
+  width: 32vw;
+}
+
+.news-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .news-link {
-  /* Add styles for the news link */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   text-decoration: none;
-  color: inherit;
+  color: #333;
 }
 
 .news-item-wrapper {
-  /* Add styles for the news item wrapper */
-  border-radius: 10px;
-  background-color: #f0f0f0;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
   display: flex;
   flex-direction: column;
-}
-
-.news-image {
-  /* Add styles for the news image */
-  width: 100%;
-  height: 200px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  align-items: center;
+  height: 100%;
 }
 
 .news-content {
-  /* Add styles for the news content */
-  padding: 10px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.333vw;
+  height: 100%;
 }
 
-.news-title {
-  /* Add styles for the news title */
-  margin-top: 0;
+.news-image-wrapper {
+  width: 100%;
+  padding: 1.333vw;
+}
+
+.news-image {
+  width: 15vw;
+  height: 25vh;
+  margin-bottom: 1.333vw;
+}
+.news-image2{
+  width: 32vw;
+  height: 50vh;
 }
 
 .news-summary {
-  /* Add styles for the news summary */
-  margin-bottom: 0;
+  margin: 10px 0;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Number of lines to show */
+  -webkit-box-orient: vertical;
 }
-
-/* 轮播图 */
-
 
 /* 右下组件——回到顶部 */
 .scroll-to-top-btn {
@@ -679,10 +988,11 @@ export default {
   position: relative;
   text-align: center;
   padding: 20px;
-  background-color: #fff;
+  background-color: rgb(241, 204, 253);
   border: 1px solid #ccc;
   border-radius: 10px;
   width: 30%;
+  height: 120px;
   cursor: pointer; /* 添加交互：将鼠标光标变为手型 */
   transition: transform 0.3s ease;
 }
@@ -690,22 +1000,20 @@ export default {
 .module:hover {
     transform: scale(1.05);
 }
-
-.module .circle {
-  width: 80px;
-  height: 80px;
-  line-height: 80px;
-  border-radius: 50%;
-  background-color: #007bff;
-  color: #fff;
-  font-size: 36px;
-  margin: 0 auto 10px;
-}
-
 .module .module-text {
-  font-size: 16px;
-  color: #777;
+  font-size: 18px;
+  color: rgba(0, 123, 255, 0.7);
+  margin-top:1%;
 }
+
+.news-icon,
+.posts-icon,
+.football-icon {
+  font-size: 40px; /* Adjust the size of the icon as needed */
+  margin-bottom: 10px; /* Add margin between icon and text */
+  color: rgba(0, 123, 255, 0.7);
+}
+
 
 .overlay-background {
   position: absolute;
@@ -713,7 +1021,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 123, 255, 0.7);
+  background-color: rgba(0, 123, 255, 0.516);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -731,11 +1039,13 @@ export default {
   color: #fff;
 }
 
-.module .module-text, .module .circle {
+.module .module-text, .module .football-icon,
+.module .news-icon,.module .posts-icon{
   visibility: visible;
 }
 
-.module:hover .module-text, .module:hover .circle {
+.module:hover .module-text, .module:hover .football-icon,
+.module:hover .news-icon,.module:hover .posts-icon{
   visibility: hidden;
 }
 </style>

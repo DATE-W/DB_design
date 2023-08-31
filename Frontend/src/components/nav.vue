@@ -3,7 +3,7 @@
     <div class="nav-container">
       <div class="nav-left">
         <div class="nav-logo">Logo</div>
-        <el-menu class="nav-menu" mode="horizontal" active-text-color="#409eff" :ellipsis="false">
+        <el-menu class="el-menu-demo" mode="horizontal" active-text-color="#409eff" :ellipsis="false">
           <el-menu-item index="1" @click="redirectToMain">首页</el-menu-item>
           <el-menu-item index="2" @click="redirectToNews">新闻</el-menu-item>
           <el-menu-item index="3" @click="redirectToForum">论坛</el-menu-item>
