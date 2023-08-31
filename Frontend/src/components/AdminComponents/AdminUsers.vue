@@ -16,8 +16,20 @@ export default {
     },
     mounted(){
         this.getAllUsers();
+        this.getReportedUsers();
     },
     methods:{
+        analyse_date(date){
+            // 创建一个 Date 对象来解析时间字符串
+            const dateObject = new Date(date);
+            // 提取年、月和日
+            const year = dateObject.getFullYear();
+            const month = String(dateObject.getMonth() + 1).padStart(2, "0"); // 月份是从 0 开始的，需要加1
+            const day = String(dateObject.getDate()).padStart(2, "0");
+            // 构建目标格式的日期字符串
+            const formattedDate = `${year}-${month}-${day}`;
+            return formattedDate;
+        },
         async getAllUsers()
         {
             console.log("start get all users")
@@ -55,10 +67,39 @@ export default {
             }
             return
         },
-        async deleteUser(index)
+        async getReportedUsers()
         {
-            console.log("deleteUser")
-            console.log("index " + index);
+            console.log("start get reported users")
+            let response
+            try {
+                response = await axios.get('/api/Admin/GetBannedUser');
+            } catch (err) {
+                console.error(err);
+                if (err.response.data.result == 'fail') {
+                    ElMessage.error(err.response.data.msg)
+                } else {
+                    ElMessage.error("未知错误")
+                }
+                return
+            }
+            console.log("ReportedUsers - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
+            response.data.forEach(item => {
+                    const convertedItem = {
+                        user_id: item.user_id,
+                        userName: item.username,
+                        userPoint: item.userpoint,
+                        regDate: this.analyse_date(item.regdate),
+                        followedNumber: item.followednumber
+                    };
+                // 将转换后的数据添加到 AllUsers 数组中
+                this.ReportedUsers.push(convertedItem);
+                 // 对 AllUsers 数组按照 user_id 进行排序
+                this.ReportedUsers.sort((a, b) => a.user_id - b.user_id);
+            });
+            return
+        },
+        async killUser(index)
+        {
             let response
             try {
                 response = await axios.post('api/report/banUsr',  {
@@ -80,10 +121,41 @@ export default {
                 }
                 return
             }
-            console.log("JSON.stringify(response.data) = "+JSON.stringify(response, null, 2))
-            console.log("response.data.value = " + response.data.value);
             if (response.data.ok == 'yes') {
                 ElMessage.success("封禁用户成功");
+                location.reload();
+            }
+            else {
+               ElMessage.error("未找到相关用户信息");
+            }
+            return
+        },
+        async liftUser(index)
+        {
+            let response
+            try {
+                response = await axios.post('/api/Admin/LiftUser',  {
+                    user_id:this.ReportedUsers[index].user_id,
+                });
+            } catch (err) {
+                if (err.response.data.result == 'fail') {
+                    ElMessage({
+                        message: err.response.data.msg,
+                        grouping: false,
+                        type: 'error',
+                    })
+                } else {
+                    ElMessage({
+                        message: '未知错误',
+                        grouping: false,
+                        type: 'error',
+                    })
+                }
+                return
+            }
+            if (response.data.ok == 'yes') {
+                location.reload();
+                ElMessage.success("解禁用户成功");
             }
             else {
                ElMessage.error("未找到相关用户信息");
@@ -114,13 +186,13 @@ export default {
                         <el-table-column align="center" prop="followedNumber" label="粉丝数" width="150" />
                         <el-table-column fixed="right" label="操作">
                             <template #default="scope">
-                                    <el-button link type="primary" size="small" @click="deleteUser(scope.$index)">封禁用户</el-button>
+                                    <el-button link type="primary" size="small" @click="killUser(scope.$index)">封禁用户</el-button>
                             </template>
                         </el-table-column>
                     </el-table-column>
                 </el-table>
                 <el-table :data="ReportedUsers" border height="300" style="width: 100%;border-radius: 10px;margin-top: 5vh;">
-                    <el-table-column :label="`被举报用户名单`" align="center">
+                    <el-table-column :label="`被封禁用户名单`" align="center">
                         <el-table-column align="center" prop="user_id" label="用户Id" width="100" />
                         <el-table-column prop="userName" label="用户昵称" width="150" />
                         <el-table-column align="center" prop="regDate" label="注册时间" width="200" />
@@ -128,7 +200,7 @@ export default {
                         <el-table-column align="center" prop="followedNumber" label="粉丝数" width="150" />
                         <el-table-column fixed="right" label="操作">
                             <template #default="scope">
-                                    <el-button link type="primary" size="small" @click="deleteUser(scope.$index)">封禁用户</el-button>
+                                    <el-button link type="primary" size="small" @click="liftUser(scope.$index)">解禁用户</el-button>
                             </template>
                         </el-table-column>
                     </el-table-column>

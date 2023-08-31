@@ -69,7 +69,7 @@ export default {
             <el-aside width="20vw" class="hide-aside">
             <dashboard/>
             </el-aside>
-            <el-main style="background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;display: flex;flex-direction: column;justify-content: center;">
+            <el-main style="overflow: hidden;background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;display: flex;flex-direction: column;justify-content: center;">
                 <span class="announcement-tittle">发布公告</span>
                 <el-container style="height:20vh;position: relative;top:10vh;left:3vw;">
                     <el-input  

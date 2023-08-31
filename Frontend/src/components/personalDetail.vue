@@ -1,9 +1,9 @@
 <!-- 我的动态 v1.2 -->
 <template>
-    <div class="overflow-container" ref="scrollContainer">
-        <!-- 上方展示背景图 -->
-        <el-container class="main-container">
-            <el-main class="user-profile">
+    <!-- 上方展示背景图 -->
+    <el-container class="main-container">
+        <el-main class="user-profile">
+            <div class="overflow-container" ref="scrollContainer">
                 <div class="bg-theme" :style="{ backgroundImage: 'url(' + backgroundImage + ')' }">
                 </div>
                 <!-- 遍历动态分组数组，为每个分组创建区域 -->
@@ -40,37 +40,29 @@
                         </div>
                     </div>
                 </div>
-            </el-main>
-            <el-aside class="right-profile">
-                <div @click="scrollToTop" class="scroll-to-top-btn">
-                    <div class="image-container">
-                        <img src="../assets/img/ToTop.png" alt="Scroll to Top">
-                    </div>
-                    <div class="text-overlay">
-                        <div class="line">{{ line1 }}</div>
-                        <div class="line">{{ line2 }}</div>
-                    </div>
+            </div>
+        </el-main>
+        <el-aside>
+            <div class="back-to-top-container">
+                <div></div>
+                <div class="back-to-top" :class="{ 'animating': isScrollingToTop }" @click="scrollToTop">
                 </div>
-            </el-aside>
-        </el-container>
-        <!-- 展示我的动态 -->
-    </div>
+            </div>
+        </el-aside>
+    </el-container>
+    <!-- 展示我的动态 -->
 </template>
 
 <script>
 import { ElMessage, ElMessageBox } from 'element-plus';
 import axios from 'axios';
 export default {
-    props: {
-        backgroundImage: String, // 声明一个名为 backgroundImage 的 String 类型的 props
-    },
     data() {
         return {
-            line1: '回到',
-            line2: '顶部',
             dynamics: [
             ],
-            //backgroundImage: '',
+            backgroundImage: '',
+            isScrollingToTop: false,
         };
     },
     computed: {
@@ -89,19 +81,31 @@ export default {
     },
     mounted() {
         this.ShowAction();
-        //this.getTheme();
-        console.log(this.backgroundImage)
+        this.getTheme();
     },
     methods: {
         scrollToTop() {
             // 获取元素的引用
             const container = this.$refs.scrollContainer;
-            // 使用元素的滚动方法来滚动到顶部
             if (container) {
-                container.scrollTo({
-                    top: 0,
-                    behavior: "smooth"
-                });
+                this.isScrollingToTop = true;
+                const duration = 1000; // 滚动持续时间，单位：毫秒
+                const startTime = performance.now();
+                const startTop = container.scrollTop;
+                const targetTop = 0; // 目标滚动位置（顶部）
+                const animateScroll = (timestamp) => {
+                    const elapsedTime = timestamp - startTime;
+                    if (elapsedTime >= duration) {
+                        container.scrollTop = targetTop;
+                        this.isScrollingToTop = false;
+                        return;
+                    }
+                    const easeInOutCubic = (t) => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+                    const scrollProgress = easeInOutCubic(elapsedTime / duration);
+                    container.scrollTop = startTop + (targetTop - startTop) * scrollProgress;
+                    requestAnimationFrame(animateScroll);
+                };
+                requestAnimationFrame(animateScroll);
             }
         },
         // 根据动态类型返回相应的文本内容
@@ -221,7 +225,7 @@ export default {
 <style scoped>
 .overflow-container {
     overflow-y: auto;
-    max-height: 625px;
+    max-height: 82vh;
 }
 
 .overflow-container::-webkit-scrollbar {
@@ -229,16 +233,12 @@ export default {
 }
 
 .bg-theme {
+    margin-top: -20px;
     position: relative;
     width: 100%;
     height: 250px;
     background-repeat: no-repeat;
     background-size: cover;
-}
-
-.right-profile {
-    width: 15vw;
-    background: linear-gradient(to top, rgb(18, 188, 240), rgb(169, 209, 244));
 }
 
 .dynamic-group {
@@ -307,6 +307,12 @@ export default {
     margin-right: 5px;
 }
 
+.user-avatar {
+    width: 25px;
+    height: 25px;
+    margin-right: 5px;
+}
+
 /* author头像 */
 
 .scroll-to-top-btn {
@@ -327,31 +333,26 @@ export default {
     transition: opacity 0.3s;
 }
 
-.text-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+.back-to-top-container {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
+    position: relative;
+    width: 300px;
+    height: 620px;
 }
 
-.scroll-to-top-btn:hover .image-container img {
-    opacity: 0;
-}
-
-.scroll-to-top-btn:hover .text-overlay {
+.back-to-top {
+    cursor: pointer;
+    top: 0;
+    width: 70px;
+    height: 590px;
+    margin-left: 35%;
+    background: url(./src/assets/img/scroll_cat.png);
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
     opacity: 1;
 }
 
-.line {
-    color: black;
-    font-size: 16px;
+.back-to-top.animating {
+    transform: translateY(-200px);
+    opacity: 1;
 }
 </style>

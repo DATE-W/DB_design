@@ -11,8 +11,8 @@
             <el-col :span="8" v-for="(theme, index) in themeList" :key="index">
                 <div class="frame-option" v-if="index < themeList.length - 1">
                     <div class="theme-item" @click="showThemePreview(theme)">
-                        <div class="theme-circle" :style="`background-image: url(${theme.image4})`"
-                            :class="{ 'selected-frame': selectedTheme === theme }"></div>
+                        <div class="theme-circle" :style="`background-image: url(${theme.image1})`"
+                            :class="{ 'selected-frame': selectedTheme.id === theme.id }"></div>
                         <div class="theme-name">{{ theme.name }}</div>
                     </div>
                 </div>
@@ -65,16 +65,17 @@ export default {
             }
             console.log(response);
             this.themeList = response.data;
+            this.selectedTheme = response.data[response.data.length - 1];
+            console.log(this.selectedTheme)
         },
         showThemePreview(theme) {
             this.previewImageUrl = theme.image3;
-
             ElMessageBox({
                 title: '切换主题',
                 message: `
                     <div>
                         <p>是否切换到主题 ${theme.name}？</p>
-                        <img src="${theme.image3}" alt="Theme Preview" style="max-width: 100%;">
+                        <img src=${theme.image3} alt="Theme Preview" style="max-width: 100%;">
                     </div>
                 `,
                 showCancelButton: true,
