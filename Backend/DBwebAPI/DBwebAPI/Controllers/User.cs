@@ -21,14 +21,14 @@ namespace DBwebAPI.Controllers
     public class UserController : ControllerBase
     {
         public class profileJson {
-            public String username { get; set; }
-            public String uft { get; set; }
+            public String username { get; set; } = "";
+            public String uft { get; set; } = "";
             public int follower_num { get; set; }
             public int follow_num { get; set; }
             public int approval_num { get; set; }
-            public String account { get; set; }
-            public String avatar { get; set; }
-            public String signature { get; set; }
+            public String? account { get; set; } = "";
+            public String avatar { get; set; } = "";
+            public String signature { get; set; } = "";
             public int userpoint { get; set; }
         }
         [HttpPost]
@@ -46,7 +46,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                  // 从请求头中获取传递的JWT令牌
-                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                 string authorizationHeader = Request.Headers["Authorization"].First();
                  //验证 Authorization 请求头是否包含 JWT 令牌
                  if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                  {
@@ -59,7 +59,7 @@ namespace DBwebAPI.Controllers
                  var handler = new JwtSecurityTokenHandler();
                  var tokenS = handler.ReadJwtToken(jwtToken);
                  // 获取JWT令牌中的claims信息
-                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                 string? account = tokenS.Claims.First(claim => claim.Type == "account")?.Value;
                  List<Usr> tempUsr = new List<Usr>();
                  tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                      .ToListAsync();
@@ -70,7 +70,7 @@ namespace DBwebAPI.Controllers
                      return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                  }
 
-                 int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.FirstOrDefault()?.user_id ?? 1; 
                 /*int user_id = 2;
                 List <Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
@@ -78,24 +78,24 @@ namespace DBwebAPI.Controllers
                 String account = tempUsr.FirstOrDefault().userAccount; */
 
                 //用户名
-                String userName = tempUsr.FirstOrDefault().userName;
+                String userName = tempUsr.FirstOrDefault()?.userName?? "";
                 //个性签名
-                String signature = tempUsr.FirstOrDefault().signature;
+                String signature = tempUsr.FirstOrDefault()?.signature ??"";
                 //头像
-                String avatar = tempUsr.FirstOrDefault().avatar;
+                String avatar = tempUsr.FirstOrDefault()?.avatar ?? "/";
                 //关注数
-                int follower_num = tempUsr.FirstOrDefault().follownumber;
+                int follower_num = tempUsr.FirstOrDefault()?.follownumber??0;
                 //粉丝数
-                int follow_num = tempUsr.FirstOrDefault().followednumber;
+                int follow_num = tempUsr.FirstOrDefault()?.followednumber ?? 0;
                 //主队
                 List <UserFavouriteTeam> tmpUFT_id = new List<UserFavouriteTeam>();
                 tmpUFT_id = await sqlORM.Queryable<UserFavouriteTeam>().Where(it => it.user_id == user_id)
                     .ToListAsync();
-                int UFT_id = tmpUFT_id.Count() != 0 ? tmpUFT_id.FirstOrDefault().team_id : 0;
+                int UFT_id = tmpUFT_id.Count() != 0 ? tmpUFT_id.FirstOrDefault()?.team_id ?? 0 : 0;
                 List<Team> tmpUFT = new List<Team>();
                 tmpUFT = await sqlORM.Queryable<Team>().Where(it => it.team_id == UFT_id)
                     .ToListAsync();
-                String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "暂无主队";
+                String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault()?.chinesename?? "暂无主队" : "暂无主队";
                 //点赞数
                 List<PublishPost> tmpPP = new List<PublishPost>();
                 tmpPP = await sqlORM.Queryable<PublishPost>().Where(it => it.user_id == user_id)
@@ -106,7 +106,7 @@ namespace DBwebAPI.Controllers
                     List<Posts> tmpPost = new List<Posts>();
                     tmpPost = await sqlORM.Queryable<Posts>().Where(it => it.post_id == pp.post_id)
                         .ToListAsync();
-                    approvalNum += tmpPost.Count() != 0 ? tmpPost.FirstOrDefault().approvalNum : 0;
+                    approvalNum += tmpPost.Count() != 0 ? tmpPost.FirstOrDefault()?.approvalNum ?? 0 : 0;
                 }
                 profileJson response = new profileJson();
                 response.username = userName;
@@ -117,7 +117,7 @@ namespace DBwebAPI.Controllers
                 response.account = account;
                 response.avatar = avatar;
                 response.signature = signature;
-                response.userpoint = tempUsr.FirstOrDefault().userPoint;
+                response.userpoint = tempUsr.FirstOrDefault()?.userPoint ?? 0;
                 Console.WriteLine("response.username" + response.username);
                 Console.WriteLine("response.uft:" + response.uft);
                 Console.WriteLine("response.approval_num:" + response.approval_num);
@@ -136,9 +136,9 @@ namespace DBwebAPI.Controllers
         }
         public class modifyprofileJson
         {
-            public string username { get;set; }
-            public string avatar { get; set; }
-            public string signature { get; set; }
+            public string username { get; set; } = "";
+            public string avatar { get; set; } = "";
+            public string signature { get; set; } = "";
         }
         [HttpPost]
         public async Task<IActionResult> modifyprofile([FromBody] modifyprofileJson json)
@@ -155,7 +155,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -168,7 +168,7 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.First(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
@@ -179,16 +179,17 @@ namespace DBwebAPI.Controllers
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
 
-                Usr tmpU = tempUsr.FirstOrDefault();
+                Usr tmpU = new Usr(); 
+                tmpU=tempUsr.First();
                 int count = 0;
-                int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.FirstOrDefault()?.user_id ?? 1;
                 Console.WriteLine("userName:"+ json.username);
                 Console.WriteLine("avatar:" + json.avatar);
                 Console.WriteLine("signature:" + json.signature);
 
-                tmpU.userName = json.username;
-                tmpU.avatar =json.avatar;
-                tmpU.signature = json.signature;
+                tmpU.userName = json?.username??"";
+                tmpU.avatar =json?.avatar??"/";
+                tmpU.signature = json?.signature ?? "";
                 count = await sqlORM.Updateable(tmpU).ExecuteCommandAsync();
                 if ( count>0)
                 {
@@ -209,7 +210,7 @@ namespace DBwebAPI.Controllers
         }
         public class utfJson
         {
-            public String teamname { get; set; }
+            public String teamname { get; set; } = "";
         }
         [HttpPost]
         public async Task<IActionResult> modifyteam([FromBody] utfJson json)
@@ -226,7 +227,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                  // 从请求头中获取传递的JWT令牌
-                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                 string authorizationHeader = Request.Headers["Authorization"].First();
                  //验证 Authorization 请求头是否包含 JWT 令牌
                  if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                  {
@@ -239,7 +240,7 @@ namespace DBwebAPI.Controllers
                  var handler = new JwtSecurityTokenHandler();
                  var tokenS = handler.ReadJwtToken(jwtToken);
                  // 获取JWT令牌中的claims信息
-                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                 string? account = tokenS.Claims.First(claim => claim.Type == "account")?.Value;
                  List<Usr> tempUsr = new List<Usr>();
                  tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                      .ToListAsync();
@@ -250,7 +251,7 @@ namespace DBwebAPI.Controllers
                      return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                  }
 
-                 int user_id = tempUsr.FirstOrDefault().user_id;
+                 int user_id = tempUsr.First().user_id;
               /*  int user_id = 8;*/
                 if (json.teamname == "")
                 {
@@ -285,7 +286,7 @@ namespace DBwebAPI.Controllers
                     }
                     else
                     {
-                        team_id = tmpteam.FirstOrDefault().team_id;
+                        team_id = tmpteam.First().team_id;
                     }
                     List<UserFavouriteTeam> tmpUFT = new List<UserFavouriteTeam>();
                     tmpUFT = await sqlORM.Queryable<UserFavouriteTeam>().Where(it => it.user_id == user_id)
@@ -303,8 +304,8 @@ namespace DBwebAPI.Controllers
                     else
                     {
                         //修改关系
-                        tmpUFT.FirstOrDefault().team_id = team_id;
-                        tmpUFT.FirstOrDefault().modifyDateTime = DateTime.Now;
+                        tmpUFT.First().team_id = team_id;
+                        tmpUFT.First().modifyDateTime = DateTime.Now;
                         // 更新数据库中的关系
                         count = await sqlORM.Updateable(tmpUFT.FirstOrDefault()).ExecuteCommandAsync();
                     }
@@ -329,15 +330,15 @@ namespace DBwebAPI.Controllers
             public List<action> actions { get; set; } = new List<action>();
             public class action
             {
-                public String type { get; set; }
-                public String title { get; set; }
-                public String contains { get; set; }
-                public String name { get; set; }
-                public String author { get; set; }
+                public String type { get; set; } = "";
+                public String title { get; set; } = "";
+                public String contains { get; set; } = "";
+                public String name { get; set; } = "";
+                public String author { get; set; } = "";
                 public int post_id { get; set; }
                 public DateTime datetime { get; set; }
-                public String comment { get; set; }
-                public String follower_name { get; set; }
+                public String comment { get; set; } = "";
+                public String follower_name { get; set; } = "";
             }
         }
         [HttpPost]
@@ -356,7 +357,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -369,7 +370,7 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.First(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
@@ -379,7 +380,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.First().user_id;
 
                 // 创建 ActionJson 实例
                 ActionJson actionJson = new ActionJson();
@@ -397,11 +398,11 @@ namespace DBwebAPI.Controllers
                     tmpusr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == ap.user_id)
                         .ToListAsync();
                     ActionJson.action tmpac = new ActionJson.action();
-                    tmpac.title = tmpp.FirstOrDefault().title;
-                    tmpac.contains = tmpp.FirstOrDefault().contains;
-                    tmpac.datetime = tmpp.FirstOrDefault().publishDateTime;
+                    tmpac.title = tmpp.First().title;
+                    tmpac.contains = tmpp.First().contains;
+                    tmpac.datetime = tmpp.First().publishDateTime;
                     tmpac.type = "publish";
-                    tmpac.author = tmpusr.FirstOrDefault().userName;
+                    tmpac.author = tmpusr.First().userName;
                     tmpac.post_id = ap.post_id;
 
                     actionJson.actions.Add(tmpac);
@@ -419,14 +420,14 @@ namespace DBwebAPI.Controllers
                     tmppp = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == ap.post_id)
                         .ToListAsync();
                     List<Usr> tmpusr = new List<Usr>();
-                    tmpusr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tmppp.FirstOrDefault().user_id)
+                    tmpusr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tmppp.First().user_id)
                         .ToListAsync();
                     ActionJson.action tmpac = new ActionJson.action();
-                    tmpac.title = tmpp.FirstOrDefault().title;
-                    tmpac.contains = tmpp.FirstOrDefault().contains;
+                    tmpac.title = tmpp.First().title;
+                    tmpac.contains = tmpp.First().contains;
                     tmpac.datetime = ap.createDateTime;
                     tmpac.type = "like";
-                    tmpac.author = tmpusr.FirstOrDefault().userName;
+                    tmpac.author = tmpusr.First().userName;
                     tmpac.post_id = ap.post_id;
 
                     actionJson.actions.Add(tmpac);
@@ -444,14 +445,14 @@ namespace DBwebAPI.Controllers
                     tmppp = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == ap.post_id)
                         .ToListAsync();
                     List<Usr> tmpusr = new List<Usr>();
-                    tmpusr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tmppp.FirstOrDefault().user_id)
+                    tmpusr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tmppp.First().user_id)
                         .ToListAsync();
                     ActionJson.action tmpac = new ActionJson.action();
-                    tmpac.title = tmpp.FirstOrDefault().title;
-                    tmpac.contains = tmpp.FirstOrDefault().contains;
+                    tmpac.title = tmpp.First().title;
+                    tmpac.contains = tmpp.First().contains;
                     tmpac.datetime = ap.createDateTime;
                     tmpac.type = "collect";
-                    tmpac.author = tmpusr.FirstOrDefault().userName;
+                    tmpac.author = tmpusr.First().userName;
                     tmpac.post_id = ap.post_id;
 
                     actionJson.actions.Add(tmpac);
@@ -469,14 +470,14 @@ namespace DBwebAPI.Controllers
                     tmppp = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == ap.post_id)
                         .ToListAsync();
                     List<Usr> tmpusr = new List<Usr>();
-                    tmpusr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tmppp.FirstOrDefault().user_id)
+                    tmpusr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tmppp.First().user_id)
                         .ToListAsync();
                     ActionJson.action tmpac = new ActionJson.action();
-                    tmpac.title = tmpp.FirstOrDefault().title;
-                    tmpac.contains = tmpp.FirstOrDefault().contains;
+                    tmpac.title = tmpp.First().title;
+                    tmpac.contains = tmpp.First().contains;
                     tmpac.datetime = ap.publishDateTime;
                     tmpac.type = "comment";
-                    tmpac.author = tmpusr.FirstOrDefault().userName;
+                    tmpac.author = tmpusr.First().userName;
                     tmpac.post_id = ap.post_id;
                     tmpac.comment = ap.contains;
                     actionJson.actions.Add(tmpac);
@@ -493,7 +494,7 @@ namespace DBwebAPI.Controllers
                     ActionJson.action tmpac = new ActionJson.action();
                     tmpac.datetime = ap.createDateTime;
                     tmpac.type = "follow";
-                    tmpac.name = tmpusr.FirstOrDefault().userName;
+                    tmpac.name = tmpusr.First().userName;
                     actionJson.actions.Add(tmpac);
                 }
                 // 对 actionJson.actions 数组按照 datetime 降序排序
@@ -521,7 +522,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -534,7 +535,7 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
@@ -544,9 +545,9 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;
-                Console.WriteLine("Point:" + tempUsr.FirstOrDefault().userPoint);
-                return Ok(new { userpoint = tempUsr.FirstOrDefault().userPoint });
+                int user_id = tempUsr.First().user_id;
+                Console.WriteLine("Point:" + tempUsr.First().userPoint);
+                return Ok(new { userpoint = tempUsr.First().userPoint });
             }
             catch (Exception ex)
             {
@@ -559,7 +560,7 @@ namespace DBwebAPI.Controllers
             public List<point> points { get; set; } = new List<point>();
             public class point
             {
-                public String type;
+                public String type = "";
                 public DateTime datetime;
             }
         }
@@ -578,7 +579,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -591,7 +592,7 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.First(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
@@ -601,7 +602,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.First().user_id;
 
                 // 创建 ActionJson 实例
                 PointJson pointJson = new PointJson();
@@ -617,7 +618,7 @@ namespace DBwebAPI.Controllers
                     tmpp = await sqlORM.Queryable<Posts>().Where(it => it.post_id == ap.post_id)
                         .ToListAsync();
                     PointJson.point tmpac = new PointJson.point();
-                    tmpac.datetime = tmpp.FirstOrDefault().publishDateTime;
+                    tmpac.datetime = tmpp.First().publishDateTime;
                     tmpac.type = "publish";
                     pointJson.points.Add(tmpac);
                 }
@@ -684,15 +685,15 @@ namespace DBwebAPI.Controllers
         }
         public class NoticeJson 
         {
-            public DateTime[] notice_dates { get; set; }
-            public String[] notice_people { get; set; }
-            public String[] notice_contents { get; set; }
+            public DateTime[] notice_dates { get; set; } = new DateTime[0];
+            public String[] notice_people { get; set; } = new String[0];
+            public String[] notice_contents { get; set; } = new String[0];
         }
         public class NoticeClass
         {
             public  DateTime dateTime { get; set; }
-            public String people { get; set; }
-            public String content { get; set; }
+            public String people { get; set; } = "";
+            public String? content { get; set; } = "";
         }
         //通知
         [HttpPost]
@@ -710,7 +711,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                  // 从请求头中获取传递的JWT令牌
-                 string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                 string authorizationHeader = Request.Headers["Authorization"].First();
                  //验证 Authorization 请求头是否包含 JWT 令牌
                  if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                  {
@@ -723,7 +724,7 @@ namespace DBwebAPI.Controllers
                  var handler = new JwtSecurityTokenHandler();
                  var tokenS = handler.ReadJwtToken(jwtToken);
                  // 获取JWT令牌中的claims信息
-                 string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                 string? account = tokenS.Claims.First(claim => claim.Type == "account")?.Value;
                  List<Usr> tempUsr = new List<Usr>();
                  tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                      .ToListAsync();
@@ -733,7 +734,7 @@ namespace DBwebAPI.Controllers
                      Console.WriteLine("用户不存在");
                      return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                  }
-                 int user_id = tempUsr.FirstOrDefault().user_id;
+                 int user_id = tempUsr.First().user_id;
                
                 //int user_id = 12;
                 // 创建 NoticeClass 实例
@@ -849,7 +850,7 @@ namespace DBwebAPI.Controllers
                 {
                     timeList.Add(notice.dateTime);
                     peopleList.Add(notice.people);
-                    contentList.Add(notice.content);
+                    contentList.Add(notice.content ?? ""); 
                 }
                 response.notice_people = peopleList.ToArray();
                 response.notice_dates = timeList.ToArray();
@@ -878,7 +879,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -891,7 +892,7 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
@@ -901,7 +902,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.First().user_id;
 
                 DateTime dateTime = DateTime.Now;
                 Checkins checkins = new Checkins();
@@ -941,7 +942,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 Console.WriteLine("Get userAction");
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -954,7 +955,7 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
@@ -964,7 +965,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.First().user_id;
 
 
                 List<DateTime> times = new List<DateTime>();
@@ -987,14 +988,14 @@ namespace DBwebAPI.Controllers
         private class Followed
         {
             public int user_id { get; set; }
-            public String userName { get; set; }
-            public String uft { get;set; }
+            public String userName { get; set; } = "";
+            public String uft { get; set; } = "";
             public int userpoint { get; set; }
-            public String signature { get; set; }
+            public String signature { get; set; } = "";
             public int follownum { get;set; }
             public int likenum { get;set; }
             public int fansnum { get;set; }
-            public string avatar { get; set; }
+            public string avatar { get; set; } = "";        
             public int isfollowed { get;set; }
         }
         //关注列表
@@ -1013,7 +1014,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -1026,7 +1027,7 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
@@ -1036,7 +1037,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.First().user_id;
                 //
                 
                 List<Followed> followed = new List<Followed>();
@@ -1057,11 +1058,11 @@ namespace DBwebAPI.Controllers
                     List<UserFavouriteTeam> tmpUFT_id = new List<UserFavouriteTeam>();
                     tmpUFT_id = await sqlORM.Queryable<UserFavouriteTeam>().Where(it => it.user_id == user.user_id)
                         .ToListAsync();
-                    int UFT_id = tmpUFT_id.Count() != 0 ? tmpUFT_id.FirstOrDefault().team_id : 0;
+                    int UFT_id = tmpUFT_id.Count() != 0 ? tmpUFT_id.First().team_id : 0;
                     List<Team> tmpUFT = new List<Team>();
                     tmpUFT = await sqlORM.Queryable<Team>().Where(it => it.team_id == UFT_id)
                         .ToListAsync();
-                    String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "暂无主队";
+                    String UFT = tmpUFT.Count() != 0 ? tmpUFT.First().chinesename : "暂无主队";
                     t.uft = UFT;
                     
                     //点赞数
@@ -1074,7 +1075,7 @@ namespace DBwebAPI.Controllers
                         List<Posts> tmpPost = new List<Posts>();
                         tmpPost = await sqlORM.Queryable<Posts>().Where(it => it.post_id == pp.post_id)
                             .ToListAsync();
-                        approvalNum += tmpPost.Count() != 0 ? tmpPost.FirstOrDefault().approvalNum : 0;
+                        approvalNum += tmpPost.Count() != 0 ? tmpPost.First().approvalNum : 0;
                     }
                     t.likenum=approvalNum;
                     //关注数
@@ -1116,7 +1117,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -1129,7 +1130,7 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.First(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
@@ -1139,7 +1140,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.First().user_id;
                 //
 
                 List<Followed> followed = new List<Followed>();
@@ -1160,11 +1161,11 @@ namespace DBwebAPI.Controllers
                     List<UserFavouriteTeam> tmpUFT_id = new List<UserFavouriteTeam>();
                     tmpUFT_id = await sqlORM.Queryable<UserFavouriteTeam>().Where(it => it.user_id == user.user_id)
                         .ToListAsync();
-                    int UFT_id = tmpUFT_id.Count() != 0 ? tmpUFT_id.FirstOrDefault().team_id : 0;
+                    int UFT_id = tmpUFT_id.Count() != 0 ? tmpUFT_id.First().team_id : 0;
                     List<Team> tmpUFT = new List<Team>();
                     tmpUFT = await sqlORM.Queryable<Team>().Where(it => it.team_id == UFT_id)
                         .ToListAsync();
-                    String UFT = tmpUFT.Count() != 0 ? tmpUFT.FirstOrDefault().chinesename : "暂无主队";
+                    String UFT = tmpUFT.Count() != 0 ? tmpUFT.First().chinesename : "暂无主队";
                     t.uft = UFT;
 
                     //点赞数
@@ -1177,7 +1178,7 @@ namespace DBwebAPI.Controllers
                         List<Posts> tmpPost = new List<Posts>();
                         tmpPost = await sqlORM.Queryable<Posts>().Where(it => it.post_id == pp.post_id)
                             .ToListAsync();
-                        approvalNum += tmpPost.Count() != 0 ? tmpPost.FirstOrDefault().approvalNum : 0;
+                        approvalNum += tmpPost.Count() != 0 ? tmpPost.First().approvalNum : 0;
                     }
                     t.likenum = approvalNum;
                     //关注数
@@ -1205,8 +1206,8 @@ namespace DBwebAPI.Controllers
         }
         public class TeamsJson
         {
-            public string chinesename { get;set; }
-            public string logo { get; set; }
+            public string chinesename { get;set; } = "";
+            public string logo { get; set; } = "";
         }
         [HttpPost]
         public async Task<IActionResult> getallteam()
@@ -1223,7 +1224,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -1236,7 +1237,7 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
@@ -1246,14 +1247,14 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.First().user_id;
 
                 List<Team> allteams = new List<Team>();
                 allteams = await sqlORM.Queryable<Team>().ToListAsync();
                 List<TeamsJson> tmpTeams = new List<TeamsJson>();
                 Team uft = new Team();
                 TeamsJson tmpteam = new TeamsJson();
-                UserFavouriteTeam userFavouriteTeam = await sqlORM.Queryable<UserFavouriteTeam>().SingleAsync(it=>it.user_id== tempUsr.FirstOrDefault().user_id);
+                UserFavouriteTeam userFavouriteTeam = await sqlORM.Queryable<UserFavouriteTeam>().SingleAsync(it=>it.user_id== tempUsr.First().user_id);
                 if (userFavouriteTeam != null)
                 {
                     uft = await sqlORM.Queryable<Team>().SingleAsync(it => it.team_id == userFavouriteTeam.team_id);
@@ -1286,11 +1287,11 @@ namespace DBwebAPI.Controllers
         public class ThemeJson
         {
             public int id { get; set; }
-            public string name { get; set; }
-            public string image1 { get; set; }
-            public string image2 { get; set; }
-            public string image3 { get; set; }
-            public string image4 { get; set; }
+            public string name { get; set; } = "";
+            public string image1 { get; set; } = "";
+            public string image2 { get; set; } = "";
+            public string image3 { get; set; } = "";
+            public string image4 { get; set; } = "";
         }
         [HttpPost]
         public async Task<IActionResult> getalltheme()
@@ -1307,7 +1308,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -1320,7 +1321,7 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
@@ -1330,7 +1331,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.First().user_id;
                 /*
                 int user_id = 4;
                 List<Usr> tempUsr = new List<Usr>();
@@ -1355,7 +1356,7 @@ namespace DBwebAPI.Controllers
                 }
                 tmpThemes=tmpThemes.OrderBy(t => t.id).ToList();
 
-                Theme userTheme = await sqlORM.Queryable<Theme>().SingleAsync(it => it.id == tempUsr.FirstOrDefault().themeType);
+                Theme userTheme = await sqlORM.Queryable<Theme>().SingleAsync(it => it.id == tempUsr.First().themeType);
                 ThemeJson userThemejson = new ThemeJson();
                 userThemejson.id = userTheme.id;
                 userThemejson.name = userTheme.name;
@@ -1389,7 +1390,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -1402,7 +1403,7 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
@@ -1412,7 +1413,7 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.First().user_id;
                 /*
                 int user_id = 4;
                 List<Usr> tempUsr = new List<Usr>();
@@ -1422,7 +1423,7 @@ namespace DBwebAPI.Controllers
                 allthemes = await sqlORM.Queryable<Theme>().ToListAsync();
                 List<ThemeJson> tmpThemes = new List<ThemeJson>();
 
-                Theme userTheme = await sqlORM.Queryable<Theme>().SingleAsync(it => it.id == tempUsr.FirstOrDefault().themeType);
+                Theme userTheme = await sqlORM.Queryable<Theme>().SingleAsync(it => it.id == tempUsr.First().themeType);
                 ThemeJson userThemejson = new ThemeJson();
                 userThemejson.id = userTheme.id;
                 userThemejson.name = userTheme.name;
@@ -1464,7 +1465,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -1477,18 +1478,18 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                Usr usr = tempUsr.FirstOrDefault();
+                Usr usr = tempUsr.First();
                 //判断用户是否存在
                 if (tempUsr.Count() == 0)
                 {
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.First().user_id;
                 /*
                 int user_id = 4;
                 List<Usr> tempUsr = new List<Usr>();
@@ -1528,8 +1529,8 @@ namespace DBwebAPI.Controllers
         public class PostinfoJson
         {
             public int post_id { get; set; }
-            public string title { get; set; }
-            public string contains { get;set; }
+            public string title { get; set; } = "";
+            public string contains { get; set; } = "";
             public int approvalNum { get; set; }
             public int collectNum { get;set; }
         }
@@ -1549,7 +1550,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -1562,18 +1563,18 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                Usr usr = tempUsr.FirstOrDefault();
+                Usr usr = tempUsr.First();
                 //判断用户是否存在
                 if (tempUsr.Count() == 0)
                 {
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;
+                int user_id = tempUsr.First().user_id;
                 /*
                                int user_id = 2;
                                List<Usr> tempUsr = new List<Usr>();
@@ -1623,7 +1624,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
 
                 // 从请求头中获取传递的JWT令牌
-                string authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+                string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer"))
                 {
@@ -1636,18 +1637,18 @@ namespace DBwebAPI.Controllers
                 var handler = new JwtSecurityTokenHandler();
                 var tokenS = handler.ReadJwtToken(jwtToken);
                 // 获取JWT令牌中的claims信息
-                string account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
+                string? account = tokenS.Claims.FirstOrDefault(claim => claim.Type == "account")?.Value;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.userAccount == account)
                     .ToListAsync();
-                Usr usr = tempUsr.FirstOrDefault();
+                Usr usr = tempUsr.First();
                 //判断用户是否存在
                 if (tempUsr.Count() == 0)
                 {
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-                int user_id = tempUsr.FirstOrDefault().user_id;    
+                int user_id = tempUsr.First().user_id;    
  /*               
                                int user_id = 12;
                                List<Usr> tempUsr = new List<Usr>();
@@ -1690,10 +1691,10 @@ namespace DBwebAPI.Controllers
         }
         public class UserJson
         {
-            public string name { get; set; }
-            public string avatar { get; set; }
-            public string uft { get; set; }
-            public string signature { get; set; }
+            public string name { get; set; } = "";
+            public string avatar { get; set; } = "";
+            public string uft { get; set; } = "";
+            public string signature { get; set; } = "";
             public int follownum { get; set; }
             public int followednum { get; set; }
             public int likenum { get; set; }
@@ -1735,7 +1736,7 @@ namespace DBwebAPI.Controllers
                     List<Posts> tmpPost = new List<Posts>();
                     tmpPost = await sqlORM.Queryable<Posts>().Where(it => it.post_id == pp.post_id)
                         .ToListAsync();
-                    approvalNum += tmpPost.Count() != 0 ? tmpPost.FirstOrDefault().approvalNum : 0;
+                    approvalNum += tmpPost.Count() != 0 ? tmpPost.FirstOrDefault()?.approvalNum ?? 0 : 0;
                 }
                 response.likenum = approvalNum;
                 //主队
