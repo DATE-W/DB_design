@@ -11,7 +11,7 @@
             <el-col :span="8" v-for="(theme, index) in themeList" :key="index">
                 <div class="frame-option" v-if="index < themeList.length - 1">
                     <div class="theme-item" @click="showThemePreview(theme)">
-                        <div class="theme-circle" :style="`background-image: url(${theme.image4})`"
+                        <div class="theme-circle" :style="`background-image: url(${theme.image1})`"
                             :class="{ 'selected-frame': selectedTheme.id === theme.id }"></div>
                         <div class="theme-name">{{ theme.name }}</div>
                     </div>
