@@ -15,11 +15,9 @@
           <div v-if="isAccount">
             <!-- 用户名 -->
             <div class="userNameLayout">
-              <p class="userNameTypo">{{ userName }}</p>
-            </div>
-
-            <div class="homeTeamLayout">
-              <p class="homeTeamTypo">{{ homeTeam }}</p>
+              <div class="userNameTypo">{{ userName }}</div>
+              <div class="homeTeamTypo">{{ homeTeam }}</div>
+              <div class="homeTeamTypo">{{ userTitle }}</div>
             </div>
 
             <!-- 头像图片 -->
@@ -84,7 +82,7 @@
       </el-aside>
       <el-main v-if="isAccount">
         <div v-if="showtabs">
-          <el-tabs type="border-card" tab-position="top" class="maintabs">
+          <el-tabs type="card" tab-position="top" class="maintabs">
             <el-tab-pane label="我的动态">
               <detail :backgroundImage="detailBackgroundimage" />
             </el-tab-pane>
@@ -157,6 +155,7 @@ export default {
       followCnt: 0,       // 关注数
       befollowCnt: 0,     // 被关注数
       likeCnt: 0,         // 被点赞总数
+      userTitle: '',           // 积分
       backgroundImage: '', //左侧竖
       detailBackgroundimage: '',//右侧横
     };
@@ -193,6 +192,14 @@ export default {
       else if (data == 'unfollow') {
         this.followCnt -= 1;
       }
+    },
+    async getUserTitle(mypoint) {
+      if (mypoint >= 0 && mypoint <= 9) return '平平无奇';
+      if (mypoint >= 10 && mypoint <= 49) return '普通用户';
+      if (mypoint >= 50 && mypoint <= 99) return '一贴成名';
+      if (mypoint >= 100 && mypoint <= 499) return '球场金童';
+      if (mypoint >= 500 && mypoint <= 999) return '明日之星';
+      if (mypoint >= 1000) return '名人堂';
     },
     async JudgeAccount() {
       const token = localStorage.getItem('token');
@@ -232,15 +239,11 @@ export default {
         console.log(this.isAccount);
         this.avatarUrl = response.data.value.avatar;
         this.userName = response.data.value.username;
-        if (response.data.value.uft == '查无此队') {
-          this.homeTeam = '暂无主队';
-        }
-        else {
-          this.homeTeam = response.data.value.uft;
-        }
+        this.homeTeam = response.data.value.uft;
         this.followCnt = response.data.value.follower_num;
         this.befollowCnt = response.data.value.follow_num;
         this.likeCnt = response.data.value.approval_num;
+        this.userTitle = await this.getUserTitle(response.data.value.userpoint);
       }
       else {
         this.isAccount = false;
@@ -274,7 +277,8 @@ export default {
       this.backgroundImage = response.data.image2;
       this.detailBackgroundimage = response.data.image1;
       return
-    }
+    },
+
   }
 }
 </script>
@@ -332,6 +336,14 @@ export default {
   height: 100%;
 }
 
+:deep(.el-tabs__content) {
+  padding: 0px;
+}
+
+:deep(.el-tabs__header) {
+  margin: 0;
+}
+
 .logout-button {
   position: absolute;
   font-size: 24px;
@@ -340,19 +352,6 @@ export default {
   bottom: 5vh;
   opacity: 0.8;
   border-radius: 100px;
-}
-
-
-/* 容器框样式 */
-.bBox {
-  position: absolute;
-  flex-shrink: 0;
-  border-radius: 32px;
-  border: 1px solid var(--colors-light-eaeaea-100, #EAEAEA);
-  /* 正式版本用此颜色*/
-  background-color: #ffffff;
-  /* 方便检测位置*/
-  /* background-color: #c3c3c3;  */
 }
 
 /* 按钮样式 */
@@ -382,16 +381,6 @@ export default {
   font-style: normal;
   font-weight: 600;
   line-height: 24px;
-}
-
-.homeTeamLayout {
-  position: absolute;
-  display: flex;
-  margin-top: 3vh;
-  width: 6vw;
-  left: 7vw;
-  flex-direction: column;
-  flex-shrink: 0;
 }
 
 .homeTeamTypo {
