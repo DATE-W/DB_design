@@ -34,7 +34,6 @@ export default {
                 }
                 return
             }
-            console.log("YesterdayInfo - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
             if(response.data.ok=='no')
             {
                 ElMessage.error("获取昨日信息失败");

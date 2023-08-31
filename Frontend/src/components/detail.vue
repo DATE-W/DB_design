@@ -8,8 +8,10 @@ export default {
         'my-nav': MyNav
     },
     mounted() {
+        this.setData();
         this.JudgeAccount();
-        this.GetPostDetail();
+        this.GetPostDetail(this.$route.query.clickedPostID);
+        this.getAllPost();
         console.log("post_id = " + this.$route.query.clickedPostID);
     },
     data(){
@@ -56,9 +58,57 @@ export default {
             jDates:[],
 
             userJudge:"",
+
+            currentPostId:0,
+
+            allPost:[],
         }
     },
     methods:{
+        setData()
+        {
+            //用来判断几个按钮的初始情况
+            this.isApproved=false
+            this.isCollected=false
+            this.isReported=false
+            this.isFollowed=false
+
+            //举报相关
+            this.dialogFormVisible = false
+            this.report_descriptions=""
+
+            //帖子信息相关
+            this.title=""
+            this.uText=""
+            this.pic=[]
+            this.date=""
+            this.approvalNum=0
+
+            //发帖人信息
+            this.author_id=0
+            this.avatar=""
+            this.uName=""
+
+            //展示信息
+            this.show_name=""
+            this.show_avatar=""
+            this.show_uft=""
+            this.show_signature=""
+            this.show_follownum=0
+            this.show_followednum=0
+            this.show_likenum=0
+
+            //评论相关
+            this.jId=[]
+            this.jNames=[]
+            this.jTexts=[]
+            this.jDates=[]
+
+            this.userJudge=""
+
+            this.currentPostId=0
+            return
+        },
         async JudgeAccount() {
             const token = localStorage.getItem('token');
             let response
@@ -101,7 +151,7 @@ export default {
             const formattedDate = `${year}-${month}-${day}`;
             return formattedDate;
         },
-        async GetPostDetail()
+        async GetPostDetail(post_id)
         {
             const token = localStorage.getItem('token');
             let response
@@ -110,7 +160,7 @@ export default {
                      Authorization: `Bearer ${token}`,
                 };
                 response = await axios.post('/api/Forum/PostInfo',  {
-                    post_id: this.$route.query.clickedPostID,
+                    post_id: post_id,
                 }, { headers });
             } catch (err) {
                 if (err.response.data.result == 'fail') {
@@ -133,7 +183,11 @@ export default {
                 ElMessage.error("获取帖子信息失败");
             }else{
                 this.title = response.data.title ;
-                this.avatar = response.data.avatar;
+                if(response.data.avatar!="/"){
+                    this.avatar = response.data.avatar;
+                }else{
+                    this.avatar = 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png';
+                }
                 this.author_id = response.data.author_id;
                 this.uName = response.data.name;
                 this.uText = response.data.contains;
@@ -171,6 +225,40 @@ export default {
             console.log("response.data.approvalNum = " + response.data.approvalNum);
             console.log("response.data.avatar = "+ response.data.avatar);
             return;
+        },
+        async getAllPost()
+        {
+            console.log("start get all post")
+            let response
+            try {
+                response = await axios.get('/api/Admin/GetAllPost');
+            } catch (err) {
+                console.error(err);
+                if (err.response.data.result == 'fail') {
+                    ElMessage.error(err.response.data.msg)
+                } else {
+                    ElMessage.error("未知错误")
+                }
+                return
+            }
+            console.log("AllPost - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
+            // 遍历传来的数据并进行转换
+            response.data.forEach(item => {
+                const convertedItem = {
+                    post_id: item.post_id,
+                    title: item.title,
+                    contains: item.contains.slice(0,7),
+                    author_name:item.author_name,
+                    publishtime: this.analyse_date(item.publishtime),
+                    approvalnum: item.approvalnum
+                };
+            // 将转换后的数据添加到 allPost 数组中
+            this.allPost.push(convertedItem);
+            this.allPost.sort((b, a) => a.approvalnum - b.approvalnum);
+            // 保留前四个元素
+            this.allPost = this.allPost.slice(0, 4);
+            });
+            return
         },
         async approvePost()
         {
@@ -454,6 +542,16 @@ export default {
             });
             return
         },
+        gotoPost(post_id)
+        {
+            this.$router.push({
+                path: '/detail',
+                query: { clickedPostID: post_id }
+            });
+            this.setData();
+            this.GetPostDetail(post_id);
+            return;
+        },
     }
 }
 </script>
@@ -552,6 +650,25 @@ export default {
                 </el-main>
             </el-container>
         </el-container>
+        <!--右侧热门帖子-->
+        <el-container class="show-hot-posts">
+            <el-divider style="height:0.5vh;color: blue;weight:4px;"></el-divider>
+            <span style="position: relative;left:5vw;color: rgb(89, 89, 171);margin-bottom: 2vh;">热门帖子</span>
+            <el-container v-for="(hotPost,index) in allPost" @click="gotoPost(this.allPost[index].post_id)">
+                <el-container class="single-hot-post">
+                    <el-container style="justify-content: left;align-items:baseline;">
+                        <span style="font-size: 1.1rem;margin-left: 0.5vw;height:1vh">{{hotPost.title}}</span>
+                    </el-container>
+                    <el-container style="margin-top:0px;font-size: 0.9rem;margin-left: 0.5vw;">{{hotPost.contains}}</el-container>
+                    <el-container>
+                        <span style="height:1vh;font-family: KaiTi;font-size: 1rem;">
+                            <span style="color:rgb(41, 93, 151);">{{ hotPost.author_name}}</span>
+                            发布于{{hotPost.publishtime}}
+                        </span>
+                    </el-container>
+                </el-container>
+            </el-container>
+        </el-container>
         <!--评论输入框-->
         <div class="input-respond-container">
             <div style="margin: 20px 0">
@@ -579,8 +696,8 @@ export default {
     min-height: 80vh;
     background: #f1f1f0;
     position: absolute;
-    left: 50%; /* 设置水平居中 */
-    transform: translateX(-50%); /* 水平居中偏移修正 */
+    left: 40%;
+    transform: translateX(-40%); /* 水平居中偏移修正 */
     top: 12vh; /* 距离页头 4vh */
     border-radius: 10px;
 }
@@ -693,7 +810,7 @@ export default {
     bottom: 0;
     width:70vw;
     height:13vw;
-    left: 14.5vw;
+    left: 12vw;
 }
 .input-respond-btn{
     text-align: center;
@@ -720,5 +837,30 @@ export default {
 }
 .dialog-footer button:first-child {
   margin-right: 10px;
+}
+
+/*展示热门帖子*/
+.show-hot-posts{
+    height:65vh;
+    width: 15vw;
+    position: fixed;
+    right: 1vw;
+    top: 29vh;
+    display: flex;
+    flex-direction: column;
+}
+.single-hot-post{
+    background-color: white;
+    height:10vh;
+    margin-top: 1vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.single-hot-post:hover {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* 鼠标悬浮时的阴影效果 */
+    background-color: rgb(187, 216, 241); /* 鼠标悬浮时的背景颜色 */
 }
 </style>
