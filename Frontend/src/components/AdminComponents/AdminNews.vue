@@ -56,8 +56,9 @@ export default {
         }
       } catch (error) {
         console.error("删除新闻时出现错误：", error);
-        // 这里可以添加适当的错误处理逻辑
+        return
       }
+      return
     },
     //从后端获取新闻数据
     async getAllNews() {
@@ -74,6 +75,7 @@ export default {
                 grouping: false,
                 type: 'error',
             });
+            return
         }
         
         if ( Array.isArray(response.data)) {
@@ -93,6 +95,7 @@ export default {
                 type: 'error',
             });
         }
+        return
     },
     handlePageChange(newPage) {
       this.currentPage = newPage;

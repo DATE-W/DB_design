@@ -146,7 +146,7 @@ export default {
                     type: 'error',
                 });
             }
-            
+          return  
         },
     async getPoint(){
         const token = localStorage.getItem('token');
@@ -174,7 +174,9 @@ export default {
                     type: 'error',
                 })
             }
+            return
         }
+        return
     },
     getUserTitle(myPoints) {
       if (myPoints >= 0 && myPoints <= 9) return '平平无奇';

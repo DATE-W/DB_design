@@ -412,9 +412,6 @@ export default {
           },
         }); // 发送POST请求，并将请求数据作为 JSON 对象发送
 
-        console.log(response.data.value);
-        console.log(tag1);
-
         this.ok = response.data.ok;
         // 将数组存贮于传入的数组名中
         dataItems.splice(0, dataItems.length, ...response.data.value);
@@ -422,7 +419,9 @@ export default {
         // console.log(this.items);
       } catch (error) {
         console.error(error);
+        return
       }
+      return
     },
     async getRecentGames() {
       let response
@@ -438,6 +437,7 @@ export default {
                 grouping: false,
                 type: 'error',
             });
+            return
         }
         //console.log(response);
         if ( Array.isArray(response.data)) {
@@ -511,7 +511,7 @@ export default {
                 type: 'error',
             });
         }
-        //console.log(this.game_kind);
+      return
     },
     async getPosts(pageNumber, pageSize, currentTag) {
             let response
@@ -527,6 +527,7 @@ export default {
                     grouping: false,
                     type: 'error',
                 });
+              return
             }
             //console.log('response:', response.data);
             this.post_id = [];
@@ -551,8 +552,7 @@ export default {
                 });
             }
             
-            //console.log('得到的帖子id为:', this.post_id);
-            //console.log('得到的帖子title为:', this.post_title);
+          return
         },
     getColorClass(index) {    //设置热帖序号颜色
       if (index < 3) {
