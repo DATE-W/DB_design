@@ -383,7 +383,9 @@ export default {
     openNewsDetails(item) {
       console.log(item);
       const queryString = encodeURIComponent(JSON.stringify(item));
-      this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
+      // this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
+      const url = `${window.location.origin}/NewsDetails?data=${queryString}`;
+      window.open(url, '_blank');
     },
     goToGameDetail(gameId) {
       this.$router.push({
