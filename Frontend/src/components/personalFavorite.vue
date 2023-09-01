@@ -97,6 +97,7 @@ export default {
                     grouping: false,
                     type: 'error',
                 });
+                return
             }
             //console.log('response:', response.data);
             this.post_id = [];
@@ -120,7 +121,7 @@ export default {
                     type: 'error',
                 });
             }
-            
+          return  
         },
     async getPoint(){
         const token = localStorage.getItem('token');
@@ -148,7 +149,9 @@ export default {
                     type: 'error',
                 })
             }
+            return
         }
+        return
     },
     getUserTitle(myPoints) {
       if (myPoints >= 0 && myPoints <= 9) return '平平无奇';
@@ -166,7 +169,7 @@ export default {
 <style scoped>
 .overflow-container {
   overflow-y: auto;
-  max-height: 625px;
+  max-height: 460px;
 }
 
 .overflow-container::-webkit-scrollbar {
@@ -175,6 +178,7 @@ export default {
 .my-posts-container {
   display: flex;
   width: 100%;
+  min-height: 100vh;
   background: #d7ecffeb;
   border-radius: 20px;
 }
