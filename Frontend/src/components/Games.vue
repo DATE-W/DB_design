@@ -14,11 +14,15 @@
 
 <template>
   <my-nav></my-nav>
+
+  <!--   <div class="backGround" :style="{ height: (matches.length >= 6 ? `${(matches.length - 6) * 6 + 45}rem` : `90%`) }">
+  </div> -->
+
   <!-- 左侧联赛选择器 -->
   <div class="borderBoxLeft" style="left:5rem;">
     <!-- 使用v-for指令循环生成联赛选择器内容 -->
     <div class="borderBoxLeague" v-for="(league, index) in leagues" :key="index"
-      :style="{ top: `${index * 5 + 0.4}rem`, background: ((index == league11) ? 'aqua' : '') }"
+      :style="{ top: `${index * 5.4 + 1.9}rem`, background: ((index == league11) ? 'rgb(255, 160, 187)' : '') }"
       @click="leagueChoice(index)">
       <!-- 插入联赛LOGO图片 -->
       <img v-if="league.logo" :src="league.logo" class="imgLogo">
@@ -34,6 +38,8 @@
 
     <!-- test -->
     <p class="textTypoLeague" style="left:0rem;width:30rem;">当前选择日期: {{ date11 }}</p>
+
+    <el-empty v-show="!matches.length" description="本日暂无赛事" style="margin-top: 10rem;" />
 
     <!-- 使用v-for循环生成赛事列表 -->
     <div class="borderBoxMatch" v-for="(match, index) in matches" :key="match.gameUid"
@@ -61,7 +67,8 @@
   <div class="borderBoxRightTop" style="left:74rem">
     <!-- 日期选择器 -->
     <el-date-picker v-model="date11" type="date" placeholder="日期选择" :size="large" value-format="YYYY-MM-DD"
-      style="left:1.5rem;top:5rem" @change="this.getMatches(this.date11, this.league11);" />
+      style="left:1.5rem;top:5rem"
+      @change="this.getMatches(this.date11, this.league11); console.log(this.matches.length);" />
   </div>
 
   <!-- 右侧下方主队容器 -->
@@ -121,11 +128,6 @@ export default {
     this.league11 = this.$route.query.league11;
     this.getMainTeam();
     this.getMatches(this.date11, this.league11);
-  },
-
-  mounted() {
-    // 在页面挂载后获取赛事列表数据
-
   },
 
   methods: {
@@ -309,7 +311,7 @@ export default {
         { name: "德甲", logo: "/src/assets/img/bllogo.png" },
         { name: "法甲", logo: "/src/assets/img/le1logo.png" },
         { name: "中超", logo: "/src/assets/img/cslogo.png" },
-        { name: "其他赛事", logo: "" },],
+        /* { name: "其他赛事", logo: "" }, */],
 
       /* 正式版本 */
       matches: ref([]),
@@ -327,7 +329,13 @@ export default {
 
 
 <style scoped>
-/* 框体样式 */
+.backGround {
+  position: absolute;
+  display: flex;
+  width: 100%;
+  background: rgb(255, 216, 237);
+  /* background-color: aqua; */
+}
 
 /* 左侧容器框 */
 .borderBoxLeft {
@@ -338,7 +346,7 @@ export default {
   /* 正式版本 */
   background: rgb(240, 240, 240);
   /* 测试版本 */
-  /* background: #4BDFBC;  */
+  /* background: rgb(21, 227, 227); */
 }
 
 /* 中部容器框 */
@@ -350,7 +358,7 @@ export default {
   /* 正式版本 */
   background: white;
   /* 测试版本 */
-  /* background: #E174C3;  */
+  /* background: aqua; */
 }
 
 /* 右侧上方容器框 */
@@ -362,7 +370,7 @@ export default {
   /* 正式版本 */
   background: rgb(240, 240, 240);
   /* 测试版本 */
-  /* background: #4BDFBC; */
+  /* background: rgb(21, 227, 227); */
 }
 
 /* 右侧下方容器框 */
@@ -392,6 +400,7 @@ export default {
   width: 10rem;
   height: 5.5rem;
   background-color: white;
+  /* background-color: aqua; */
 }
 
 /* 联赛选择按钮 */
@@ -400,7 +409,7 @@ export default {
   width: 13rem;
   height: 4rem;
   flex-shrink: 0;
-  border-radius: 2rem;
+  border-radius: 1.5rem;
   border: 1px solid var(--colors-light-eaeaea-100, #EAEAEA);
   left: 1rem;
   background-color: #ffffff;
@@ -408,7 +417,8 @@ export default {
 }
 
 .borderBoxLeague:hover {
-  background-color: rgb(246, 77, 77);
+  /* background-color: rgb(246, 77, 77); */
+  background-color: aqua;
 }
 
 /* 各场赛事框 */
