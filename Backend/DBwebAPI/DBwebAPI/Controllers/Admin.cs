@@ -258,6 +258,121 @@ namespace DBwebAPI.Controllers
                 return BadRequest(new { error = "数据库错误" });
             }
         }
+        public class SearchUserJson
+        {
+            public string searchkey { get; set; }
+        }
+        public class UserJson
+        {
+            public int user_id { get; set; }
+            public string useraccount { get; set; }
+            public string username { get; set; }
+            public DateTime? createtime { get; set; }
+            public int point { get; set; }
+            public int followednum { get; set; }
+        }
+        [HttpPost]
+        public async Task<IActionResult> SearchUser(SearchUserJson json)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get SearchUser--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
+
+                string searchKey = json.searchkey.ToLower();
+
+                List<Usr> matchingUsers = await sqlORM.Queryable<Usr>()
+                    .Where(it => it.isBanned == 0 && (it.userName.Contains(searchKey) || it.userAccount.Contains(searchKey)))
+                    .OrderByDescending(it => it.userName.Contains(searchKey) ? 2 : 1)
+                    .ToListAsync();
+
+                List<UserJson> userJsonList = matchingUsers.Select(usr => new UserJson
+                {
+                    user_id = usr.user_id,
+                    useraccount = usr.userAccount,
+                    username = usr.userName,
+                    createtime = usr.createDateTime,
+                    point = usr.userPoint,
+                    followednum = usr.followednumber
+                }).ToList();
+
+                return Ok(userJsonList.ToArray());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("数据库错误：" + ex.Message);
+                return BadRequest(new { error = "数据库错误" });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> SearchBannedUser(SearchUserJson json)
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get SearchBannedUser--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
+
+                string searchKey = json.searchkey.ToLower();
+
+                List<Usr> matchingUsers = await sqlORM.Queryable<Usr>()
+                    .Where(it => it.isBanned == 1 && (it.userName.Contains(searchKey) || it.userAccount.Contains(searchKey)))
+                    .OrderByDescending(it => it.userName.Contains(searchKey) ? 2 : 1)
+                    .ToListAsync();
+
+                List<UserJson> userJsonList = matchingUsers.Select(usr => new UserJson
+                {
+                    user_id = usr.user_id,
+                    useraccount = usr.userAccount,
+                    username = usr.userName,
+                    createtime = usr.createDateTime,
+                    point = usr.userPoint,
+                    followednum = usr.followednumber
+                }).ToList();
+
+                return Ok(userJsonList.ToArray());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("数据库错误：" + ex.Message);
+                return BadRequest(new { error = "数据库错误" });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllNotice()
+        {
+            try
+            {
+                Console.WriteLine("--------------------------Get SearchBannedUser--------------------------");
+                ORACLEconn ORACLEConnectTry = new ORACLEconn();
+                if (!ORACLEConnectTry.getConn())
+                {
+                    Console.WriteLine("数据库连接失败");
+                    return BadRequest("数据库连接失败");
+                };
+                SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
+
+                List<Notice> noticeList = new List<Notice>();
+                noticeList = await sqlORM.Queryable<Notice>().Where(it=>it.receiver==0).ToListAsync();
+                return Ok(noticeList.OrderByDescending(it=>it.publishdatetime).ToArray());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("数据库错误：" + ex.Message);
+                return BadRequest(new { error = "数据库错误" });
+            }
+        }
     }
 
 }
