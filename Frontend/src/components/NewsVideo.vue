@@ -16,6 +16,7 @@
           <el-button type="info" plain @click="selectVideo('意甲')">意甲</el-button>
           <el-button type="warning" plain @click="selectVideo('德甲')">德甲</el-button>
           <el-button type="danger" plain @click="selectVideo('法甲')">法甲</el-button>
+          <el-button plain @click="selectVideo('')">ALL</el-button>
         </el-row>
       </div>
     </el-row>

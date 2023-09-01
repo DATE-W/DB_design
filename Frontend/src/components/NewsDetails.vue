@@ -15,13 +15,13 @@
                         </div>
                     </template>
                     <el-descriptions :column="2" size="small" class="mt-4">
-                        <el-descriptions-item label="News_ID：" :label-style="{ fontWeight: 300 }"><b>{{
+                        <el-descriptions-item label="新闻__ID：" :label-style="{ fontWeight: 300 }"><b>{{
                             Details.newsBody.news_id }}</b></el-descriptions-item>
-                        <el-descriptions-item label="PublishDateTime："><b>{{ returnTime(Details.newsBody.publishDateTime)
+                        <el-descriptions-item label="发布时间："><b>{{ returnTime(Details.newsBody.publishDateTime)
                         }}</b></el-descriptions-item>
-                        <el-descriptions-item label="Place："><b>{{ returnPlace(Details.newsBody.matchTag)
+                        <el-descriptions-item label="联赛类型："><b>{{ returnPlace(Details.newsBody.matchTag)
                         }}</b></el-descriptions-item>
-                        <el-descriptions-item label="Tags_News：">
+                        <el-descriptions-item label="新闻标签：">
                             <el-tag class="ml-2" type="warning"><b>{{ Details.newsBody.matchTag }}&nbsp;</b></el-tag>
                             <el-tag class=" ml-2" type="success" style="margin-left: 5px;"><b>
                                     &nbsp;{{ Details.newsBody.propertyTag }}&nbsp;
@@ -46,14 +46,15 @@
                         <img v-if="item != null && matchMP4(item) == false" referrerPolicy='no-referrer' :src="item"
                             alt="Image" class="imgItem">
                         <video v-if="item != null && matchMP4(item) == true" referrerPolicy='no-referrer' ref="videoPlayer"
-                            :src="item.pictureRoutes[0]" class="imgItem" controls />
+                            :src="item" class="imgItem" controls />
                     </el-col>
                 </div>
             </div>
         </div>
-
     </div>
-    <el-backtop :right="100" :bottom="100" />
+    <div class="back-to-top-container">
+        <div class="back-to-top" :class="{ 'animating': isScrollingToTop }" @click="scrollToTop()"></div>
+    </div>
 </template>
   
 <script>
@@ -114,17 +115,17 @@ export default {
         },
         returnPlace(tag) {
             if (tag == '中超')
-                return 'China';
+                return 'CSL';
             else if (tag == '英超')
-                return 'England';
+                return 'Premier League';
             else if (tag == '西甲')
-                return 'Spain';
+                return 'La Liga';
             else if (tag == '德甲')
-                return 'Germany';
+                return 'Bundesliga';
             else if (tag == '意甲')
-                return 'Italy';
+                return 'Serie A';
             else if (tag == '法甲')
-                return 'France';
+                return 'Ligue 1';
         },
         //匹配mp4字符，用于判断视频还是图片的渲染
         matchMP4(str) {
@@ -132,7 +133,32 @@ export default {
         },
         goBack() {
             this.$router.back();
-        }
+        },
+
+        scrollToTop() {
+            // 获取元素的引用
+            const container = document.documentElement
+            if (container) {
+                this.isScrollingToTop = true;
+                const duration = 1000; // 滚动持续时间，单位：毫秒
+                const startTime = performance.now();
+                const startTop = container.scrollTop;
+                const targetTop = 0; // 目标滚动位置（顶部）
+                const animateScroll = (timestamp) => {
+                    const elapsedTime = timestamp - startTime;
+                    if (elapsedTime >= duration) {
+                        container.scrollTop = targetTop;
+                        this.isScrollingToTop = false;
+                        return;
+                    }
+                    const easeInOutCubic = (t) => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+                    const scrollProgress = easeInOutCubic(elapsedTime / duration);
+                    container.scrollTop = startTop + (targetTop - startTop) * scrollProgress;
+                    requestAnimationFrame(animateScroll);
+                };
+                requestAnimationFrame(animateScroll);
+            }
+        },
     },
 };
 </script>
@@ -175,5 +201,31 @@ export default {
     left: 0;
     border-radius: 6px;
     width: 50vw;
+}
+
+.back-to-top-container {
+    display: flex;
+    /* position: relative; */
+    width: 300px;
+    height: 80vh;
+    position: fixed;
+    top: 10px;
+    left: 80vw;
+}
+
+.back-to-top {
+    cursor: pointer;
+    top: 0;
+    width: 70px;
+    height: 590px;
+    margin-left: 35%;
+    background: url(../assets/img/scroll_cat.png);
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    opacity: 1;
+}
+
+.back-to-top.animating {
+    transform: translateY(-200px);
+    opacity: 1;
 }
 </style>
