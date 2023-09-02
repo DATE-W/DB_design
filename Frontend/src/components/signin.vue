@@ -57,6 +57,7 @@ import carousel from './signinCarousel.vue';
 
 import { ElMessage, ElMessageBox } from 'element-plus';
 
+import { sha256 } from 'js-sha256'
 export default {
   data() {
     return {
@@ -169,7 +170,7 @@ export default {
             account: String(this.account),
             //后端管理员用户登录未加密
             //password: String(this.password),
-            password: String(await this.sha256(this.password)),
+            password: String(await sha256(this.password)),
           })
         } catch (err) {
           console.log(err)
@@ -223,7 +224,7 @@ export default {
           response = await axios.post('/api/Login/LoginPassword', {
             account: String(this.account),
             // password: String(this.password),
-            password: String(await this.sha256(this.password)),
+            password: String(await sha256(this.password)),
           })
         } catch (err) {
           console.log(err)
@@ -274,7 +275,7 @@ export default {
       }
 
     },
-    async sha256(message) {
+    async ssha256(message) {
       const msgBuffer = new TextEncoder().encode(message);
       const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
