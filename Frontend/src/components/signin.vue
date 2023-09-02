@@ -172,24 +172,16 @@ export default {
             password: String(await this.sha256(this.password)),
           })
         } catch (err) {
-          if (err.response.data.result == 'fail') {
-            ElMessage({
-              message: err.response.data.msg,
-              grouping: false,
-              type: 'error',
-            })
-          } else {
-            ElMessage({
-              message: '未知错误',
-              grouping: false,
-              type: 'error',
-            })
-            // 延迟刷新页面
-            setTimeout(() => {
-              window.location.reload(); // 刷新当前页面
-            }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
-            return
-          }
+          console.log(err)
+          ElMessage({
+            message: '未知错误',
+            grouping: false,
+            type: 'error',
+          })
+          // 延迟刷新页面
+          setTimeout(() => {
+            window.location.reload(); // 刷新当前页面
+          }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
           return
         }
         if (response.data.ok == 'no') {
