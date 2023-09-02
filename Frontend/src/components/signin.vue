@@ -226,6 +226,7 @@ export default {
             password: String(await this.sha256(this.password)),
           })
         } catch (err) {
+          console.log(err)
           ElMessage({
             message: '未知错误',
             grouping: false,
