@@ -64,6 +64,7 @@ export default {
             <el-menu-item index="AdminPosts"><span style="color: rgb(115, 115, 115);"><el-icon><Notebook /></el-icon>论坛管理</span></el-menu-item>
             <el-menu-item index="AdminNews"><span style="color: rgb(115, 115, 115);"><el-icon><Trophy /></el-icon>新闻管理</span></el-menu-item>
             <el-menu-item index="AdminAnnouncement"><span style="color: rgb(115, 115, 115);"><el-icon><Watch /></el-icon>公告管理</span></el-menu-item>
+            <el-menu-item index="AdminPastAnc"><span style="color: rgb(115, 115, 115);"><el-icon><Watch /></el-icon>往期公告</span></el-menu-item>
         </el-menu>
         <el-container class="sub-box" style="background-color: rgb(246, 148, 148);margin-top:10px;">
                 <span class="sub-text">昨日签到人数：{{ signInNum }} 人</span>
@@ -98,7 +99,7 @@ export default {
   flex-direction: column;
   align-items: center; /* 居中对齐 */
   justify-content: center; /* 居中对齐 */
-  padding: 20px;
+  padding: 10px;
 }
 .username {
   color: rgb(88, 88, 88);

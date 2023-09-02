@@ -12,6 +12,8 @@ export default {
         return {
             AllUsers: [],
             ReportedUsers:[],
+            searchkeyAll:"",
+            searchkeyBanned:"",
         };
     },
     mounted(){
@@ -45,7 +47,7 @@ export default {
                 }
                 return
             }
-            console.log("AllUsers - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
+            //console.log("AllUsers - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
             if(response.data.ok=='no')
             {
                 ElMessage.error("获取用户列表失败");
@@ -82,7 +84,7 @@ export default {
                 }
                 return
             }
-            console.log("ReportedUsers - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
+            //console.log("ReportedUsers - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
             response.data.forEach(item => {
                     const convertedItem = {
                         user_id: item.user_id,
@@ -162,6 +164,94 @@ export default {
             }
             return
         },
+        async searchFromAll(searchkey)
+        {
+            console.log("search key from all : "+searchkey)
+            if(searchkey!=""){
+                let response
+                try {
+                    response = await axios.post('/api/Admin/SearchUser',  {
+                        searchkey:String(searchkey),
+                    });
+                } catch (err) {
+                    if (err.response.data.result == 'fail') {
+                        ElMessage({
+                            message: err.response.data.msg,
+                            grouping: false,
+                            type: 'error',
+                        })
+                    } else {
+                        ElMessage({
+                            message: '未知错误',
+                            grouping: false,
+                            type: 'error',
+                        })
+                    }
+                    return
+                }
+                console.log("Search From All - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
+                response.data.forEach(item => {
+                        const convertedItem = {
+                            user_id: item.user_id,
+                            userName: item.userName,
+                            userPoint: item.userPoint,
+                            regDate: item.regDate,
+                            followedNumber: item.followedNumber || 0
+                        };
+                    // 将转换后的数据添加到 AllUsers 数组中
+                    this.AllUsers.push(convertedItem);
+                    // 对 AllUsers 数组按照 user_id 进行排序
+                    this.AllUsers.sort((a, b) => a.user_id - b.user_id);
+                });
+            }else{
+                this.getAllUsers();
+            }
+            return
+        },
+        async searchFromBanned(searchkey)
+        {
+            console.log("search key from banned : "+searchkey)
+            if(searchkey!=""){
+                let response
+                try {
+                    response = await axios.post('/api/Admin/SearchBannedUser',  {
+                        searchkey:String(searchkey),
+                    });
+                } catch (err) {
+                    if (err.response.data.result == 'fail') {
+                        ElMessage({
+                            message: err.response.data.msg,
+                            grouping: false,
+                            type: 'error',
+                        })
+                    } else {
+                        ElMessage({
+                            message: '未知错误',
+                            grouping: false,
+                            type: 'error',
+                        })
+                    }
+                    return
+                }
+                console.log("Search From Banned - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
+                response.data.forEach(item => {
+                        const convertedItem = {
+                            user_id: item.user_id,
+                            userName: item.username,
+                            userPoint: item.userpoint,
+                            regDate: this.analyse_date(item.regdate),
+                            followedNumber: item.followednumber
+                        };
+                    // 将转换后的数据添加到 AllUsers 数组中
+                    this.ReportedUsers.push(convertedItem);
+                    // 对 AllUsers 数组按照 user_id 进行排序
+                    this.ReportedUsers.sort((a, b) => a.user_id - b.user_id);
+                });
+            }else{
+                this.getReportedUsers();
+            }
+            return
+        },
     }
 }
 </script>
@@ -181,10 +271,15 @@ export default {
                     <el-table-column :label="`所有用户名单`" align="center">
                         <el-table-column align="center" prop="user_id" label="用户Id" width="100" />
                         <el-table-column prop="userName" label="用户昵称" width="150" />
-                        <el-table-column align="center" prop="regDate" label="注册时间" width="200" />
-                        <el-table-column align="center" prop="userPoint" label="积分" width="150" />
-                        <el-table-column align="center" prop="followedNumber" label="粉丝数" width="150" />
+                        <el-table-column align="center" prop="regDate" label="注册时间" width="150" />
+                        <el-table-column align="center" prop="userPoint" label="积分" width="100" />
+                        <el-table-column align="center" prop="followedNumber" label="粉丝数" width="100" />
                         <el-table-column fixed="right" label="操作">
+                            <template #header>
+                                <el-input placeholder="输入昵称查找用户" clearable v-model="searchkeyAll">
+                                    <template #append><el-icon @click="searchFromAll(this.searchkeyAll)" style="cursor: pointer;"><search/></el-icon></template>
+                                </el-input>
+                            </template>
                             <template #default="scope">
                                     <el-button link type="primary" size="small" @click="killUser(scope.$index)">封禁用户</el-button>
                             </template>
@@ -195,10 +290,15 @@ export default {
                     <el-table-column :label="`被封禁用户名单`" align="center">
                         <el-table-column align="center" prop="user_id" label="用户Id" width="100" />
                         <el-table-column prop="userName" label="用户昵称" width="150" />
-                        <el-table-column align="center" prop="regDate" label="注册时间" width="200" />
-                        <el-table-column align="center" prop="userPoint" label="积分" width="150" />
-                        <el-table-column align="center" prop="followedNumber" label="粉丝数" width="150" />
+                        <el-table-column align="center" prop="regDate" label="注册时间" width="150" />
+                        <el-table-column align="center" prop="userPoint" label="积分" width="100" />
+                        <el-table-column align="center" prop="followedNumber" label="粉丝数" width="100" />
                         <el-table-column fixed="right" label="操作">
+                            <template #header>
+                                <el-input placeholder="输入昵称查找用户" clearable v-model="searchkeyBanned">
+                                    <template #append><el-icon @click="searchFromBanned(this.searchkeyBanned)" style="cursor: pointer;"><search/></el-icon></template>
+                                </el-input>
+                            </template>
                             <template #default="scope">
                                     <el-button link type="primary" size="small" @click="liftUser(scope.$index)">解禁用户</el-button>
                             </template>

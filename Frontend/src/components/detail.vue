@@ -7,9 +7,9 @@ export default {
     components:{
         'my-nav': MyNav
     },
-    mounted() {
+    created() {
         this.setData();
-        this.JudgeAccount();
+        //this.JudgeAccount();
         this.GetPostDetail(this.$route.query.clickedPostID);
         this.getAllPost();
         console.log("post_id = " + this.$route.query.clickedPostID);
@@ -109,37 +109,37 @@ export default {
             this.currentPostId=0
             return
         },
-        async JudgeAccount() {
-            const token = localStorage.getItem('token');
-            let response
-            try {
-                const headers = {
-                    Authorization: `Bearer ${token}`,
-                };
-                response = await axios.post('/api/UserToken/UserToken', {}, { headers })
-            } catch (err) {
-                if (err.response.data.result == 'fail') {
-                    ElMessage({
-                        message: err.response.data.msg,
-                        grouping: false,
-                        type: 'error',
-                    })
-                } else {
-                    ElMessage({
-                        message: '未知错误',
-                        grouping: false,
-                        type: 'error',
-                    })
-                    return
-                }
-                return
-            }
-            if (response.data.ok == 'yes') {
-                this.isAccount = true;  
-            }
-            console.log("isAccount = " + this.isAccount);
-            return;
-        },
+        // async JudgeAccount() {
+        //     const token = localStorage.getItem('token');
+        //     let response
+        //     try {
+        //         const headers = {
+        //             Authorization: `Bearer ${token}`,
+        //         };
+        //         response = await axios.post('/api/UserToken/UserToken', {}, { headers })
+        //     } catch (err) {
+        //         if (err.response.data.result == 'fail') {
+        //             ElMessage({
+        //                 message: err.response.data.msg,
+        //                 grouping: false,
+        //                 type: 'error',
+        //             })
+        //         } else {
+        //             ElMessage({
+        //                 message: '未知错误',
+        //                 grouping: false,
+        //                 type: 'error',
+        //             })
+        //             return
+        //         }
+        //         return
+        //     }
+        //     if (response.data.ok == 'yes') {
+        //         this.isAccount = true;  
+        //     }
+        //     console.log("isAccount = " + this.isAccount);
+        //     return;
+        // },
         analyse_date(date){
             // 创建一个 Date 对象来解析时间字符串
             const dateObject = new Date(date);
@@ -180,7 +180,8 @@ export default {
             }
             if(response.data.ok=='no')
             {
-                ElMessage.error("获取帖子信息失败");
+                this.$router.push('/signin');  
+                ElMessage.error("请先登录");
             }else{
                 this.title = response.data.title ;
                 if(response.data.avatar!="/"){
@@ -256,7 +257,7 @@ export default {
             this.allPost.push(convertedItem);
             this.allPost.sort((b, a) => a.approvalnum - b.approvalnum);
             // 保留前四个元素
-            this.allPost = this.allPost.slice(0, 4);
+            this.allPost = this.allPost.slice(0, 5);
             });
             return
         },
@@ -841,11 +842,11 @@ export default {
 
 /*展示热门帖子*/
 .show-hot-posts{
-    height:65vh;
+    height:85vh;
     width: 15vw;
     position: fixed;
     right: 1vw;
-    top: 29vh;
+    top: 10vh;
     display: flex;
     flex-direction: column;
 }
