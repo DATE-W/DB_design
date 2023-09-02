@@ -94,19 +94,11 @@ export default {
           })
           console.log(response)
         } catch (err) {
-          if (err.response.data.result == 'fail') {
-            ElMessage({
-              message: err.response.data.msg,
-              grouping: false,
-              type: 'error',
-            })
-          } else {
-            ElMessage({
-              message: '未知错误',
-              grouping: false,
-              type: 'error',
-            })
-          }
+          ElMessage({
+            message: '未知错误',
+            grouping: false,
+            type: 'error',
+          })
           return
         }
         if (response.data.ok == "yes") {
@@ -169,8 +161,7 @@ export default {
         return
       }
       console.log(this.$route.query.isAdmin);
-      if(this.$route.query.isAdmin==1)
-      {
+      if (this.$route.query.isAdmin == 1) {
         console.log("start admin login")
         let response
         try {
@@ -233,8 +224,7 @@ export default {
           this.$router.push('/AdminUsers')
         }
       }
-      else
-      {
+      else {
         console.log("start user login")
         let response
         try {
@@ -244,25 +234,17 @@ export default {
             password: String(await this.sha256(this.password)),
           })
         } catch (err) {
-          if (err.response.data.result == 'fail') {
-            ElMessage({
-              message: err.response.data.msg,
-              grouping: false,
-              type: 'error',
-            })
-          } else {
-            ElMessage({
-              message: '未知错误',
-              grouping: false,
-              type: 'error',
-            })
-            // 延迟刷新页面
-            setTimeout(() => {
-              window.location.reload(); // 刷新当前页面
-            }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
-            return
-          }
+          ElMessage({
+            message: '未知错误',
+            grouping: false,
+            type: 'error',
+          })
+          // 延迟刷新页面
+          setTimeout(() => {
+            window.location.reload(); // 刷新当前页面
+          }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
           return
+
         }
         console.log(response)
         if (response.data.ok == 'no') {
