@@ -65,39 +65,21 @@
     </div>
   </div>
 
-  <!--  <el-table
-      :data="players"
-      border
-      style="width: 100%">
-      <el-table-column
-        prop="name"
-        label="姓名">
-      </el-table-column>
-      <el-table-column
-        label="照片">
-        <template slot-scope="scope">
-          <img
-            :src="scope.row.photoUrl"
-            alt="球员照片"
-            class="player-photo">
-        </template>
-      </el-table-column>
-    </el-table>
--->
-  <el-table :data="teamMember" style="width: 70vw; left: 18vw; top: 70vh;">
+  <el-table :data="teamMember" style="width: 70vw; left: 16vw; top: 70vh;">
     <el-table-column align="center" prop="playerNumber" label="号码" width="120" />
     <el-table-column align="center" prop="playerPosition" label="位置" width="120" />
 
 
-    <el-table-column prop="playername" label="姓名" width="240" />
-
-    <el-table-column label="照片">
-      <template slot-scope="scope">
+    <el-table-column>
+      <template #default="scope">
         <div>
           <img :src="scope.row.playerPhoto" alt="Player Photo" class="player-photo">
         </div>
       </template>
     </el-table-column>
+
+    <el-table-column align="left" prop="playerName" label="姓名" width="230" />
+
 
 
 
@@ -483,6 +465,6 @@ export default {
   width: 50px;
   height: 50px;
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: 20%;
 }
 </style>
