@@ -604,10 +604,10 @@ namespace DBwebAPI.Controllers
                 }
                 int user_id = tempUsr.First().user_id;
                 /*
-                int user_id = 12;
+                int user_id = 12;                8=*/
                 // 创建 ActionJson 实例
-                Poin8tJson pointJson = new PointJson();
-                8=*/
+                PointJson pointJson = new PointJson();
+
 
                 //发布帖子
                 List<PublishPost> tmpPP = new List<PublishPost>();
