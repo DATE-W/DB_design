@@ -1157,7 +1157,7 @@ namespace DBwebAPI.Controllers
                         .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
                         .Where(u => u.userAccount == account)
                         .ExecuteCommandAsync();
-                    Console.WriteLine("收藏 积分+1");
+                    Console.WriteLine("收藏 积分+3");
                     //int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
                     if (count > 0) { Console.WriteLine("collect success"); return Ok(new CustomResponse { ok = "yes", value = "收藏成功" }); }
                     else { Console.WriteLine("collect fail"); return Ok(new CustomResponse { ok = "no", value = "收藏失败" }); }

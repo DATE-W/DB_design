@@ -603,10 +603,11 @@ namespace DBwebAPI.Controllers
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
                 int user_id = tempUsr.First().user_id;
-
+                /*
+                int user_id = 12;
                 // 创建 ActionJson 实例
-                PointJson pointJson = new PointJson();
-
+                Poin8tJson pointJson = new PointJson();
+                8=*/
 
                 //发布帖子
                 List<PublishPost> tmpPP = new List<PublishPost>();
@@ -656,6 +657,7 @@ namespace DBwebAPI.Controllers
                     tmpac.type = "comment";
                     pointJson.points.Add(tmpac);
                 }
+                /*
                 //关注用户
                 List<Follow> tmpFU = new List<Follow>();
                 tmpFU = await sqlORM.Queryable<Follow>().Where(it => it.follower_id == user_id)
@@ -666,6 +668,17 @@ namespace DBwebAPI.Controllers
                     tmpac.datetime = ap.createDateTime;
                     tmpac.type = "follow";
                     pointJson.points.Add(tmpac);
+                }*/
+                //签到
+                List<Checkins> tmpCK = new List<Checkins>();
+                tmpCK = await sqlORM.Queryable<Checkins>().Where(it=>it.user_id == user_id)
+                    .ToListAsync();
+                foreach (var ck in tmpCK)
+                {
+                    PointJson.point tmpck = new PointJson.point();
+                    tmpck.datetime = ck.sign_in_date;
+                    tmpck.type = "checkin";
+                    pointJson.points.Add(tmpck);
                 }
                 // 对 points 数组按照 datetime 降序排序
                 pointJson.points = pointJson.points.OrderByDescending(a => a.datetime).ToList();
@@ -908,12 +921,23 @@ namespace DBwebAPI.Controllers
                 Checkins checkins = new Checkins();
                 checkins.user_id = user_id;
                 checkins.sign_in_date = dateTime;
+                Usr user = tempUsr.First();
+                user.userPoint += 5;
                 int count = await sqlORM.Insertable(checkins).ExecuteCommandAsync();
                 if(count > 0)
                 {
-                    Console.WriteLine("checkin success");
-                    Console.WriteLine("userid:  "+user_id+"  checkinTime:   "+dateTime);
-                    return Ok(new CustomResponse { ok = "yes", value = "签到成功" });
+                    int count2 = await sqlORM.Updateable(user).ExecuteCommandAsync();
+                    if(count2 > 0) {
+                        Console.WriteLine("签到 积分+5");
+                        Console.WriteLine("checkin success");
+                        Console.WriteLine("userid:  " + user_id + "  checkinTime:   " + dateTime);
+                        return Ok(new CustomResponse { ok = "yes", value = "签到成功" });
+                    }
+                    else
+                    {
+                        Console.WriteLine("checkin fail");
+                        return Ok(new CustomResponse { ok = "yes", value = "签到失败" });
+                    }
                 }
                 else
                 {
