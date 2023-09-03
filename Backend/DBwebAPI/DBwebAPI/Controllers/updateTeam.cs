@@ -158,6 +158,7 @@ namespace DBwebAPI.Controllers
             public int? opponentScore { get; set; }
             public string? opponentLogo { get; set; }
             public string? gameUid { get; set; }
+            public string? gameType { get; set;}
         }
         public class getGameByUidVal
         {
@@ -539,6 +540,7 @@ namespace DBwebAPI.Controllers
             public string? venue_name { get; set; }
             public string? email { get; set; }
             public int? venue_capacity { get; set; }
+            public string? leagueType { get; set; }
 
             public List<teamMemberVal>? teamMember { get; set; }
             public List<recentGamesVal?>? recentGames { get; set; }
@@ -612,7 +614,7 @@ namespace DBwebAPI.Controllers
 
                     }
 
-
+                    //添加最近比赛数据
                     ans[0].recentGames =await sqlORM.Queryable<Game>()
                          .LeftJoin<Team>((gg, myTeam) => gg.homeTeam == myTeam.team_id || gg.guestTeam == myTeam.team_id)
                          .LeftJoin<Team>((gg, myTeam, opponentTeam) => (gg.guestTeam + gg.homeTeam) == myTeam.team_id + opponentTeam.team_id)
@@ -625,7 +627,8 @@ namespace DBwebAPI.Controllers
                              opponentName = opponentTeam.chinesename,
                              opponentTeamId = opponentTeam.team_id,
                              opponentLogo = opponentTeam.logo,
-                             gameUid = gg.game_id.ToString()
+                             gameUid = gg.game_id.ToString(),
+                             gameType=gg.type
                          })
                          .ToListAsync();
 
@@ -645,8 +648,10 @@ namespace DBwebAPI.Controllers
                             .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == opponentTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
                             .SumAsync((top, pjg) => pjg.goal);
 
-
+                        ans[0].leagueType = ans[0].recentGames[i].gameType;
                     }
+
+
                 }
 
 
@@ -995,6 +1000,7 @@ namespace DBwebAPI.Controllers
             public int? team_id { get; set; }
             public int? player_id { get; set; }
             public string? club { get; set; }
+            public string? enName { get; set; }
             public string? photo { get; set; }
             public string? position { get; set; }
             public string? number { get; set; }
@@ -1030,6 +1036,7 @@ namespace DBwebAPI.Controllers
                         player_id = top.player_id,
                         photo = p.photo,
                         club = t.chinesename,
+                        enName = t.enname,
                         position = p.type,
                         number = p.playerNumber,
                         nationality = p.country,
