@@ -20,7 +20,17 @@ namespace DBwebAPI
                     ConnectionString = constr,
                     DbType = DbType.Oracle,
                     IsAutoCloseConnection = true
-                });
+                },
+                db =>
+                {
+                    //调试SQL事件，可以删掉
+                    db.Aop.OnLogExecuting = (sql, pars) =>
+                    {
+                        Console.WriteLine(sql);//输出sql,查看执行sql
+                    };
+                }
+                
+                );
                 return true;
             }
             catch (Exception)
