@@ -58,6 +58,7 @@
 import axios from 'axios';
 import carousel from './signinCarousel.vue';
 import { ElMessage } from 'element-plus';
+import { sha256 } from 'js-sha256'
 export default {
   name: 'Recover',
   data() {
@@ -71,13 +72,6 @@ export default {
     'my-carousel': carousel
   },
   methods: {
-    async sha256(message) {
-      const msgBuffer = new TextEncoder().encode(message);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      return hashHex;
-    },
     async recoverPword() {
       if (!this.securityAns) {
         ElMessage({
@@ -115,8 +109,8 @@ export default {
       try {
         response = await axios.post('/api/ForgetPassword/UpdatePassword', {
           userAccount: String(this.$route.query.account),
-          userSecAns: String(await this.sha256(this.securityAns)),
-          NewPassword: String(await this.sha256(this.newPword))
+          userSecAns: String(await sha256(this.securityAns)),
+          NewPassword: String(await sha256(this.newPword))
         })
       } catch (err) {
         console.log(err)

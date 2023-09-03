@@ -2,6 +2,7 @@
 import carousel from './signinCarousel.vue';
 import { ElMessage } from 'element-plus';
 import axios from 'axios';
+import { sha256 } from 'js-sha256'
 export default {
   data() {
     return {
@@ -56,10 +57,10 @@ export default {
           account: String(this.account),
           userName: String(this.userName),
           // password: String(this.password),
-          password: String(await this.sha256(this.password)),
+          password: String(await sha256(this.password)),
           userSecQue: String(this.securityQ),
           // userSecAns: String(this.securityAns),
-          userSecAns: String(await this.sha256(this.securityAns)),
+          userSecAns: String(await sha256(this.securityAns)),
         })
       } catch (err) {
         ElMessage({
@@ -89,13 +90,6 @@ export default {
         })
       }
       this.$router.push('/signin')
-    },
-    async sha256(message) {
-      const msgBuffer = new TextEncoder().encode(message);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      return hashHex;
     },
     redirectToLogin() {
       // 跳转到登录页面的逻辑

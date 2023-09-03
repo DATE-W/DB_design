@@ -22,7 +22,7 @@
               <el-dropdown-item @click="redirectToLogin(0)" v-if="!this.islog">{{ $t('USERSIGNIN') }}</el-dropdown-item>
               <el-dropdown-item @click="redirectToLogin(1)" v-if="!this.islog">{{ $t('ADMINISTRATORSIGNIN')
               }}</el-dropdown-item>
-              <el-dropdown-item @click="redirectToRegister" v-if="!this.islog">{{ $t('ADMINISTRATORSIGNIN')
+              <el-dropdown-item @click="redirectToRegister" v-if="!this.islog">{{ $t('SIGNUP')
               }}</el-dropdown-item>
               <el-dropdown-item @click="redirectToPersonal" v-if="this.islog">{{ $t('PERSONAL') }}</el-dropdown-item>
               <el-dropdown-item @click="logout" v-if="this.islog">{{ $t('LOGOUT') }}</el-dropdown-item>
