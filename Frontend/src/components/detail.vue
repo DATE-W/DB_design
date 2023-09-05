@@ -220,11 +220,6 @@ export default {
                     console.log("pic = "+this.pic);
                 });
             }
-            console.log("response.data.islike = " + response.data.islike);
-            console.log("response.data.iscollect = " + response.data.iscollect);
-            console.log("response.data.isfollow = " + response.data.isfollow);
-            console.log("response.data.approvalNum = " + response.data.approvalNum);
-            console.log("response.data.avatar = "+ response.data.avatar);
             return;
         },
         async getAllPost()
@@ -590,7 +585,7 @@ export default {
                     <div class="header-buttons">
                         <span style="position: relative;margin-top: 1.5vh;" class="header-info">
                             <el-icon><User /></el-icon>
-                            <span style="cursor: pointer;color:rgb(41, 93, 151)" @click="showUserInfo(this.author_id)">{{uName}}</span>
+                            <span style="cursor: pointer;color:#2A3E63" @click="showUserInfo(this.author_id)">{{uName}}</span>
                             发布于{{ date }}
                         </span>
                         <div style="width:40vw;justify-content: right;display: flex;">
@@ -643,7 +638,7 @@ export default {
                     <div class="judger-post">
                         <div v-for="(jName,index) in jNames"> 
                             <el-divider style="color: black;height:2vw"></el-divider>
-                            <p><text style="color: rgb(24, 151, 235);cursor: pointer;" @click="showUserInfo(this.jId[index])">{{ jName }} ：</text><text>{{ jTexts[index] }}</text></p>
+                            <p><text style="color: #2A3E63;cursor: pointer;" @click="showUserInfo(this.jId[index])">{{ jName }} ：</text><text>{{ jTexts[index] }}</text></p>
                             <p style="top:3vw;">{{ jDates[index] }}</p>
                         </div>
                     </div>
@@ -654,7 +649,7 @@ export default {
         <!--右侧热门帖子-->
         <el-container class="show-hot-posts">
             <el-divider style="height:0.5vh;color: blue;weight:4px;"></el-divider>
-            <span style="position: relative;left:5vw;color: rgb(89, 89, 171);margin-bottom: 2vh;">热门帖子</span>
+            <span style="position: relative;left:5vw;color: #404A57;font-weight:bold;margin-bottom: 2vh;">热门帖子</span>
             <el-container v-for="(hotPost,index) in allPost" @click="gotoPost(this.allPost[index].post_id)">
                 <el-container class="single-hot-post">
                     <el-container style="justify-content: left;align-items:baseline;">
@@ -782,7 +777,7 @@ export default {
 .rooter-name-typography{
     font-family: KaiTi;
     font-size:1.25rem;
-    color:rgb(41, 93, 151);
+    color:#2A3E63;
 }
 .aside-follow-btn{
     text-align: center;
@@ -862,6 +857,6 @@ export default {
 }
 .single-hot-post:hover {
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* 鼠标悬浮时的阴影效果 */
-    background-color: rgb(187, 216, 241); /* 鼠标悬浮时的背景颜色 */
+    background-color: rgb(207, 228, 247); /* 鼠标悬浮时的背景颜色 */
 }
 </style>

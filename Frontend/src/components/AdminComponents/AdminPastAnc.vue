@@ -10,18 +10,7 @@ export default {
     },
     data() {
         return {
-           announcement:[ 
-                {
-                    notice_id:1,
-                    text: "response.data.text",
-                    publishdatetime: "xxxx-xx-xx"
-                },
-                {
-                    notice_id:2,
-                    text: "response.data.text",
-                    publishdatetime: "xxxx-xx-xx"
-                }
-            ],
+           announcement:[],
         };
     },
     mounted(){
@@ -63,7 +52,7 @@ export default {
                     publishdatetime: this.analyse_date(item.publishdatetime),
                     //receiver:response.data.receiver
                 };
-            // 将转换后的数据添加到 reportedPost 数组中
+            //将转换后的数据添加到 reportedPost 数组中
             this.announcement.push(convertedItem);
             this.announcement.sort((a, b) => a.notice_id - b.notice_id);
             });
@@ -83,19 +72,21 @@ export default {
             <el-aside width="20vw" class="hide-aside">
             <dashboard/>
             </el-aside>
-            <el-main style="overflow: hidden;background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;">
+            <el-main style="background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;">
                 <el-container class="past-anc-title">
-                    往期公告列表
+                    <el-divider style="height:7vh;"><el-container class="title">往期公告列表</el-container></el-divider>
                 </el-container>
-                <el-container v-for="(pastAnc) in announcement">
-                    <el-container class="single-anc">
-                        <el-container class="single-notice-id">
-                            <el-container class="notice-id-line"/>
-                            <el-container class="notice-id">{{ pastAnc.notice_id }}</el-container>
-                        </el-container>
-                        <el-container class="single-notice-main">
-                            <el-container class="text">{{ pastAnc.text }}</el-container>
-                            <el-container class="publishdatetime">发布于<span style="color: rgb(77, 172, 207);">{{ pastAnc.publishdatetime }}</span></el-container>
+                <el-container style="overflow-y:auto;display: flex;flex-direction: column;height:78vh;">
+                    <el-container v-for="(pastAnc) in announcement">
+                        <el-container class="single-anc">
+                            <el-container class="single-notice-id">
+                                <el-container class="notice-id-line"/>
+                                <el-container class="notice-id">{{ pastAnc.notice_id }}</el-container>
+                            </el-container>
+                            <el-container class="single-notice-main">
+                                <el-container class="text">{{ pastAnc.text }}</el-container>
+                                <el-container class="publishdatetime">发布于<span style="color: rgb(77, 172, 207);">{{ pastAnc.publishdatetime }}</span></el-container>
+                            </el-container>
                         </el-container>
                     </el-container>
                 </el-container>
@@ -132,7 +123,17 @@ export default {
 }
 /*展示往期公告*/
 .past-anc-title{
+    height: 7vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
+}
+.title{
+    color:#404A57;
+    font-weight: bold;
+    font-size:large;
 }
 .single-anc{
     height:13vh;
