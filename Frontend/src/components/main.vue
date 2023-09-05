@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="background-color: #5698c3;">
     <my-nav></my-nav>
     <el-main>
       <div class="main-container">

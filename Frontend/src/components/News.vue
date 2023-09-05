@@ -1,7 +1,7 @@
 <template>
+  <!-- 顶部导航栏 -->
+  <my-nav></my-nav>
   <div class="total">
-    <!-- 顶部导航栏 -->
-    <my-nav></my-nav>
     <div class="line" style="left:2%; width: 45%;height: 0.05px;"></div>
     <div class="common-layout">
       <el-container>

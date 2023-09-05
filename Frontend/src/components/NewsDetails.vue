@@ -1,7 +1,5 @@
 <template>
     <div>
-        <!-- 顶部导航栏 -->
-        <my-nav></my-nav>
         <div class="mainBox">
             <!-- 导航及简介 -->
             <div>
@@ -132,7 +130,7 @@ export default {
             return str.includes('mp4');
         },
         goBack() {
-            this.$router.back();
+            window.close();
         },
 
         scrollToTop() {
@@ -209,7 +207,7 @@ export default {
     width: 300px;
     height: 80vh;
     position: fixed;
-    top: 10px;
+    top: 0;
     left: 80vw;
 }
 
