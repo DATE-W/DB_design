@@ -1,32 +1,26 @@
 <template>
-  <el-header style="background-color: aliceblue;">
+  <el-header>
     <div class="nav-container">
       <div class="nav-left">
         <div class="nav-logo">Logo</div>
-        <el-menu class="el-menu-demo" mode="horizontal" active-text-color="#409eff" :ellipsis="false"
-          style="background-color: aliceblue;">
-          <el-menu-item index="1" @click="redirectToMain">{{ $t('HOME') }}</el-menu-item>
-          <el-menu-item index="2" @click="redirectToNews">{{ $t('NEWS') }}</el-menu-item>
-          <el-menu-item index="3" @click="redirectToForum">{{ $t('FORUM') }}</el-menu-item>
-          <el-menu-item index="4" @click="redirectToGames"> {{ $t('GAMES') }}</el-menu-item>
-          <el-menu-item index="5" @click="redirectToPlayers">{{ $t('PLAYER') }}</el-menu-item>
+        <el-menu class="el-menu-demo" mode="horizontal" active-text-color="#409eff" :ellipsis="false">
+          <el-menu-item index="1" @click="redirectToMain">首页</el-menu-item>
+          <el-menu-item index="2" @click="redirectToNews">新闻</el-menu-item>
+          <el-menu-item index="3" @click="redirectToForum">论坛</el-menu-item>
+          <el-menu-item index="4" @click="redirectToGames"> 赛事</el-menu-item>
+          <el-menu-item index="5" @click="redirectToPlayers">球员信息</el-menu-item>
         </el-menu>
       </div>
       <div class="nav-right">
-        <el-icon>
-          <Tools @click="switchlang" />
-        </el-icon>
         <el-dropdown trigger="hover">
           <el-avatar :src=this.avatarurl alt="Avatar" class="avatar"></el-avatar>
           <template #dropdown>
             <el-dropdown-menu v-slot: dropdown>
-              <el-dropdown-item @click="redirectToLogin(0)" v-if="!this.islog">{{ $t('USERSIGNIN') }}</el-dropdown-item>
-              <el-dropdown-item @click="redirectToLogin(1)" v-if="!this.islog">{{ $t('ADMINISTRATORSIGNIN')
-              }}</el-dropdown-item>
-              <el-dropdown-item @click="redirectToRegister" v-if="!this.islog">{{ $t('SIGNUP')
-              }}</el-dropdown-item>
-              <el-dropdown-item @click="redirectToPersonal" v-if="this.islog">{{ $t('PERSONAL') }}</el-dropdown-item>
-              <el-dropdown-item @click="logout" v-if="this.islog">{{ $t('LOGOUT') }}</el-dropdown-item>
+              <el-dropdown-item @click="redirectToLogin(0)" v-if="!this.islog">用户登录</el-dropdown-item>
+              <el-dropdown-item @click="redirectToLogin(1)" v-if="!this.islog">管理员登录</el-dropdown-item>
+              <el-dropdown-item @click="redirectToRegister" v-if="!this.islog">注册</el-dropdown-item>
+              <el-dropdown-item @click="redirectToPersonal" v-if="this.islog">个人中心</el-dropdown-item>
+              <el-dropdown-item @click="logout" v-if="this.islog">登出</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -44,7 +38,7 @@ export default {
   data() {
     return {
       islog: false,
-      avatarurl: "./src/assets/img/carousel1.png",
+      avatarurl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
       userName: '',
     }
   },
@@ -52,14 +46,6 @@ export default {
     this.JudgeAccount();
   },
   methods: {
-    switchlang() {
-      if (this.$i18n.locale == 'zhCN') {
-        this.$i18n.locale = 'en';
-      }
-      else {
-        this.$i18n.locale = 'zhCN';
-      }
-    },
     async JudgeAccount() {
       const token = localStorage.getItem('token');
       if (token == null) {
@@ -149,7 +135,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 .nav-container {
   display: flex;
   justify-content: space-between;

@@ -1,4 +1,4 @@
-<!-- 我的积分 v1.2 -->
+<!-- 我的积分 v2.0 -->
 <template>
     <div class="overflow-container">
         <div class="main-container">
@@ -28,40 +28,25 @@
                 </div>
             </div>
             <div class="user-equity">
-                <div class="equity-title">权益详情</div>
+                <div class="equity-title">积分摘要</div>
                 <div>
                     <el-collapse v-model="activeNames" @change="handleChange">
                         <el-collapse-item name="1">
                             <template #title>
-                                <span style="display: inline-block; min-width: 350px;">平平无奇</span>
+                                <span style="display: inline-block; min-width: 340px;">积分规则</span>
                             </template>
                             <div>
-                                1
+                                每个用户的账号中拥有积分，根据积分的多少将账号的等级分为"平平无奇"、"普通用户"、"一贴成名"、"球场金童"、"明日之星"以及"名人堂"，会在用户的名片上展示对应的称号，其它用户也可以查看。
                             </div>
                         </el-collapse-item>
-                        <el-collapse-item title="普通用户" name="2">
+                        <el-collapse-item title="获取方式" name="2">
                             <div>
-                                2
-                            </div>
-                        </el-collapse-item>
-                        <el-collapse-item title="一贴成名" name="3">
-                            <div>
-                                3
-                            </div>
-                        </el-collapse-item>
-                        <el-collapse-item title="球场金童" name="4">
-                            <div>
-                                4
-                            </div>
-                        </el-collapse-item>
-                        <el-collapse-item title="明日之星" name="5">
-                            <div>
-                                5
-                            </div>
-                        </el-collapse-item>
-                        <el-collapse-item title="名人堂" name="6">
-                            <div>
-                                6
+                                积分的获取方式如下：
+                                发帖成功+10分;
+                                每日签到+5分;
+                                评论成功+3分;
+                                收藏+1分;
+                                点赞+1分
                             </div>
                         </el-collapse-item>
                     </el-collapse>
@@ -86,6 +71,7 @@
 }
 
 .user-title {
+    margin-top: 10px;
     font-family: YouYuan;
     font-weight: bold;
     font-size: 24px;
@@ -103,11 +89,13 @@
 }
 
 .main-container {
+    margin-left: 20px;
     display: flex;
     align-items: flex-start;
 }
 
 .rectangle-container {
+    margin-left: 30px;
     display: flex;
     position: relative;
 }
@@ -141,6 +129,7 @@
 
 .user-equity {
     margin-left: 50px;
+    max-width: 340px;
 }
 
 .equity-title {
@@ -216,13 +205,15 @@ export default {
         getDetailText(detail) {
             switch (detail) {
                 case 'like':
-                    return '点赞帖子  积分+1';
+                    return '点赞帖子 积分+1';
                 case 'comment':
                     return '评论帖子 积分+3';
                 case 'collect':
                     return '收藏帖子 积分+1';
                 case 'publish':
                     return '发布帖子 积分+10';
+                case 'checkin':
+                    return '签到成功 积分+5';
                 default:
                     return '';
             }
@@ -256,7 +247,7 @@ export default {
                     })
                 } else {
                     ElMessage({
-                        message: '未知错误',
+                        message: '服务器错误，获取积分失败',
                         grouping: false,
                         type: 'error',
                     })
@@ -277,7 +268,8 @@ export default {
                     response.data.forEach((detail) => {
                         this.pointDetails.push(detail);
                     });
-                }
+                };
+                console.log('积分详情', response);
             } catch (err) {
                 console.error('Error fetching details:', err);
             }

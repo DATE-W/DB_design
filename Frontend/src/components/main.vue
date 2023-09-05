@@ -1,7 +1,7 @@
 <template>
-  <div style="background-color: #5698c3;">
+  <div>
     <my-nav></my-nav>
-    <el-main>
+    <el-main style="background-color: #b0d5df;">
       <div class="main-container">
         <!-- Scroll to Top Button -->
         <div @click="scrollToTop" class="scroll-to-top-btn">
@@ -14,7 +14,8 @@
           </div>
         </div>
         <!-- Carousel -->
-        <div style="display: flex; justify-content: center; align-items: center; height: 76vh; width: 100vw;">
+        <div
+          style="display: flex; justify-content: center; align-items: center; height: 76vh; width: 100vw;margin-top: -20px;">
           <el-carousel style="height: 76vh; z-index: 1; width: 86vw; margin: auto; position: relative;" arrow="never">
             <!-- Images to display above the carousel -->
             <div
@@ -31,57 +32,43 @@
             <el-carousel-item v-for="item in 3" :key="item"
               style="width: 86vw; height: 76vh; display: flex; justify-content: center; align-items: center;">
               <img :src="getImageUrl(item)" alt="Carousel Image" class="carousel-image"
-                style="border: 0; width: 100%; height: 90%; object-fit: cover;" />
+                style="border: 0; width: 100%; height: 90%; object-fit: cover; border-radius: 15px;" />
             </el-carousel-item>
           </el-carousel>
         </div>
         <div class="top-section">
           <!-- 赛事信息筛选菜单 -->
-          <el-menu class="Games-menu" mode="horizontal" @select="handleMenuSelect">
+          <el-menu class="Games-menu">
             <div class="menu-wrapper">
-              <el-menu-item class="menu-item" index="2">
-                <div class="menu-item-content">
-                  <p class="menu-title" @click="selectLeague('中超')">{{ $t('CSL') }}</p>
-                </div>
+              <el-menu-item index="2">
+                <p class="menu-title" @click="selectLeague('中超')">{{ $t('CSL') }}</p>
               </el-menu-item>
-              <el-menu-item class="menu-item" index="3">
-                <div class="menu-item-content">
-                  <p class="menu-title" @click="selectLeague('英超')">{{ $t('PL') }}</p>
-                </div>
+              <el-menu-item index="3">
+                <p class="menu-title" @click="selectLeague('英超')">{{ $t('PL') }}</p>
               </el-menu-item>
-              <el-menu-item class="menu-item" index="4">
-                <div class="menu-item-content">
-                  <p class="menu-title" @click="selectLeague('意甲')">{{ $t('SA') }}</p>
-                </div>
+              <el-menu-item index="4">
+                <p class="menu-title" @click="selectLeague('意甲')">{{ $t('SA') }}</p>
               </el-menu-item>
-              <el-menu-item class="menu-item" index="5">
-                <div class="menu-item-content">
-                  <p class="menu-title" @click="selectLeague('西甲')">{{ $t('LL') }}</p>
-                </div>
+              <el-menu-item index="5">
+                <p class="menu-title" @click="selectLeague('西甲')">{{ $t('LL') }}</p>
               </el-menu-item>
-              <el-menu-item class="menu-item" index="6">
-                <div class="menu-item-content">
-                  <p class="menu-title" @click="selectLeague('德甲')">{{ $t('BL') }}</p>
-                </div>
+              <el-menu-item index="6">
+                <p class="menu-title" @click="selectLeague('德甲')">{{ $t('BL') }}</p>
               </el-menu-item>
-              <el-menu-item class="menu-item" index="7">
-                <div class="menu-item-content">
-                  <p class="menu-title" @click="selectLeague('法甲')">{{ $t('L1') }}</p>
-                </div>
+              <el-menu-item index="7">
+                <p class="menu-title" @click="selectLeague('法甲')">{{ $t('L1') }}</p>
               </el-menu-item>
-              <el-menu-item class="menu-item" index="8" @click="redirectToGames">
-                <div class="menu-item-content">
-                  <p class="menu-title">{{ $t('MORE') }}</p>
-                </div>
+              <el-menu-item index="8" @click="redirectToGames">
+                <p class="menu-title">{{ $t('MORE') }}</p>
               </el-menu-item>
             </div>
           </el-menu>
-
           <!-- 赛事信息卡片 -->
           <div v-if="selectedLeague === '中超' || selectedLeague === ''">
             <el-row class="Game-col-container">
-              <el-card shadow="hover" class="Game-card" v-for="(game, index) in ZCgame_id" :key="game.id"
-                style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
+              <el-card shadow="hover" class="game-card" v-for="(game, index) in ZCgame_id" :key="game.id"
+                style="border-radius: 0.3vw; border: none; margin: 0.667vw; background-color: #f1f0ed;"
+                @click="goToGameDetail(ZCgame_id[index])">
                 <div class="Game-content">
                   <div class="column-status" style="padding-bottom: 0.5rem;">
                     {{ ZCgame_status[index] === 'Played' ? '已结束' : ZCgame_status[index] }}
@@ -89,15 +76,15 @@
                   <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
                   <div class="column-team1">{{ ZCteam1_name[index] }} {{ ZCteam1_score[index] }}</div>
                   <div class="column-team1">{{ ZCteam2_name[index] }} {{ ZCteam2_score[index] }}</div>
-                  <el-button class="button" @click="goToGameDetail(ZCgame_id[index])" text>详细赛事信息</el-button>
                 </div>
               </el-card>
             </el-row>
           </div>
           <div v-if="selectedLeague === '英超'">
             <el-row class="Game-col-container">
-              <el-card shadow="hover" class="Game-card" v-for="(game, index) in YCgame_id" :key="game.id"
-                style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
+              <el-card shadow="hover" class="game-card" v-for="(game, index) in YCgame_id" :key="game.id"
+                style="border-radius: 0.3vw; border: none; margin: 0.667vw;background-color: #f1f0ed;"
+                @click="goToGameDetail(YCgame_id[index])">
                 <div class="Game-content">
                   <div class="column-status" style="padding-bottom: 0.5rem;">
                     {{ YCgame_status[index] === 'Played' ? '已结束' : YCgame_status[index] }}
@@ -105,15 +92,15 @@
                   <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
                   <div class="column-team1">{{ YCteam1_name[index] }} {{ YCteam1_score[index] }}</div>
                   <div class="column-team1">{{ YCteam2_name[index] }} {{ YCteam2_score[index] }}</div>
-                  <el-button class="button" @click="goToGameDetail(YCgame_id[index])" text>详细赛事信息</el-button>
                 </div>
               </el-card>
             </el-row>
           </div>
           <div v-if="selectedLeague === '意甲'">
             <el-row class="Game-col-container">
-              <el-card shadow="hover" class="Game-card" v-for="(game, index) in YJgame_id" :key="game.id"
-                style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
+              <el-card shadow="hover" class="game-card" v-for="(game, index) in YJgame_id" :key="game.id"
+                style="border-radius: 0.3vw; border: none; margin: 0.667vw;background-color: #f1f0ed;"
+                @click="goToGameDetail(YJgame_id[index])">
                 <div class="Game-content">
                   <div class="column-status" style="padding-bottom: 0.5rem;">
                     {{ YJgame_status[index] === 'Played' ? '已结束' : YJgame_status[index] }}
@@ -121,15 +108,15 @@
                   <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
                   <div class="column-team1">{{ YJteam1_name[index] }} {{ YJteam1_score[index] }}</div>
                   <div class="column-team1">{{ YJteam2_name[index] }} {{ YJteam2_score[index] }}</div>
-                  <el-button class="button" @click="goToGameDetail(YJgame_id[index])" text>详细赛事信息</el-button>
                 </div>
               </el-card>
             </el-row>
           </div>
           <div v-if="selectedLeague === '西甲'">
             <el-row class="Game-col-container">
-              <el-card shadow="hover" class="Game-card" v-for="(game, index) in XJgame_id" :key="game.id"
-                style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
+              <el-card shadow="hover" class="game-card" v-for="(game, index) in XJgame_id" :key="game.id"
+                style="border-radius: 0.3vw; border: none; margin: 0.667vw;background-color: #f1f0ed;"
+                @click="goToGameDetail(XJgame_id[index])">
                 <div class="Game-content">
                   <div class="column-status" style="padding-bottom: 0.5rem;">
                     {{ XJgame_status[index] === 'Played' ? '已结束' : XJgame_status[index] }}
@@ -137,15 +124,15 @@
                   <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
                   <div class="column-team1">{{ XJteam1_name[index] }} {{ XJteam1_score[index] }}</div>
                   <div class="column-team1">{{ XJteam2_name[index] }} {{ XJteam2_score[index] }}</div>
-                  <el-button class="button" @click="goToGameDetail(XJgame_id[index])" text>详细赛事信息</el-button>
                 </div>
               </el-card>
             </el-row>
           </div>
           <div v-if="selectedLeague === '德甲'">
             <el-row class="Game-col-container">
-              <el-card shadow="hover" class="Game-card" v-for="(game, index) in DJgame_id" :key="game.id"
-                style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
+              <el-card shadow="hover" class="game-card" v-for="(game, index) in DJgame_id" :key="game.id"
+                style="border-radius: 0.3vw; border: none; margin: 0.667vw;background-color: #f1f0ed;"
+                @click="goToGameDetail(DJgame_id[index])">
                 <div class="Game-content">
                   <div class="column-status" style="padding-bottom: 0.5rem;">
                     {{ DJgame_status[index] === 'Played' ? '已结束' : DJgame_status[index] }}
@@ -153,15 +140,15 @@
                   <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
                   <div class="column-team1">{{ DJteam1_name[index] }} {{ DJteam1_score[index] }}</div>
                   <div class="column-team1">{{ DJteam2_name[index] }} {{ DJteam2_score[index] }}</div>
-                  <el-button class="button" @click="goToGameDetail(DJgame_id[index])" text>详细赛事信息</el-button>
                 </div>
               </el-card>
             </el-row>
           </div>
           <div v-if="selectedLeague === '法甲'">
             <el-row class="Game-col-container">
-              <el-card shadow="hover" class="Game-card" v-for="(game, index) in FJgame_id" :key="game.id"
-                style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
+              <el-card shadow="hover" class="game-card" v-for="(game, index) in FJgame_id" :key="game.id"
+                style="border-radius: 0.3vw; border: none; margin: 0.667vw;background-color: #f1f0ed;"
+                @click="goToGameDetail(FJgame_id[index])">
                 <div class="Game-content">
                   <div class="column-status" style="padding-bottom: 0.5rem;">
                     {{ FJgame_status[index] === 'Played' ? '已结束' : FJgame_status[index] }}
@@ -169,12 +156,12 @@
                   <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
                   <div class="column-team1">{{ FJteam1_name[index] }} {{ FJteam1_score[index] }}</div>
                   <div class="column-team1">{{ FJteam2_name[index] }} {{ FJteam2_score[index] }}</div>
-                  <el-button class="button" @click="goToGameDetail(FJgame_id[index])" text>详细赛事信息</el-button>
                 </div>
               </el-card>
             </el-row>
           </div>
         </div>
+
         <!-- 下中半部分 -->
         <div class="bottom-middle-section">
           <!-- 左侧新闻板块 -->
@@ -644,23 +631,28 @@ export default {
 
 .top-section {
   width: 86vw;
+  margin-top: 20px;
 }
 
 /* 赛事种类选择栏 */
 .Games-menu {
   padding: 1.333vw;
-  background-color: #78b9fa;
+  background-color: #eef7f2;
+  border-radius: 30px;
 }
 
 .el-menu-item {
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: background-color 0.8s ease;
+  transition: transform 0.5s ease;
 }
 
 .el-menu-item:hover {
-  transform: scale(1.05);
+  transform: scale(1.15);
+  background-color: #c6dfc8;
+}
+
+.el-menu-item.is-active .menu-title {
+  color: #3ba7ea;
 }
 
 .menu-wrapper {
@@ -681,15 +673,11 @@ export default {
   padding: 1.333vw;
   border-radius: 1.067vw;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.menu-title:hover {
-  color: #409EFF;
 }
 
 /* 赛事信息卡片 */
 .Game-col-container {
+  margin-top: -20px;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
@@ -698,10 +686,13 @@ export default {
   /* 防止列折行 */
 }
 
-.Game-col {
-  flex: 0 0 20%;
-  /* 一行显示六个列，每个列占比16.66% */
-  padding: 1.333vw;
+.game-card {
+  width: 725px;
+  height: 150px;
+}
+
+.game-card:hover {
+  cursor: pointer;
 }
 
 
@@ -1026,7 +1017,7 @@ export default {
   position: relative;
   text-align: center;
   padding: 20px;
-  background-color: rgb(241, 204, 253);
+  background-color: #f8f4ed;
   border: 1px solid #ccc;
   border-radius: 10px;
   width: 30%;
