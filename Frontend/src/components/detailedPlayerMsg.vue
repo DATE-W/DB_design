@@ -13,40 +13,44 @@
   <el-card class="playerInfo">
     <div class="firstBar">
       <div class="firstBlock">
-        国籍：{{ this.nationality }}
+        <b>国籍：</b>{{ this.nationality }}
       </div>
       <div class="secondBlock">
-        年龄：{{ this.age }}
+        <b>年龄：</b>{{ this.age }}
       </div>
       <div class="thirdBlock">
-        身高：{{ this.height }}
+        <b>身高：</b>{{ this.height }}
       </div>
     </div>
 
     <div class="secondBar">
       <div class="firstBlock">
-        号码：{{ this.number }}
+        <b>号码：</b>{{ this.number }}
       </div>
       <div class="secondBlock">
-        位置：{{ this.position }}
+        <b>位置：</b>{{ this.position }}
       </div>
 
       <div class="thirdBlock">
-        俱乐部：{{ this.club }}
+        <b>俱乐部：</b>{{ this.club }}
       </div>
     </div>
 
     <div class="thirdBar">
       <div class="firstBlock">
-        惯用脚：{{ this.dominantFoot }}
+        <b>惯用脚：</b>{{ this.dominantFoot }}
       </div>
     </div>
 
-    <div class="briefIntroductionContainer">
-      球员简介：{{ this.playerName }}，（英文名：{{ this.enName }}），出生于{{ 2023 - this.age }}年，是一名{{ this.nationality }}
-      的足球运动员。他身高{{ this.height }}，现效力于{{ this.club }}足球俱乐部。他的惯用脚是{{ this.dominantFoot }}，
-      在球队中担任{{ this.position }}的位置。他的球衣号码为{{ this.number }}。
+    <div class="fourthBar">
+      <b>球员简介：</b>
+      <div class="fourthBarContent">
+        {{ this.playerName }}，（英文名：{{ this.enName }}），现年{{ this.age }}，
+        是一名{{ this.nationality }}的足球运动员。他身高{{ this.height }}，现效力于{{ this.club }}足球俱乐部。
+        他的惯用脚是{{ this.dominantFoot }}，在球队中担任{{ this.position }}的位置。他的球衣号码为{{ this.number }}。 
+      </div>
     </div>
+
   </el-card>
 
   <div class="titleContainer">
@@ -57,7 +61,7 @@
   </div>
 
   <el-table :data="eventData" style="width: 60vw; left: 10vw; top: 70vh;">
-    <el-table-column align="center" prop="seasonName" label="赛季" width="150" />
+    <el-table-column align="center" prop="seasonName" label="赛季" width="158" />
     <el-table-column align="center" prop="appearance" label="上场" width="105" />
     <el-table-column align="center" prop="pass" label="过人" width="105" />
     <el-table-column align="center" prop="shoot" label="射门" width="105" />
@@ -74,47 +78,19 @@
     </div>
   </div>
 
-  <!---->
-  <table class="relatedTable">
-    <tbody>
-      <tr style v-for="(relatedPlayer, index) in relatedPlayers" :key="index" @click="direct2detailedPlayerMsg(relatedPlayer.playerName)">
-        <td class="tdTable1" :style="{ top: `${index * 3 + 0.6}rem`}">
-          <div>
-            <img :src="relatedPlayer.playerPhoto" style="width: 2vw; height: 4vh;">
-          </div>
-        </td>
+  <el-table :data="relatedPlayers" style="width: 20vw; left: 74vw; top: -20vh;" @row-click="handleRowClick">
 
-        <td class="tdTable2" :style="{ top: `${index * 3 + 0.6}rem`}">
-          <div style="text-align: left;">
-            {{ relatedPlayer.playerName }}
-          </div>
-
-          
-        </td>
-        <td class="tdTable3" :style="{ top: `${index * 3 + 0.6}rem`}">
-          <div>
-            {{ relatedPlayer.type }}
-          </div>
-
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!--
-  <el-table :data="relatedPlayers" style="width: 10vw; left: 75vw; top: -18vh;">
-    <el-table-column label="头像" width="150">    
-      <template slot-scope="scope">
-        <el-image style="width: 50px; height: 50px;" :src="scope.row.playerPhoto">
-
-        </el-image>
+    <el-table-column align="right">
+      <template #default="scope">
+        <div>
+          <img :src="scope.row.playerPhoto" alt="Player Photo" class="player-photo">
+        </div>
       </template>
     </el-table-column>
-    <el-table-column prop="type"  width="150" />
+
+    <el-table-column align="left" prop="playerName" width="150" />
+    <el-table-column align="center" prop="type" width="60" />
   </el-table>
-
--->
-
 </template>
 
 <script>
@@ -184,36 +160,31 @@ export default {
       this.getPlayerMsg(topScorerName);
     },
 
+    handleRowClick(row, event, column) {
+      this.direct2detailedPlayerMsg(row.playerName);
+    },
 
   },
 
   data() {
     return {
-      playerName: 'mhy',
-      enName: 'wangyuehui',
-      playerPhoto: '/src/assets/img/wyh.png',
-      club: '罗德岛',
-      position: '后端',
-      number: '1',
-      nationality: '蒙德',
-      age: '114',
-      height: '150',
-      dominantFoot: '轮椅',
-      shoot: '1',
-      pass: '2',
+      playerName: '',
+      enName: '',
+      playerPhoto: '',
+      club: '',
+      position: '',
+      number: '',
+      nationality: '',
+      age: '',
+      height: '',
+      dominantFoot: '',
+      shoot: '',
+      pass: '',
 
       eventData: ref([
-        { "seasonName": '1-2', "appearance": 3, "pass": 1, "shoot": 3, "goal": 5, "assist": 6, "yellow": 7, "red": 8 },
-        { "seasonName": '1-2', "appearance": 3, "pass": 1, "shoot": 3, "goal": 5, "assist": 6, "yellow": 7, "red": 8 },
-        { "seasonName": '1-2', "appearance": 3, "pass": 1, "shoot": 3, "goal": 5, "assist": 6, "yellow": 7, "red": 8 },
-        { "seasonName": '1-2', "appearance": 3, "pass": 1, "shoot": 3, "goal": 5, "assist": 6, "yellow": 7, "red": 8 },
-
       ]),
 
       relatedPlayers: ref([
-        { "playerPhoto": '/src/assets/img/wyh.png', "playerName": 'wh', "type": '1端' },
-        { "playerPhoto": '/src/assets/img/wyh.png', "playerName": 'wyh', "type": '前端' },
-
       ]),
 
     }
@@ -230,27 +201,33 @@ export default {
   width: 60vw;
   height: 20vh;
   flex-shrink: 0;
+  background-image: linear-gradient(to right, white 20%, rgba(255, 255, 255, 0.6)), url('/src/assets/img/backgroundPic.png');
+  background-size: cover;
+  /* 可根据需要调整背景大小 */
+  background-repeat: no-repeat;
+  background-position: center;
+  /* 可根据需要调整背景位置 */
 }
 
 .playerIconContainer {
   position: absolute;
-  left: 4vw;
-  top: 4vh;
+  left: 3vw;
+  top: 2.5vh;
   width: 8vw;
-  height: 12vh;
+  height: 15vh;
   flex-shrink: 0;
 }
 
 .playerNameContainer {
   position: absolute;
-  left: 15vw;
+  left: 14vw;
   top: 4vh;
   font-size: 2.5vw;
 }
 
 .playerEnnameContainer {
   position: absolute;
-  left: 15vw;
+  left: 14vw;
   top: 11vh;
   font-size: 1.5vw;
 }
@@ -291,6 +268,14 @@ export default {
   width: 60vw;
 }
 
+.fourthBar {
+  position: absolute;
+  left: 5vw;
+  top: 23vh;
+  height: 13vh;
+  width: 62vw;
+}
+
 /* 横向第一条 */
 .firstBlock {
   position: absolute;
@@ -307,6 +292,14 @@ export default {
 .thirdBlock {
   position: absolute;
   left: 30vw;
+}
+
+.fourthBarContent {
+  position: absolute;
+  left: 5.4vw;
+  top: 0vh;
+  height: 13vh;
+  width: 44vw;
 }
 
 .briefIntroductionContainer {
@@ -352,109 +345,10 @@ export default {
   background: rgb(240, 240, 240);
 }
 
-.relatedTable{
-  position: absolute;
-  top: 15vh;
-  left: 75vw;
-  width: 18vw;
-}
-
-.tdTable1{
-  position: absolute;
-  left: 1vw;
-}
-
-.tdTable2{
-  position: absolute;
-  left: 4vw;
-}
-
-.tdTable3{
-  position: absolute;
-  left: 12vw;
-}
-
-
-
-
-
-
-
-
-
-
-.header {
-  position: absolute;
-  font-size: 2vw;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.relatedPlayerHeader {
-  position: absolute;
-  left: 75%;
-  width: 18vw;
-  height: 8vh;
-  background: rgb(240, 240, 240);
-}
-
-.relatedPlayerData {
-  position: absolute;
-  left: 75%;
-}
-
-.relatedPlayerPhotoContainer {
-  position: absolute;
-  width: 3vw;
-  height: 4vh;
-}
-
-.relatedPlayerPhoto {
-  position: absolute;
-  width: 1.5vw;
-  height: 3vh;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.relatedPlayerNameContainer {
-  position: absolute;
-  left: 3vw;
-  width: 10vw;
-  height: 4vh;
-}
-
-.relatedPlayerName {
-  position: absolute;
-  color: var(--colors-text-dark-172239100, #172239);
-  left: 20%;
-  top: -5%;
-  transform: translate(-50%, -50%);
-}
-
-.relatedPlayerPositionContainer {
-  position: absolute;
-  left: 15vw;
-  width: 5vw;
-  height: 4vh;
-}
-
-.relatedPlayerName {
-  position: absolute;
-  color: var(--colors-text-dark-172239100, #172239);
-  left: 20%;
-  top: -5%;
-  transform: translate(-50%, -50%);
-}
-
-.oddIndex {
-  background-color: lightblue;
-  /* 奇数行的背景色 */
-}
-
-.evenIndex {
-  background-color: lightpink;
-  /* 偶数行的背景色 */
+.player-photo {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 20%;
 }
 </style>

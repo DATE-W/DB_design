@@ -13,48 +13,51 @@
   <el-card class="teamInfo">
     <div class="firstBar">
       <div class="firstBlock">
-        成立：{{ this.foundYear }}
+        <b>成立：</b>{{ this.foundYear }}
       </div>
       <div class="secondBlock">
-        国家：{{ this.country }}
+        <b>国家：</b>{{ this.country }}
       </div>
       <div class="thirdBlock">
-        联赛类别：{{ this.leagueType }}
+        <b>联赛类别：</b>{{ this.leagueType }}
       </div>
       <div class="fourthBlock">
-        主教练：{{ this.coach }}
+        <b>主教练：</b>{{ this.coach }}
       </div>
     </div>
 
     <div class="secondBar">
       <div class="firstBlock">
-        城市：{{ this.city }}
+        <b>城市：</b>{{ this.city }}
       </div>
       <div class="secondBlock">
-        地址：{{ this.address }}
+        <b>地址：</b>{{ this.address }}
       </div>
 
       <div class="thirdBlock">
-        主场：{{ this.venueName }}
+        <b>主场：</b>{{ this.venueName }}
       </div>
       <div class="fourthBlock">
-        容纳：{{ this.venueCapacity }}人
+        <b>容纳：</b>{{ this.venueCapacity }}人
       </div>
     </div>
 
     <div class="thirdBar">
       <div class="firstBlock">
-        电话：{{ this.tel }}
+        <b>电话：</b>{{ this.tel }}
       </div>
       <div class="secondBlock">
-        邮箱：{{ this.email }}
+        <b>邮箱：</b>{{ this.email }}
       </div>
     </div>
 
-    <div class="briefIntroductionContainer">
-      球队简介：{{ this.teamName }}足球俱乐部（英文名：{{ this.enName }}），是{{ this.leagueType }}的一支足球俱乐部。
-      {{ this.teamName }}成立于{{ this.foundYear }}年，坐落于美丽的{{ this.city }}。{{ this.teamName }}的主场球场为
-      {{ this.venueName }}，能够容纳{{ this.venueCapacity }}人同时观赛。
+    <div class="fourthBar">
+      <b>球队简介：</b>
+      <div class="fourthBarContent">
+        {{ this.teamName }}足球俱乐部（英文名：{{ this.enName }}），是{{ this.leagueType }}的一支足球俱乐部。
+        {{ this.teamName }}成立于{{ this.foundYear }}年，坐落于美丽的{{ this.city }}。
+        {{ this.teamName }}的主场球场为{{ this.venueName }}，能够容纳{{ this.venueCapacity }}人同时观赛。
+      </div>
     </div>
   </el-card>
 
@@ -65,12 +68,12 @@
     </div>
   </div>
 
-  <el-table :data="teamMember" style="width: 70vw; left: 16vw; top: 70vh;">
-    <el-table-column align="center" prop="playerNumber" label="号码" width="120" />
-    <el-table-column align="center" prop="playerPosition" label="位置" width="120" />
+  <el-table :data="currentPlayerPage" style="width: 70vw; left: 16vw; top: 70vh;" @row-click="handleRowClick">
+    <!-- 表格列配置 -->
+    <el-table-column align="center" prop="playerNumber" label="号码" min-width="12%" />
+    <el-table-column align="center" prop="playerPosition" label="位置" min-width="12%" />
 
-
-    <el-table-column>
+    <el-table-column align="right" min-width="12%">
       <template #default="scope">
         <div>
           <img :src="scope.row.playerPhoto" alt="Player Photo" class="player-photo">
@@ -78,133 +81,21 @@
       </template>
     </el-table-column>
 
-    <el-table-column align="left" prop="playerName" label="姓名" width="230" />
-
-
-
-
-    <el-table-column align="center" prop="playerAppearance" label="出场" width="120" />
-    <el-table-column align="center" prop="playerShoot" label="射门" width="120" />
-    <el-table-column align="center" prop="playerGoal" label="进球" width="120" />
-    <el-table-column align="center" prop="playerNationality" label="国籍" width="120" />
+    <el-table-column align="left" prop="playerName" label="姓名" min-width="16%" />
+    <el-table-column align="center" prop="playerAppearance" label="出场" min-width="12%" />
+    <el-table-column align="center" prop="playerShoot" label="射门" min-width="12%" />
+    <el-table-column align="center" prop="playerGoal" label="进球" min-width="12%" />
+    <el-table-column align="center" prop="playerNationality" label="国籍" min-width="12%" />
 
   </el-table>
 
-  <!--
-
-
-  
-  <div class="eventInfo">
-    <div style="font-size: 2vw;margin-left: 42%;">
-      球员列表
-    </div>
-
-    <div class="positionInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        位置
-      </p>
-    </div>
-
-    <div class="numberInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        号码
-      </p>
-    </div>
-
-    <div class="photoInfo">
-    </div>
-
-    <div class="nameInfo">
-      <p style="position: absolute;left: 10%;  transform: translate(-50%, -50%);">
-        姓名
-      </p>
-    </div>
-
-    <div class="appearanceInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        出场
-      </p>
-    </div>
-
-    <div class="shootInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        射门
-      </p>
-    </div>
-
-    <div class="goalInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        进球
-      </p>
-    </div>
-
-    <div class="nationalityInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        国籍
-      </p>
-    </div>
-
-    
+  <div class="pagination">
+    <el-pagination :current-page="currentPage" :page-size="pageSize" :total="totalTeamMembers"
+      @current-change="handlePageChange">
+    </el-pagination>
   </div>
 
-  <div class="detailedEventData" v-for="(singleTeamMember, index) in teamMember" :key="index"
-    :style="{ top: `${index * 2.5 + 31.5}rem` }" @click="direct2detailedPlayerMsg(singleTeamMember.playerName)">
-    <div class="positionInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ singleTeamMember.playerPosition }}
-      </p>
-    </div>
-
-    <div class="numberInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ singleTeamMember.playerNumber }}
-      </p>
-    </div>
-
-    <div class="photoInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ singleTeamMember.playerPhoto }}
-      </p>
-    </div>
-
-    <div class="nameInfo">
-      <p style="position: absolute;left: 10%;  transform: translate(-50%, -50%);">
-        {{ singleTeamMember.playerName }}
-      </p>
-    </div>
-
-
-    <div class="appearanceInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ singleTeamMember.playerAppearance }}
-      </p>
-    </div>
-
-    <div class="shootInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ singleTeamMember.playerShoot }}
-      </p>
-    </div>
-
-    <div class="goalInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ singleTeamMember.playerGoal }}
-      </p>
-    </div>
-
-    
-  </div>--> <!-- -->
-  <!--
-  <el-card class="playerInfo" v-for="(singleteamMember, index) in teamMember" :key="index"
-    :style="{ top: `${Math.floor(index / 4) * 19 + 26}rem`, left: `${index % 4 * 16 + 16}rem` }"
-    @click="direct2detailedPlayerMsg(singleteamMember.playerName)">
-    <img class="playerPic" :src="singleteamMember.playerPhoto">
-    <p class="playerName" style="left: 50%; transform: translate(-50%, -50%); font-size: 1.2vw;">
-      {{ singleteamMember.playerName }}
-    </p>
-  </el-card>-->
 </template>
-
 
 
 <script>
@@ -226,16 +117,23 @@ export default {
     this.getTeamMsg(this.teamName);
   },
 
+  computed: {
+    currentPlayerPage() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const end = start + this.pageSize - 1;
+      return this.teamMember.slice(start, end);
+    },
+  },
+
   methods: {
-    direct2detailedPlayerMsg(topScorerName) {
+    direct2detailedPlayerMsg(name) {
       this.$router.push({
         path: '/detailedPlayerMsg',
         query: {
-          playerName: topScorerName
+          playerName: name
         }
       });
     },
-
 
     async getTeamMsg(teamName) {
       let response;
@@ -245,7 +143,6 @@ export default {
           teamName: teamName,
         });
 
-        //        console.log(response);
         this.teamMember = [];
 
         this.city = response.data[0].city;
@@ -258,8 +155,11 @@ export default {
         this.address = response.data[0].address;
         this.venueCapacity = response.data[0].venue_capacity;
         this.email = response.data[0].email;
+        this.coach = response.data[0].coach;
+        this.leagueType = response.data[0].leagueType;
 
         this.teamMember = response.data[0].teamMember;
+        this.totalTeamMembers = this.teamMember.length;
 
       } catch (err) {
         ElMessage({
@@ -269,39 +169,39 @@ export default {
       }
     },
 
+    handleRowClick(row, event, column) {
+      this.direct2detailedPlayerMsg(row.playerName);
+    },
 
+    handlePageChange(newPage) {
+      // 当用户切换页码时触发的方法
+      this.currentPage = newPage;
+    },
   },
 
   data() {
     return {
-      teamName: '不要挂ysj挑战',
-      enName: 'isafnjnjds',
-      logo: '/src/assets/img/pmlogo.png',
-      coach: 'wjl',
-      foundYear: '2023',
-      city: '龙门',
-      address: '须弥城114弄514号',
-      country: '璃月',
-      venueName: '301',
-      venueCapacity: 114514,
-      tel: '+86 12345678901',
-      email: '111',
-      leagueType: '紫砂',
+      teamName: '',
+      enName: '',
+      logo: '',
+      coach: '',
+      foundYear: '',
+      city: '',
+      address: '',
+      country: '',
+      venueName: '',
+      venueCapacity: 0,
+      tel: '',
+      email: '',
+      leagueType: '',
 
       teamMember: [
-        { playerName: "wjl", playerPhoto: "/src/assets/img/otto.png", "playerPosition": "前锋", "playerNumber": "12", "playerAppearance": "3", "playerShoot": "12", "playerGoal": "2", "playerNationality": "US", },
-        { playerName: "wyh", playerPhoto: "/src/assets/img/otto.png", "playerPosition": "前锋", "playerNumber": "12", "playerAppearance": "3", "playerShoot": "12", "playerGoal": "2", "playerNationality": "US", },
-        { playerName: "wrb", playerPhoto: "/src/assets/img/otto.png", "playerPosition": "前锋", "playerNumber": "12", "playerAppearance": "3", "playerShoot": "12", "playerGoal": "2", "playerNationality": "US", },
-        { playerName: "wh", playerPhoto: "/src/assets/img/otto.png", "playerPosition": "前锋", "playerNumber": "12", "playerAppearance": "3", "playerShoot": "12", "playerGoal": "2", "playerNationality": "US", },
-        { playerName: "111", playerPhoto: "/src/assets/img/otto.png", "playerPosition": "前锋", "playerNumber": "12", "playerAppearance": "3", "playerShoot": "12", "playerGoal": "2", "playerNationality": "US", },
-
       ],
 
-      players: [
-        { "name": '球员1', "photoUrl": 'https://chunithm.sega.jp/$site/images/pc/prev.png.webp' },
-        { "name": '球员2', "photoUrl": 'https://chunithm.sega.jp/$site/images/pc/prev.png.webp' },
-        // 在这里继续添加更多球员的信息
-      ],
+      totalTeamMembers: 0,
+      pageSize: 8,
+      currentPage: 1,
+
     }
 
   }
@@ -316,27 +216,33 @@ export default {
   width: 70vw;
   height: 20vh;
   flex-shrink: 0;
+  background-image: linear-gradient(to right, white 20%, rgba(255, 255, 255, 0.6)), url('/src/assets/img/backgroundPic.png');
+  background-size: cover;
+  /* 可根据需要调整背景大小 */
+  background-repeat: no-repeat;
+  background-position: center;
+  /* 可根据需要调整背景位置 */
 }
 
 .teamIconContainer {
   position: absolute;
-  left: 4vw;
-  top: 4vh;
+  left: 3vw;
+  top: 2.5vh;
   width: 8vw;
-  height: 12vh;
+  height: 15vh;
   flex-shrink: 0;
 }
 
 .teamNameContainer {
   position: absolute;
-  left: 15vw;
+  left: 13vw;
   top: 4vh;
   font-size: 2.5vw;
 }
 
 .teamEnnameContainer {
   position: absolute;
-  left: 15vw;
+  left: 13vw;
   top: 11vh;
   font-size: 1.5vw;
 }
@@ -377,6 +283,14 @@ export default {
   width: 60vw;
 }
 
+.fourthBar {
+  position: absolute;
+  left: 5vw;
+  top: 23vh;
+  height: 13vh;
+  width: 62vw;
+}
+
 /* 横向第一条 */
 .firstBlock {
   position: absolute;
@@ -392,22 +306,21 @@ export default {
 /* 横向第三条 */
 .thirdBlock {
   position: absolute;
-  left: 30vw;
+  left: 32vw;
 }
 
 .fourthBlock {
   position: absolute;
-  left: 42vw;
+  left: 47vw;
 }
 
-.briefIntroductionContainer {
+.fourthBarContent {
   position: absolute;
-  left: 3vw;
-  top: 23vh;
+  left: 5.4vw;
+  top: 0vh;
   height: 13vh;
-  width: 62vw;
+  width: 50vw;
 }
-
 
 .titleContainer {
   position: absolute;
@@ -434,37 +347,18 @@ export default {
   height: 6vh;
 }
 
-.cell-content {
-  display: flex;
-  align-items: center;
-}
-
-.image {
-  width: 40px;
-  height: 40px;
-  margin-right: 10px;
-}
-
-
-
-
-.nationalityInfo {
-  position: absolute;
-  left: 53vw;
-  width: 7vw;
-  height: 4vh;
-}
-
-.detailedEventData {
-  position: absolute;
-  left: 10vw;
-  background: wheat;
-}
-
 .player-photo {
   width: 50px;
   height: 50px;
   object-fit: cover;
   border-radius: 20%;
+}
+
+.pagination{
+  position: absolute;
+  left: 35vw;
+  top: 155vh;
+  width: 50px;
+  height: 50px;
 }
 </style>
