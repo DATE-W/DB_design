@@ -1,170 +1,96 @@
 <template>
   <my-nav></my-nav>
-  <el-card class="basicinfoContainer">
-    <img class="playerPic" :src="playerPhoto">
-    <div class="basicInfo">
-      <p class="header">
-        {{ this.playerName }}
-      </p>
-
-      <div class="firstBar">
-        <div class="firstBlock">
-          年龄：{{ this.age }}
-        </div>
-        <div class="secondBlock">
-          位置：{{ this.position }}
-        </div>
-        <div class="thirdBlock">
-          号码：{{ this.number }}
-        </div>
-      </div>
-
-      <div class="secondBar">
-        <div class="firstBlock">
-          国籍：{{ this.nationality }}
-        </div>
-        <div class="secondBlock">
-          身高：{{ this.height }}
-        </div>
-        <div class="thirdBlock">
-          惯用脚：{{ this.dominantFoot }}
-        </div>
-      </div>
-
-      <div class="thirdBar">
-        <div class="firstBlock">
-          俱乐部：{{ this.club }}
-        </div>
-      </div>
-
+  <el-card class="playerNameAndIcon">
+    <img class="playerIconContainer" alt="This is player icon" :src="this.playerPhoto">
+    <div class="playerNameContainer">
+      {{ this.playerName }}
+    </div>
+    <div class="playerEnnameContainer">
+      {{ this.enName }}
     </div>
   </el-card>
 
-  <div class="eventInfo">
-    <div style="font-size: 2vw;margin-left: 42%;">
-      比赛数据
+  <el-card class="playerInfo">
+    <div class="firstBar">
+      <div class="firstBlock">
+        <b>国籍：</b>{{ this.nationality }}
+      </div>
+      <div class="secondBlock">
+        <b>年龄：</b>{{ this.age }}
+      </div>
+      <div class="thirdBlock">
+        <b>身高：</b>{{ this.height }}
+      </div>
     </div>
 
-    <div class="seasonInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        赛季
-      </p>
+    <div class="secondBar">
+      <div class="firstBlock">
+        <b>号码：</b>{{ this.number }}
+      </div>
+      <div class="secondBlock">
+        <b>位置：</b>{{ this.position }}
+      </div>
+
+      <div class="thirdBlock">
+        <b>俱乐部：</b>{{ this.club }}
+      </div>
     </div>
 
-    <div class="appearanceInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        上场
-      </p>
+    <div class="thirdBar">
+      <div class="firstBlock">
+        <b>惯用脚：</b>{{ this.dominantFoot }}
+      </div>
     </div>
 
-    <div class="passInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        过人
-      </p>
+    <div class="fourthBar">
+      <b>球员简介：</b>
+      <div class="fourthBarContent">
+        {{ this.playerName }}，（英文名：{{ this.enName }}），现年{{ this.age }}，
+        是一名{{ this.nationality }}的足球运动员。他身高{{ this.height }}，现效力于{{ this.club }}足球俱乐部。
+        他的惯用脚是{{ this.dominantFoot }}，在球队中担任{{ this.position }}的位置。他的球衣号码为{{ this.number }}。 
+      </div>
     </div>
 
-    <div class="shootInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        射门
-      </p>
-    </div>
+  </el-card>
 
-    <div class="goalInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        进球
-      </p>
-    </div>
-
-    <div class="assistInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        助攻
-      </p>
-    </div>
-
-    <div class="yellowInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        黄牌
-      </p>
-    </div>
-
-    <div class="redInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        红牌
-      </p>
-    </div>
-
-  </div>
-
-  <div class="detailedEventData" v-for="(event, index) in eventData" :key="index"
-    :style="{ top: `${index * 2.5 + 31.5}rem` }">
-    <div class="seasonInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.seasonName }}
-      </p>
-    </div>
-
-    <div class="appearanceInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.appearance }}
-      </p>
-    </div>
-
-    <div class="passInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.pass }}
-      </p>
-    </div>
-
-    <div class="shootInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.shoot }}
-      </p>
-    </div>
-
-    <div class="goalInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.goal }}
-      </p>
-    </div>
-
-    <div class="assistInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.assist }}
-      </p>
-    </div>
-
-    <div class="yellowInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.yellow }}
-      </p>
-    </div>
-
-    <div class="redInfo">
-      <p style="position: absolute;left: 50%;  transform: translate(-50%, -50%);">
-        {{ event.red }}
-      </p>
+  <div class="titleContainer">
+    <div class="titleBar"></div>
+    <div class="title">
+      <p style="transform: translateY(-30%); ">赛季数据</p>
     </div>
   </div>
 
-  <div class="relatedPlayerHeader">
-    <p class="header">相关队员</p>
+  <el-table :data="eventData" style="width: 60vw; left: 10vw; top: 70vh;">
+    <el-table-column align="center" prop="seasonName" label="赛季" width="158" />
+    <el-table-column align="center" prop="appearance" label="上场" width="105" />
+    <el-table-column align="center" prop="pass" label="过人" width="105" />
+    <el-table-column align="center" prop="shoot" label="射门" width="105" />
+    <el-table-column align="center" prop="goal" label="进球" width="105" />
+    <el-table-column align="center" prop="assist" label="助攻" width="105" />
+    <el-table-column align="center" prop="yellow" label="黄牌" width="105" />
+    <el-table-column align="center" prop="red" label="红牌" width="105" />
+  </el-table>
+
+  <div class="titleContainer2">
+    <div class="titleBar"></div>
+    <div class="title">
+      <p style="transform: translateY(-30%); ">相关球员</p>
+    </div>
   </div>
 
-  <div class="relatedPlayerData" v-for="(relatedPlayer, index) in relatedPlayers" :key="index" :style="{ top: `${index * 3 + 8.5}rem` }">
-    <div class="relatedPlayerPhotoContainer" ><!--:class="{ oddIndex: index % 2 === 1, evenIndex: index % 2 === 0 }"-->
-      <img class="relatedPlayerPhoto" :src="relatedPlayer.playerPhoto">
-    </div>
+  <el-table :data="relatedPlayers" style="width: 20vw; left: 74vw; top: -20vh;" @row-click="handleRowClick">
 
-    <div class="relatedPlayerNameContainer">
-        {{ relatedPlayer.playerName }}
-    </div>
+    <el-table-column align="right">
+      <template #default="scope">
+        <div>
+          <img :src="scope.row.playerPhoto" alt="Player Photo" class="player-photo">
+        </div>
+      </template>
+    </el-table-column>
 
-    <div class="relatedPlayerPositionContainer" >
-        {{ relatedPlayer.type }}
-    </div>
-
-
-  </div>
+    <el-table-column align="left" prop="playerName" width="150" />
+    <el-table-column align="center" prop="type" width="60" />
+  </el-table>
 </template>
 
 <script>
@@ -188,6 +114,7 @@ export default {
 
   methods: {
     async getPlayerMsg(playerName) {
+      this.playerName = playerName;
       let response;
       try {
         response = await axios.post('/api/updateTeam/getPlayerDetail', {
@@ -223,33 +150,41 @@ export default {
 
     },
 
+    direct2detailedPlayerMsg(topScorerName) {
+      this.$router.push({
+        path: '/detailedPlayerMsg',
+        query: {
+          playerName: topScorerName
+        }
+      });
+      this.getPlayerMsg(topScorerName);
+    },
+
+    handleRowClick(row, event, column) {
+      this.direct2detailedPlayerMsg(row.playerName);
+    },
+
   },
 
   data() {
     return {
-      playerName: 'mhy',
-      enName: '114',
-      playerPhoto: '/src/assets/img/wyh.png',
-      club: '罗德岛',
-      position: '后端',
-      number: '1',
-      nationality: '蒙德',
-      age: '114',
-      height: '150',
-      dominantFoot: '轮椅',
-      shoot: '1',
-      pass:'2',
+      playerName: '',
+      enName: '',
+      playerPhoto: '',
+      club: '',
+      position: '',
+      number: '',
+      nationality: '',
+      age: '',
+      height: '',
+      dominantFoot: '',
+      shoot: '',
+      pass: '',
 
       eventData: ref([
-        { "seasonName": '1-2',  "appearance": 3, "goal": 5, "assist": 6, "yellow": 7, "red": 8 },
-        { "seasonName": '1-2',  "appearance": 3, "goal": 5, "assist": 6, "yellow": 7, "red": 8 },
-
       ]),
 
       relatedPlayers: ref([
-        { "playerPhoto": '/src/assets/img/wyh.png', "playerName": 'wyh', "type": '前端' },
-        { "playerPhoto": '/src/assets/img/wyh.png', "playerName": 'wyh', "type": '前端' },
-
       ]),
 
     }
@@ -260,241 +195,160 @@ export default {
 </script>
 
 <style scoped>
-/* 球员基本信息 */
-.basicinfoContainer {
-  position: absolute;
-  left: 10%;
-  width: 60vw;
-  height: 20vw;
-  flex-shrink: 0;
-  background: rgb(240, 240, 240);
-
-}
-
-.basicInfo {
-  position: absolute;
-  top: 15%;
-  left: 25%;
-  width: 40vw;
-  height: 15vw;
-  flex-shrink: 0;
-  /* 
-
-  background: rgb(221, 245, 251);*/
-
-}
-
-.playerPic {
-  margin-top: 30px;
-  margin-left: 30px;
-  width: 200px;
-  height: 220px;
-}
-
-.eventInfo {
-  position: absolute;
-  top: 55vh;
-  left: 10vw;
-  width: 60vw;
-  height: 10vh;
-  background: rgb(240, 240, 240);
-}
-
-.detailedEventData {
+.playerNameAndIcon {
   position: absolute;
   left: 10vw;
-  background: wheat;
+  width: 60vw;
+  height: 20vh;
+  flex-shrink: 0;
+  background-image: linear-gradient(to right, white 20%, rgba(255, 255, 255, 0.6)), url('/src/assets/img/backgroundPic.png');
+  background-size: cover;
+  /* 可根据需要调整背景大小 */
+  background-repeat: no-repeat;
+  background-position: center;
+  /* 可根据需要调整背景位置 */
+}
+
+.playerIconContainer {
+  position: absolute;
+  left: 3vw;
+  top: 2.5vh;
+  width: 8vw;
+  height: 15vh;
+  flex-shrink: 0;
+}
+
+.playerNameContainer {
+  position: absolute;
+  left: 14vw;
+  top: 4vh;
+  font-size: 2.5vw;
+}
+
+.playerEnnameContainer {
+  position: absolute;
+  left: 14vw;
+  top: 11vh;
+  font-size: 1.5vw;
+}
+
+.playerInfo {
+  position: absolute;
+  left: 10vw;
+  top: 32vh;
+  width: 60vw;
+  height: 35vh;
+  flex-shrink: 0;
 }
 
 /* 信息第一行 */
 .firstBar {
   position: absolute;
-  left: 5vw;
-  top: 9vh;
+  left: 4vw;
+  top: 5vh;
   height: 4vh;
-  width: 36vw;
-  /* 
-  background: rgb(0, 240, 249);*/
+  width: 60vw;
 }
 
 /* 信息第二行 */
 .secondBar {
   position: absolute;
-  left: 5vw;
-  top: 15vh;
+  left: 4vw;
+  top: 11vh;
   height: 4vh;
-  width: 36vw;
-  /* 
-
-  background: rgb(0, 240, 249);*/
+  width: 60vw;
 }
 
 /* 信息第三行 */
 .thirdBar {
   position: absolute;
-  left: 5vw;
-  top: 22vh;
+  left: 4vw;
+  top: 17vh;
   height: 4vh;
-  width: 36vw;
-  /*
+  width: 60vw;
+}
 
-  background: rgb(0, 240, 249); */
+.fourthBar {
+  position: absolute;
+  left: 5vw;
+  top: 23vh;
+  height: 13vh;
+  width: 62vw;
 }
 
 /* 横向第一条 */
 .firstBlock {
   position: absolute;
   left: 1vw;
-  /* 
-
-  background: rgb(255, 255, 255);*/
 }
 
 /* 横向第二条 */
 .secondBlock {
   position: absolute;
-  left: 13vw;
-  /* 
-
-  background: rgb(255, 255, 255);*/
+  left: 16vw;
 }
 
 /* 横向第三条 */
 .thirdBlock {
   position: absolute;
-  left: 25vw;
-  /* 
-
-  background: rgb(255, 255, 255);*/
+  left: 30vw;
 }
 
-.seasonInfo {
+.fourthBarContent {
   position: absolute;
-  width: 11vw;
-  height: 4vh;
+  left: 5.4vw;
+  top: 0vh;
+  height: 13vh;
+  width: 44vw;
 }
 
-.appearanceInfo {
+.briefIntroductionContainer {
   position: absolute;
-  left: 11vw;
+  left: 3vw;
+  top: 23vh;
+  height: 13vh;
+  width: 55vw;
+}
+
+.titleContainer {
+  position: absolute;
+  border: none;
+  top: 70vh;
+  left: 10vw;
   width: 7vw;
-  height: 4vh;
-}
-
-.passInfo {
-  position: absolute;
-  left: 18vw;
-  width: 7vw;
-  height: 4vh;
-}
-
-.shootInfo {
-  position: absolute;
-  left: 25vw;
-  width: 7vw;
-  height: 4vh;
-}
-
-.goalInfo {
-  position: absolute;
-  left: 32vw;
-  width: 7vw;
-  height: 4vh;
-}
-
-.assistInfo {
-  position: absolute;
-  left: 39vw;
-  width: 7vw;
-  height: 4vh;
-}
-
-.yellowInfo {
-  position: absolute;
-  left: 46vw;
-  width: 7vw;
-  height: 4vh;
-}
-
-.redInfo {
-  position: absolute;
-  left: 53vw;
-  width: 7vw;
-  height: 4vh;
-}
-
-.header {
-  position: absolute;
-  font-size: 2vw;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.relatedPlayerHeader {
-  position: absolute;
-  left: 75%;
-  width: 18vw;
-  height: 8vh;
+  height: 6vh;
   background: rgb(240, 240, 240);
 }
 
-.relatedPlayerData {
+.titleBar {
   position: absolute;
-  left: 75%;
-}
-
-.relatedPlayerPhotoContainer {
-  position: absolute;
-  width: 3vw;
-  height: 4vh;
-}
-
-.relatedPlayerPhoto {
-  position: absolute;
-  width: 1.5vw;
+  top: 1.5vh;
+  width: 0.5vw;
   height: 3vh;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  background: aqua;
 }
 
-.relatedPlayerNameContainer {
+.title {
   position: absolute;
-  left: 3vw;
+  left: 1.5vw;
   width: 10vw;
-  height: 4vh;
+  height: 6vh;
 }
 
-.relatedPlayerName {
+.titleContainer2 {
   position: absolute;
-  color: var(--colors-text-dark-172239100, #172239);
-  left: 20%;
-  top: -5%;
-  transform: translate(-50%, -50%);
+  border: none;
+  top: 8vh;
+  left: 75vw;
+  width: 7vw;
+  height: 6vh;
+  background: rgb(240, 240, 240);
 }
 
-.relatedPlayerPositionContainer {
-  position: absolute;
-  left: 15vw;
-  width: 5vw;
-  height: 4vh;
-}
-
-.relatedPlayerName {
-  position: absolute;
-  color: var(--colors-text-dark-172239100, #172239);
-  left: 20%;
-  top: -5%;
-  transform: translate(-50%, -50%);
-}
-
-.oddIndex {
-  background-color: lightblue;
-  /* 奇数行的背景色 */
-}
-
-.evenIndex {
-  background-color: lightpink;
-  /* 偶数行的背景色 */
+.player-photo {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 20%;
 }
 </style>
