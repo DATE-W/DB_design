@@ -33,19 +33,24 @@
                     <el-collapse v-model="activeNames" @change="handleChange">
                         <el-collapse-item name="1">
                             <template #title>
-                                <span style="display: inline-block; min-width: 340px;">积分规则</span>
+                                <span style="display: inline-block; min-width: 320px;">积分规则</span>
                             </template>
                             <div>
-                                每个用户的账号中拥有积分，根据积分的多少将账号的等级分为"平平无奇"、"普通用户"、"一贴成名"、"球场金童"、"明日之星"以及"名人堂"，会在用户的名片上展示对应的称号，其它用户也可以查看。
+                                每个用户的账号中拥有积分，<br>
+                                根据积分的多少将账号的等级分为：<br>
+                                "平平无奇"、"普通用户"、"一贴成名"、<br>
+                                "球场金童"、"明日之星"以及"名人堂"，<br>
+                                会在用户的名片上展示对应的称号，<br>
+                                其它用户也可以查看。
                             </div>
                         </el-collapse-item>
                         <el-collapse-item title="获取方式" name="2">
                             <div>
-                                积分的获取方式如下：
-                                发帖成功+10分;
-                                每日签到+5分;
-                                评论成功+3分;
-                                收藏+1分;
+                                积分的获取方式如下：<br>
+                                发帖成功+10分;<br>
+                                每日签到+5分;<br>
+                                评论成功+3分;<br>
+                                收藏+1分;<br>
                                 点赞+1分
                             </div>
                         </el-collapse-item>
@@ -128,6 +133,7 @@
 }
 
 .user-equity {
+    margin-top: 10px;
     margin-left: 50px;
     max-width: 340px;
 }
