@@ -122,7 +122,8 @@ export default {
 /*发布公告栏*/
 .announcement-tittle{
     font-family: 'Courier New', Courier, monospace;
-    color: #555555;
+    color: #404A57;
+    font-weight: bold;
     font-weight: 2rem;
     font-size: 1.5rem;
     text-align: center;

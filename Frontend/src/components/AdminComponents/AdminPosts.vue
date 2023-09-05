@@ -257,7 +257,7 @@ export default {
                 </el-table-column>
             </el-table>
             <el-container class="all-post" style="overflow-y: auto;overflow-x: hidden;">
-                <span style="position: relative;left:25vw;font-weight: bold;color: #a4a4a4;margin-top: 0.5vh;">全部帖子列表</span>
+                <span style="position: relative;left:25vw;font-weight: bold;color: #404A57;margin-top: 0.5vh;">全部帖子列表</span>
                 <el-container v-for="(post,index) in allPost">
                     <el-container class="single-post">
                         <el-container style="display: flex;justify-content: center;padding-top: 1vh;">
