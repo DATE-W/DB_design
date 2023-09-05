@@ -315,7 +315,6 @@ export default {
   width: 75px;
   height: 75px;
   border-radius: 50%;
-  background-color: #52dcf8;
 }
 
 .league-name {
