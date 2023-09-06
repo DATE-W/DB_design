@@ -116,11 +116,7 @@ namespace DBwebAPI.Controllers
                     post_id = post_id,
                     title = title,
                     publishDateTime = DateTime.Now,
-                    contains = contains,
-                    isBanned = 0,
-                    approvalNum = 0,
-                    disapprovalNum = 0,
-                    favouriteNum = 0
+                    contains = contains
                 };
                 //新建PublishPost
                 PublishPost publishPost = new PublishPost
@@ -162,10 +158,6 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("publishDateTime= " + post.publishDateTime);
                     Console.WriteLine("title= " + post.title);
                     Console.WriteLine("contains= " + post.contains);
-                    Console.WriteLine("isBanned= " + post.isBanned);
-                    Console.WriteLine("approvalNum= " + post.approvalNum);
-                    Console.WriteLine("disapprovalNum= " + post.disapprovalNum);
-                    Console.WriteLine("favouriteNum= " + post.favouriteNum);
                     return Ok(new CustomResponse { ok = "yes", value = "Success" });
                 }
                 else
@@ -937,13 +929,10 @@ namespace DBwebAPI.Controllers
                 List<PublishPost> tempPublicshPosts = new List<PublishPost>();
                 tempPublicshPosts = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //获取新的comment_id
-                int comment_id = sqlORM.Queryable<Comments>().Max(it => it.comment_id) + 1;
                 //解析json文件
                 //新建post
                 Comments comment = new Comments
                 {
-                    comment_id = comment_id,
                     publishDateTime = DateTime.Now,
                     contains = contains,
                     user_id = tempUsr.First().user_id,
