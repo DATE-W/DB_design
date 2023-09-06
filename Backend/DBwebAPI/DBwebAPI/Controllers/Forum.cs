@@ -116,7 +116,10 @@ namespace DBwebAPI.Controllers
                     post_id = post_id,
                     title = title,
                     publishDateTime = DateTime.Now,
-                    contains = contains
+                    contains = contains,
+                    isBanned = 0,
+                    approvalNum = 0,
+                    favouriteNum = 0
                 };
                 //新建PublishPost
                 PublishPost publishPost = new PublishPost
@@ -158,6 +161,9 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("publishDateTime= " + post.publishDateTime);
                     Console.WriteLine("title= " + post.title);
                     Console.WriteLine("contains= " + post.contains);
+                    Console.WriteLine("isBanned= " + post.isBanned);
+                    Console.WriteLine("approvalNum= " + post.approvalNum);
+                    Console.WriteLine("favouriteNum= " + post.favouriteNum);
                     return Ok(new CustomResponse { ok = "yes", value = "Success" });
                 }
                 else
@@ -711,6 +717,7 @@ namespace DBwebAPI.Controllers
         {
             public int user_id { get; set; }
             public string userName { get; set; }
+            public string avatar { get; set; }
             public string contains { get; set; }
             public DateTime publishDateTime { get; set; }
         }
@@ -846,6 +853,7 @@ namespace DBwebAPI.Controllers
                         .ToListAsync();
                     Comment tmpComment = new Comment();
                     tmpComment.user_id = comment.user_id;
+                    tmpComment.avatar = ComUsr.First().avatar;
                     tmpComment.userName = ComUsr.First().userName;
                     tmpComment.contains = comment.contains;
                     tmpComment.publishDateTime = comment.publishDateTime;
