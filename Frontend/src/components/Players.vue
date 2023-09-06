@@ -157,7 +157,7 @@ export default {
         console.log('视频列表为', this.PlayerVideos);
       } catch (err) {
         ElMessage({
-          message: '获取球员剪辑失败',
+          message: '服务器错误，获取球员剪辑失败',
           type: 'error',
         });
       }
@@ -169,7 +169,7 @@ export default {
         this.topScorers = response.data;
       } catch (err) {
         ElMessage({
-          message: '获取射手榜失败',
+          message: '服务器错误，获取射手榜失败',
           type: 'error',
         });
       }
@@ -188,7 +188,7 @@ export default {
         console.log('球队数量为', this.totalTeams);
       } catch (err) {
         ElMessage({
-          message: '获取信息失败',
+          message: '服务器错误，获取球队信息失败',
           type: 'error',
         });
       }
@@ -207,7 +207,7 @@ export default {
         }
       } catch (err) {
         ElMessage({
-          message: '搜索失败',
+          message: '服务器错误，搜索球队失败',
           type: 'error',
         });
       }
@@ -223,7 +223,7 @@ export default {
         this.PlayersinLeague = response.data;
       } catch (err) {
         ElMessage({
-          message: '搜索失败',
+          message: '服务器错误，搜索球员失败',
           type: 'error',
         });
       }
@@ -315,7 +315,6 @@ export default {
   width: 75px;
   height: 75px;
   border-radius: 50%;
-  background-color: #52dcf8;
 }
 
 .league-name {

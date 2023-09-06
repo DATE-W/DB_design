@@ -3,15 +3,19 @@
         <!-- 当前球队展示 -->
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 140px;">
             <div v-if="selectedteam.chinesename !== ''">
-                <div style="font-size: 24px; margin-bottom: 10px;">当前主队</div>
-                <div style="display: flex; align-items: center;">
+                <div style="font-size: 24px; margin-bottom: 10px;display: flex;  justify-content: center;">当前主队</div>
+                <div style="display: flex;  justify-content: center;">
                     <img :src="selectedteam.logo" alt="Selected team" class="team-circle" />
+                </div>
+                <div style="display: flex;  justify-content: center;">
                     <div style="font-size: 20px;">{{ selectedteam.chinesename }}</div>
                 </div>
             </div>
             <div v-else style="font-size: 20px;">暂时没有选择主队</div>
         </div>
-
+        <div class="default-button" v-if="selectedteam.chinesename !== ''">
+            <el-button type="primary" @click="recover" class="default-buttonsize">取消选择主队</el-button>
+        </div>
         <el-divider></el-divider>
 
         <!-- 球队选项 -->
@@ -26,9 +30,7 @@
                 </div>
             </el-col>
         </el-row>
-        <div class="default-button">
-            <el-button type="primary" @click="recover" class="default-buttonsize">取消选择主队</el-button>
-        </div>
+
     </div>
 </template>
   
@@ -176,7 +178,7 @@ export default {
     text-align: center;
     overflow-y: auto;
     /* 添加垂直滚动条 */
-    max-height: 70vh;
+    max-height: 65vh;
     /* 设置最大高度，超过部分会出现滚动条 */
 }
 
@@ -212,9 +214,9 @@ export default {
 }
 
 .default-button {
-    position: fixed;
-    bottom: 100px;
-    right: 150px;
+    display: flex;
+    position: relative;
+    justify-content: flex-end;
 }
 
 .default-buttonsize {

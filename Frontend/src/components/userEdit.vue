@@ -26,6 +26,9 @@
             <div>{{ account }}</div>
         </div>
     </el-card>
+    <div class="submit-button">
+        <el-button type="primary" @click="showSubmitDialog" class="large-button">提交</el-button>
+    </div>
     <el-dialog v-model="dialogVisible" :title="dialogTitle">
         <el-input v-model="tempInput"></el-input>
         <template #footer>
@@ -38,9 +41,6 @@
         </template>
     </el-dialog>
     <!-- 按钮放置在右下角 -->
-    <div class="submit-button">
-        <el-button type="primary" @click="showSubmitDialog" class="large-button">提交</el-button>
-    </div>
 </template>
 
 <script>
@@ -268,9 +268,10 @@ export default {
 
 /* 按钮样式 */
 .submit-button {
-    position: fixed;
-    bottom: 100px;
-    right: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15vh;
 }
 
 /* 新增按钮样式 */

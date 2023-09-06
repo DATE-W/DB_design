@@ -16,6 +16,7 @@
           <el-button type="info" plain @click="selectVideo('意甲')">意甲</el-button>
           <el-button type="warning" plain @click="selectVideo('德甲')">德甲</el-button>
           <el-button type="danger" plain @click="selectVideo('法甲')">法甲</el-button>
+          <el-button plain @click="selectVideo('')">ALL</el-button>
         </el-row>
       </div>
     </el-row>
@@ -125,13 +126,9 @@ export default {
           },
         }); // 发送POST请求，并将请求数据作为 JSON 对象发送
       } catch (error) {
-        console.error(error);
-        ElMessage({
-          message: err.response.data.msg,
-          grouping: false,
-          type: 'error',
-        })
-        return
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       }
       console.log(response.data.value);
       // 将数组存贮于传入的数组名中

@@ -1,6 +1,6 @@
 <template>
   <el-container style="height: 100vh; display: flex; flex-direction: column;">
-    <el-header>
+    <el-header style="padding: 0;">
       <my-nav></my-nav>
     </el-header>
 

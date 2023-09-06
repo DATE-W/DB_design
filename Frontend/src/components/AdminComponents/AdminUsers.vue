@@ -190,13 +190,14 @@ export default {
                     return
                 }
                 console.log("Search From All - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
+                this.AllUsers=[];
                 response.data.forEach(item => {
                         const convertedItem = {
                             user_id: item.user_id,
-                            userName: item.userName,
-                            userPoint: item.userPoint,
-                            regDate: item.regDate,
-                            followedNumber: item.followedNumber || 0
+                            userName: item.username,
+                            userPoint: item.point,
+                            regDate: this.analyse_date(item.createtime),
+                            followedNumber: item.followednum || 0
                         };
                     // 将转换后的数据添加到 AllUsers 数组中
                     this.AllUsers.push(convertedItem);
@@ -204,6 +205,7 @@ export default {
                     this.AllUsers.sort((a, b) => a.user_id - b.user_id);
                 });
             }else{
+                this.AllUsers=[];
                 this.getAllUsers();
             }
             return
@@ -234,13 +236,14 @@ export default {
                     return
                 }
                 console.log("Search From Banned - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
+                this.ReportedUsers=[];
                 response.data.forEach(item => {
                         const convertedItem = {
                             user_id: item.user_id,
                             userName: item.username,
-                            userPoint: item.userpoint,
-                            regDate: this.analyse_date(item.regdate),
-                            followedNumber: item.followednumber
+                            userPoint: item.point,
+                            regDate: this.analyse_date(item.createtime),
+                            followedNumber: item.followednum || 0
                         };
                     // 将转换后的数据添加到 AllUsers 数组中
                     this.ReportedUsers.push(convertedItem);
@@ -248,6 +251,7 @@ export default {
                     this.ReportedUsers.sort((a, b) => a.user_id - b.user_id);
                 });
             }else{
+                this.ReportedUsers=[];
                 this.getReportedUsers();
             }
             return

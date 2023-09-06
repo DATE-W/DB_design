@@ -1,7 +1,7 @@
 <template>
   <div>
     <my-nav></my-nav>
-    <el-main>
+    <el-main style="background-color: #b0d5df;">
       <div class="main-container">
         <!-- Scroll to Top Button -->
         <div @click="scrollToTop" class="scroll-to-top-btn">
@@ -14,7 +14,8 @@
           </div>
         </div>
         <!-- Carousel -->
-        <div style="display: flex; justify-content: center; align-items: center; height: 76vh; width: 100vw;">
+        <div
+          style="display: flex; justify-content: center; align-items: center; height: 76vh; width: 100vw;margin-top: -30px;">
           <el-carousel style="height: 76vh; z-index: 1; width: 86vw; margin: auto; position: relative;" arrow="never">
             <!-- Images to display above the carousel -->
             <div
@@ -31,150 +32,246 @@
             <el-carousel-item v-for="item in 3" :key="item"
               style="width: 86vw; height: 76vh; display: flex; justify-content: center; align-items: center;">
               <img :src="getImageUrl(item)" alt="Carousel Image" class="carousel-image"
-                style="border: 0; width: 100%; height: 90%; object-fit: cover;" />
+                style="border: 0; width: 100%; height: 90%; object-fit: cover; border-radius: 15px;" />
             </el-carousel-item>
           </el-carousel>
         </div>
-        <div class="top-section">
-          <!-- 赛事信息筛选菜单 -->
-          <el-menu class="Games-menu" mode="horizontal" @select="handleMenuSelect">
-            <div class="menu-wrapper">
-              <el-menu-item class="menu-item" index="2">
-                <div class="menu-item-content">
+        <div class="content-wrapper">
+          <div class="top-section">
+            <!-- 赛事信息筛选菜单 -->
+            <el-menu class="Games-menu">
+              <div class="menu-wrapper">
+                <el-menu-item index="2">
                   <p class="menu-title" @click="selectLeague('中超')">{{ $t('CSL') }}</p>
-                </div>
-              </el-menu-item>
-              <el-menu-item class="menu-item" index="3">
-                <div class="menu-item-content">
+                </el-menu-item>
+                <el-menu-item index="3">
                   <p class="menu-title" @click="selectLeague('英超')">{{ $t('PL') }}</p>
-                </div>
-              </el-menu-item>
-              <el-menu-item class="menu-item" index="4">
-                <div class="menu-item-content">
+                </el-menu-item>
+                <el-menu-item index="4">
                   <p class="menu-title" @click="selectLeague('意甲')">{{ $t('SA') }}</p>
-                </div>
-              </el-menu-item>
-              <el-menu-item class="menu-item" index="5">
-                <div class="menu-item-content">
+                </el-menu-item>
+                <el-menu-item index="5">
                   <p class="menu-title" @click="selectLeague('西甲')">{{ $t('LL') }}</p>
-                </div>
-              </el-menu-item>
-              <el-menu-item class="menu-item" index="6">
-                <div class="menu-item-content">
+                </el-menu-item>
+                <el-menu-item index="6">
                   <p class="menu-title" @click="selectLeague('德甲')">{{ $t('BL') }}</p>
-                </div>
-              </el-menu-item>
-              <el-menu-item class="menu-item" index="7">
-                <div class="menu-item-content">
+                </el-menu-item>
+                <el-menu-item index="7">
                   <p class="menu-title" @click="selectLeague('法甲')">{{ $t('L1') }}</p>
-                </div>
-              </el-menu-item>
-              <el-menu-item class="menu-item" index="8" @click="redirectToGames">
-                <div class="menu-item-content">
+                </el-menu-item>
+                <el-menu-item index="8" @click="redirectToGames">
                   <p class="menu-title">{{ $t('MORE') }}</p>
-                </div>
-              </el-menu-item>
+                </el-menu-item>
+              </div>
+            </el-menu>
+            <!-- 赛事信息卡片 -->
+            <div v-if="selectedLeague === '中超' || selectedLeague === ''">
+              <el-row class="Game-col-container">
+                <el-card shadow="hover" class="game-card" v-for="(game, index) in ZCgame_id" :key="game.id"
+                  style="border-radius: 0.3vw; border: none; margin: 0.667vw; background-color: #f1f0ed;"
+                  @click="goToGameDetail(ZCgame_id[index])">
+                  <div class="game-content">
+                    <div class="game-header">
+                      <!-- 时间在左上方 -->
+                      <div class="column-time">{{ ZCgame_time[index] }}</div>
+                      <!-- 比赛状态在右上方 -->
+                      <div class="column-status">
+                        {{ ZCgame_status[index] === 'Played' ? '已结束' : ZCgame_status[index] }}
+                      </div>
+                    </div>
+                    <div>
+                      <div class="game-row">
+                        <div class="team-cell">
+                          <img :src="ZCteam1_logo[index]" alt="Logo Image" class="logo-image">
+                        </div>
+                        <div class="team-cell">{{ ZCteam1_name[index] }}</div>
+                        <div class="team-cell">{{ ZCteam1_score[index] }}</div>
+                      </div>
+                      <div class="game-row-2">
+                        <div class="team-cell">
+                          <img :src="ZCteam2_logo[index]" alt="Logo Image" class="logo-image">
+                        </div>
+                        <div class="team-cell">{{ ZCteam2_name[index] }}</div>
+                        <div class="team-cell">{{ ZCteam2_score[index] }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </el-card>
+              </el-row>
             </div>
-          </el-menu>
-
-          <!-- 赛事信息卡片 -->
-          <div v-if="selectedLeague === '中超' || selectedLeague === ''">
-            <el-row class="Game-col-container">
-              <el-card shadow="hover" class="Game-card" v-for="(game, index) in ZCgame_id" :key="game.id"
-                style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
-                <div class="Game-content">
-                  <div class="column-status" style="padding-bottom: 0.5rem;">
-                    {{ ZCgame_status[index] === 'Played' ? '已结束' : ZCgame_status[index] }}
+            <div v-if="selectedLeague === '英超'">
+              <el-row class="Game-col-container">
+                <el-card shadow="hover" class="game-card" v-for="(game, index) in YCgame_id" :key="game.id"
+                  style="border-radius: 0.3vw; border: none; margin: 0.667vw;background-color: #f1f0ed;"
+                  @click="goToGameDetail(YCgame_id[index])">
+                  <div class="game-content">
+                    <div class="game-header">
+                      <!-- 时间在左上方 -->
+                      <div class="column-time">{{ YCgame_time[index] }}</div>
+                      <!-- 比赛状态在右上方 -->
+                      <div class="column-status">
+                        {{ YCgame_status[index] === 'Played' ? '已结束' : YCgame_status[index] }}
+                      </div>
+                    </div>
+                    <div>
+                      <div class="game-row">
+                        <div class="team-cell">
+                          <img :src="YCteam1_logo[index]" alt="Logo Image" class="logo-image">
+                        </div>
+                        <div class="team-cell">{{ YCteam1_name[index] }}</div>
+                        <div class="team-cell">{{ YCteam1_score[index] }}</div>
+                      </div>
+                      <div class="game-row-2">
+                        <div class="team-cell">
+                          <img :src="YCteam2_logo[index]" alt="Logo Image" class="logo-image">
+                        </div>
+                        <div class="team-cell">{{ YCteam2_name[index] }}</div>
+                        <div class="team-cell">{{ YCteam2_score[index] }}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
-                  <div class="column-team1">{{ ZCteam1_name[index] }} {{ ZCteam1_score[index] }}</div>
-                  <div class="column-team1">{{ ZCteam2_name[index] }} {{ ZCteam2_score[index] }}</div>
-                  <el-button class="button" @click="goToGameDetail(ZCgame_id[index])" text>详细赛事信息</el-button>
-                </div>
-              </el-card>
-            </el-row>
-          </div>
-          <div v-if="selectedLeague === '英超'">
-            <el-row class="Game-col-container">
-              <el-card shadow="hover" class="Game-card" v-for="(game, index) in YCgame_id" :key="game.id"
-                style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
-                <div class="Game-content">
-                  <div class="column-status" style="padding-bottom: 0.5rem;">
-                    {{ YCgame_status[index] === 'Played' ? '已结束' : YCgame_status[index] }}
+                </el-card>
+              </el-row>
+            </div>
+            <div v-if="selectedLeague === '意甲'">
+              <el-row class="Game-col-container">
+                <el-card shadow="hover" class="game-card" v-for="(game, index) in YJgame_id" :key="game.id"
+                  style="border-radius: 0.3vw; border: none; margin: 0.667vw;background-color: #f1f0ed;"
+                  @click="goToGameDetail(YJgame_id[index])">
+                  <div class="game-content">
+                    <div class="game-header">
+                      <!-- 时间在左上方 -->
+                      <div class="column-time">{{ YJgame_time[index] }}</div>
+                      <!-- 比赛状态在右上方 -->
+                      <div class="column-status">
+                        {{ YJgame_status[index] === 'Played' ? '已结束' : YJgame_status[index] }}
+                      </div>
+                    </div>
+                    <div>
+                      <div class="game-row">
+                        <div class="team-cell">
+                          <img :src="YJteam1_logo[index]" alt="Logo Image" class="logo-image">
+                        </div>
+                        <div class="team-cell">{{ YJteam1_name[index] }}</div>
+                        <div class="team-cell">{{ YJteam1_score[index] }}</div>
+                      </div>
+                      <div class="game-row-2">
+                        <div class="team-cell">
+                          <img :src="YJteam2_logo[index]" alt="Logo Image" class="logo-image">
+                        </div>
+                        <div class="team-cell">{{ YJteam2_name[index] }}</div>
+                        <div class="team-cell">{{ YJteam2_score[index] }}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
-                  <div class="column-team1">{{ YCteam1_name[index] }} {{ YCteam1_score[index] }}</div>
-                  <div class="column-team1">{{ YCteam2_name[index] }} {{ YCteam2_score[index] }}</div>
-                  <el-button class="button" @click="goToGameDetail(YCgame_id[index])" text>详细赛事信息</el-button>
-                </div>
-              </el-card>
-            </el-row>
-          </div>
-          <div v-if="selectedLeague === '意甲'">
-            <el-row class="Game-col-container">
-              <el-card shadow="hover" class="Game-card" v-for="(game, index) in YJgame_id" :key="game.id"
-                style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
-                <div class="Game-content">
-                  <div class="column-status" style="padding-bottom: 0.5rem;">
-                    {{ YJgame_status[index] === 'Played' ? '已结束' : YJgame_status[index] }}
+                </el-card>
+              </el-row>
+            </div>
+            <div v-if="selectedLeague === '西甲'">
+              <el-row class="Game-col-container">
+                <el-card shadow="hover" class="game-card" v-for="(game, index) in XJgame_id" :key="game.id"
+                  style="border-radius: 0.3vw; border: none; margin: 0.667vw;background-color: #f1f0ed;"
+                  @click="goToGameDetail(XJgame_id[index])">
+                  <div class="game-content">
+                    <div class="game-header">
+                      <!-- 时间在左上方 -->
+                      <div class="column-time">{{ XJgame_time[index] }}</div>
+                      <!-- 比赛状态在右上方 -->
+                      <div class="column-status">
+                        {{ XJgame_status[index] === 'Played' ? '已结束' : XJgame_status[index] }}
+                      </div>
+                    </div>
+                    <div>
+                      <div class="game-row">
+                        <div class="team-cell">
+                          <img :src="XJteam1_logo[index]" alt="Logo Image" class="logo-image">
+                        </div>
+                        <div class="team-cell">{{ XJteam1_name[index] }}</div>
+                        <div class="team-cell">{{ XJteam1_score[index] }}</div>
+                      </div>
+                      <div class="game-row-2">
+                        <div class="team-cell">
+                          <img :src="XJteam2_logo[index]" alt="Logo Image" class="logo-image">
+                        </div>
+                        <div class="team-cell">{{ XJteam2_name[index] }}</div>
+                        <div class="team-cell">{{ XJteam2_score[index] }}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
-                  <div class="column-team1">{{ YJteam1_name[index] }} {{ YJteam1_score[index] }}</div>
-                  <div class="column-team1">{{ YJteam2_name[index] }} {{ YJteam2_score[index] }}</div>
-                  <el-button class="button" @click="goToGameDetail(YJgame_id[index])" text>详细赛事信息</el-button>
-                </div>
-              </el-card>
-            </el-row>
-          </div>
-          <div v-if="selectedLeague === '西甲'">
-            <el-row class="Game-col-container">
-              <el-card shadow="hover" class="Game-card" v-for="(game, index) in XJgame_id" :key="game.id"
-                style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
-                <div class="Game-content">
-                  <div class="column-status" style="padding-bottom: 0.5rem;">
-                    {{ XJgame_status[index] === 'Played' ? '已结束' : XJgame_status[index] }}
+                </el-card>
+              </el-row>
+            </div>
+            <div v-if="selectedLeague === '德甲'">
+              <el-row class="Game-col-container">
+                <el-card shadow="hover" class="game-card" v-for="(game, index) in DJgame_id" :key="game.id"
+                  style="border-radius: 0.3vw; border: none; margin: 0.667vw;background-color: #f1f0ed;"
+                  @click="goToGameDetail(DJgame_id[index])">
+                  <div class="game-content">
+                    <div class="game-header">
+                      <!-- 时间在左上方 -->
+                      <div class="column-time">{{ DJgame_time[index] }}</div>
+                      <!-- 比赛状态在右上方 -->
+                      <div class="column-status">
+                        {{ DJgame_status[index] === 'Played' ? '已结束' : DJgame_status[index] }}
+                      </div>
+                    </div>
+                    <div>
+                      <div class="game-row">
+                        <div class="team-cell">
+                          <img :src="DJteam1_logo[index]" alt="Logo Image" class="logo-image">
+                        </div>
+                        <div class="team-cell">{{ DJteam1_name[index] }}</div>
+                        <div class="team-cell">{{ DJteam1_score[index] }}</div>
+                      </div>
+                      <div class="game-row-2">
+                        <div class="team-cell">
+                          <img :src="DJteam2_logo[index]" alt="Logo Image" class="logo-image">
+                        </div>
+                        <div class="team-cell">{{ DJteam2_name[index] }}</div>
+                        <div class="team-cell">{{ DJteam2_score[index] }}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
-                  <div class="column-team1">{{ XJteam1_name[index] }} {{ XJteam1_score[index] }}</div>
-                  <div class="column-team1">{{ XJteam2_name[index] }} {{ XJteam2_score[index] }}</div>
-                  <el-button class="button" @click="goToGameDetail(XJgame_id[index])" text>详细赛事信息</el-button>
-                </div>
-              </el-card>
-            </el-row>
-          </div>
-          <div v-if="selectedLeague === '德甲'">
-            <el-row class="Game-col-container">
-              <el-card shadow="hover" class="Game-card" v-for="(game, index) in DJgame_id" :key="game.id"
-                style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
-                <div class="Game-content">
-                  <div class="column-status" style="padding-bottom: 0.5rem;">
-                    {{ DJgame_status[index] === 'Played' ? '已结束' : DJgame_status[index] }}
+                </el-card>
+              </el-row>
+            </div>
+            <div v-if="selectedLeague === '法甲'">
+              <el-row class="Game-col-container">
+                <el-card shadow="hover" class="game-card" v-for="(game, index) in FJgame_id" :key="game.id"
+                  style="border-radius: 0.3vw; border: none; margin: 0.667vw;background-color: #f1f0ed;"
+                  @click="goToGameDetail(FJgame_id[index])">
+                  <div class="game-content">
+                    <div class="game-header">
+                      <!-- 时间在左上方 -->
+                      <div class="column-time">{{ FJgame_time[index] }}</div>
+                      <!-- 比赛状态在右上方 -->
+                      <div class="column-status">
+                        {{ FJgame_status[index] === 'Played' ? '已结束' : FJgame_status[index] }}
+                      </div>
+                    </div>
+                    <div>
+                      <div class="game-row">
+                        <div class="team-cell">
+                          <img :src="FJteam1_logo[index]" alt="Logo Image" class="logo-image">
+                        </div>
+                        <div class="team-cell">{{ FJteam1_name[index] }}</div>
+                        <div class="team-cell">{{ FJteam1_score[index] }}</div>
+                      </div>
+                      <div class="game-row-2">
+                        <div class="team-cell">
+                          <img :src="FJteam2_logo[index]" alt="Logo Image" class="logo-image">
+                        </div>
+                        <div class="team-cell">{{ FJteam2_name[index] }}</div>
+                        <div class="team-cell">{{ FJteam2_score[index] }}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
-                  <div class="column-team1">{{ DJteam1_name[index] }} {{ DJteam1_score[index] }}</div>
-                  <div class="column-team1">{{ DJteam2_name[index] }} {{ DJteam2_score[index] }}</div>
-                  <el-button class="button" @click="goToGameDetail(DJgame_id[index])" text>详细赛事信息</el-button>
-                </div>
-              </el-card>
-            </el-row>
-          </div>
-          <div v-if="selectedLeague === '法甲'">
-            <el-row class="Game-col-container">
-              <el-card shadow="hover" class="Game-card" v-for="(game, index) in FJgame_id" :key="game.id"
-                style="border-radius: 1.333vw; border: none; margin: 0.667vw;background-color: #d7ecffca;">
-                <div class="Game-content">
-                  <div class="column-status" style="padding-bottom: 0.5rem;">
-                    {{ FJgame_status[index] === 'Played' ? '已结束' : FJgame_status[index] }}
-                  </div>
-                  <div class="column-time" style="padding-bottom: 0.5rem;">{{ ZCgame_time[index] }}</div>
-                  <div class="column-team1">{{ FJteam1_name[index] }} {{ FJteam1_score[index] }}</div>
-                  <div class="column-team1">{{ FJteam2_name[index] }} {{ FJteam2_score[index] }}</div>
-                  <el-button class="button" @click="goToGameDetail(FJgame_id[index])" text>详细赛事信息</el-button>
-                </div>
-              </el-card>
-            </el-row>
+                </el-card>
+              </el-row>
+            </div>
           </div>
         </div>
+
         <!-- 下中半部分 -->
         <div class="bottom-middle-section">
           <!-- 左侧新闻板块 -->
@@ -321,6 +418,8 @@ export default {
       ZCgame_kind: [],
       ZCteam1_name: [],
       ZCteam2_name: [],
+      ZCteam1_logo: [],
+      ZCteam2_logo: [],
       ZCteam1_score: [],
       ZCteam2_score: [],
       ZCgame_time: [],
@@ -330,6 +429,8 @@ export default {
       YCgame_kind: [],
       YCteam1_name: [],
       YCteam2_name: [],
+      YCteam1_logo: [],
+      YCteam2_logo: [],
       YCteam1_score: [],
       YCteam2_score: [],
       YCgame_time: [],
@@ -339,6 +440,8 @@ export default {
       YJgame_kind: [],
       YJteam1_name: [],
       YJteam2_name: [],
+      YJteam1_logo: [],
+      YJteam2_logo: [],
       YJteam1_score: [],
       YJteam2_score: [],
       YJgame_time: [],
@@ -348,6 +451,8 @@ export default {
       DJgame_kind: [],
       DJteam1_name: [],
       DJteam2_name: [],
+      DJteam1_logo: [],
+      DJteam2_logo: [],
       DJteam1_score: [],
       DJteam2_score: [],
       DJgame_time: [],
@@ -357,6 +462,8 @@ export default {
       XJgame_kind: [],
       XJteam1_name: [],
       XJteam2_name: [],
+      XJteam1_logo: [],
+      XJteam2_logo: [],
       XJteam1_score: [],
       XJteam2_score: [],
       XJgame_time: [],
@@ -366,6 +473,8 @@ export default {
       FJgame_kind: [],
       FJteam1_name: [],
       FJteam2_name: [],
+      FJteam1_logo: [],
+      FJteam2_logo: [],
       FJteam1_score: [],
       FJteam2_score: [],
       FJgame_time: [],
@@ -465,6 +574,8 @@ export default {
             this.ZCgame_id.push(postInfo.gameUid);
             this.ZCteam1_name.push(postInfo.homeTeamName);
             this.ZCteam2_name.push(postInfo.guestTeamName);
+            this.ZCteam1_logo.push(postInfo.homeTeamLogo);
+            this.ZCteam2_logo.push(postInfo.guestTeamLogo);
             this.ZCteam1_score.push(postInfo.homeScore);
             this.ZCteam2_score.push(postInfo.guestScore);
             this.ZCgame_time.push(postInfo.gameTime);
@@ -475,6 +586,8 @@ export default {
             this.YCgame_id.push(postInfo.gameUid);
             this.YCteam1_name.push(postInfo.homeTeamName);
             this.YCteam2_name.push(postInfo.guestTeamName);
+            this.YCteam1_logo.push(postInfo.homeTeamLogo);
+            this.YCteam2_logo.push(postInfo.guestTeamLogo);
             this.YCteam1_score.push(postInfo.homeScore);
             this.YCteam2_score.push(postInfo.guestScore);
             this.YCgame_time.push(postInfo.gameTime);
@@ -485,6 +598,8 @@ export default {
             this.YJgame_id.push(postInfo.gameUid);
             this.YJteam1_name.push(postInfo.homeTeamName);
             this.YJteam2_name.push(postInfo.guestTeamName);
+            this.YJteam1_logo.push(postInfo.homeTeamLogo);
+            this.YJteam2_logo.push(postInfo.guestTeamLogo);
             this.YJteam1_score.push(postInfo.homeScore);
             this.YJteam2_score.push(postInfo.guestScore);
             this.YJgame_time.push(postInfo.gameTime);
@@ -495,6 +610,8 @@ export default {
             this.XJgame_id.push(postInfo.gameUid);
             this.XJteam1_name.push(postInfo.homeTeamName);
             this.XJteam2_name.push(postInfo.guestTeamName);
+            this.XJteam1_logo.push(postInfo.homeTeamLogo);
+            this.XJteam2_logo.push(postInfo.guestTeamLogo);
             this.XJteam1_score.push(postInfo.homeScore);
             this.XJteam2_score.push(postInfo.guestScore);
             this.XJgame_time.push(postInfo.gameTime);
@@ -505,6 +622,8 @@ export default {
             this.DJgame_id.push(postInfo.gameUid);
             this.DJteam1_name.push(postInfo.homeTeamName);
             this.DJteam2_name.push(postInfo.guestTeamName);
+            this.DJteam1_logo.push(postInfo.homeTeamLogo);
+            this.DJteam2_logo.push(postInfo.guestTeamLogo);
             this.DJteam1_score.push(postInfo.homeScore);
             this.DJteam2_score.push(postInfo.guestScore);
             this.DJgame_time.push(postInfo.gameTime);
@@ -515,6 +634,8 @@ export default {
             this.FJgame_id.push(postInfo.gameUid);
             this.FJteam1_name.push(postInfo.homeTeamName);
             this.FJteam2_name.push(postInfo.guestTeamName);
+            this.FJteam1_logo.push(postInfo.homeTeamLogo);
+            this.FJteam2_logo.push(postInfo.guestTeamLogo);
             this.FJteam1_score.push(postInfo.homeScore);
             this.FJteam2_score.push(postInfo.guestScore);
             this.FJgame_time.push(postInfo.gameTime);
@@ -644,23 +765,28 @@ export default {
 
 .top-section {
   width: 86vw;
+  margin-top: 25px;
 }
 
 /* 赛事种类选择栏 */
 .Games-menu {
   padding: 1.333vw;
-  background-color: #78b9fa;
+  background-color: #f1f0ed;
+  border-radius: 30px;
 }
 
 .el-menu-item {
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: background-color 0.8s ease;
+  transition: transform 0.5s ease;
 }
 
 .el-menu-item:hover {
-  transform: scale(1.05);
+  transform: scale(1.15);
+  background-color: #b9dec9;
+}
+
+.el-menu-item.is-active .menu-title {
+  color: #3ba7ea;
 }
 
 .menu-wrapper {
@@ -681,29 +807,75 @@ export default {
   padding: 1.333vw;
   border-radius: 1.067vw;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.menu-title:hover {
-  color: #409EFF;
 }
 
 /* 赛事信息卡片 */
 .Game-col-container {
+  margin-top: -20px;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
   padding-top: 1.333vw;
-  padding-bottom: 1.333vw;
+  padding-bottom: 0.333vw;
   /* 防止列折行 */
 }
 
-.Game-col {
-  flex: 0 0 20%;
-  /* 一行显示六个列，每个列占比16.66% */
-  padding: 1.333vw;
+.content-wrapper {
+  background-color: #ede3e7;
+  border-radius: 10px;
+  margin: 10px;
 }
 
+.game-card {
+  width: 725px;
+  height: 150px;
+}
+
+.game-card:hover {
+  cursor: pointer;
+}
+
+.game-content {
+  text-align: center;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.column-time {
+  font-size: 0.9rem;
+}
+
+.column-status {
+  font-size: 0.9rem;
+}
+
+.game-row {
+  display: grid;
+  grid-template-columns: 1fr 2.5fr 1fr;
+  align-items: center;
+}
+
+.game-row-2 {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 2.5fr 1fr;
+  align-items: center;
+}
+
+.team-cell {
+  text-align: center;
+}
+
+.logo-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
 
 .bottom-middle-section {
   display: flex;
@@ -849,8 +1021,8 @@ export default {
 .hot-posts {
   font-size: 3.5vw;
   font-weight: bold;
-  color: #4fb3ffc7;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  color: #2f2f35;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
   display: flex;
   justify-content: center;
@@ -871,8 +1043,8 @@ export default {
 .hot-news {
   font-size: 3.5vw;
   font-weight: bold;
-  color: #4fb3ffc7;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  color: #2f2f35;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
   display: flex;
   justify-content: center;
@@ -1026,7 +1198,7 @@ export default {
   position: relative;
   text-align: center;
   padding: 20px;
-  background-color: rgb(241, 204, 253);
+  background-color: #f8f4ed;
   border: 1px solid #ccc;
   border-radius: 10px;
   width: 30%;

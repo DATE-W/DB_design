@@ -1,4 +1,4 @@
-<!-- 发帖界面v2.2 -->
+<!-- 发帖界面v2.3 -->
 <template>
   <div class="common-layout">
     <my-nav></my-nav>
@@ -150,11 +150,25 @@ export default {
       }
     },
     async post_to_forum() {
+      // 首先去除标题和内容两端的空格
+      const trimmedTitle = this.postTitle.trim();
+      const trimmedText = this.postText.trim();
+
+      // 判断标题和内容是否为空
+      if (trimmedTitle === '' || trimmedText === '') {
+        this.$message({
+          message: '标题和内容均不能为空',
+          type: 'error',
+        });
+        return; // 如果标题或内容为空，不继续执行发帖操作
+      }
+
       if (this.selectedPics.length > 0) {
         await this.submitPics();
-      };
+      }
+
       const token = localStorage.getItem('token');
-      let response
+      let response;
       try {
         const headers = {
           Authorization: `Bearer ${token}`,
@@ -172,16 +186,16 @@ export default {
             message: err.response.data.msg,
             grouping: false,
             type: 'error',
-          })
+          });
         } else {
           ElMessage({
-            message: '未知错误',
+            message: '发帖失败',
             grouping: false,
             type: 'error',
-          })
-          return
+          });
+          return;
         }
-        return
+        return;
       }
       if (response.data.ok == 'yes') {
         ElMessageBox.alert('发帖成功', '提示', {
@@ -190,8 +204,7 @@ export default {
             this.$router.push('/forum');
           }
         });
-      }
-      else {
+      } else {
         ElMessage({
           message: '发帖失败',
           grouping: false,
@@ -210,7 +223,7 @@ export default {
       } catch (err) {
         console.log(err);
         ElMessage({
-          message: '未知错误',
+          message: '上传图片失败',
           grouping: false,
           type: 'error',
         })

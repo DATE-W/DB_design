@@ -1,4 +1,4 @@
-<!-- 2154314_郑楷_赛事列表 2023.08.28 14:40 v2.2.0
+<!-- 2154314_郑楷_赛事列表 2023.09.05 20:30 v3.0.0
  v1.0.0 页面画了一半 
   v1.1.0 画出了左侧的联赛选择器（未添加逻辑），布局了中部的比赛列表（已添加跳转逻辑），增加了各大联赛LOGO素材图，日期选择器和广告区待实现
   v1.2.0 优化了联赛选择器组件的代码、视觉效果、功能、数据通路
@@ -10,7 +10,8 @@
   v1.8.0 调用获取当前用户状态的接口，未登录时跳转到登陆界面 
  v2.0.0 正式版首版，所有功能均已完成，删去了冗余代码
   v2.1.0 优化主队近期赛事板块，在用户无主队时跳转到设置主队界面
-  v2.2.0 显示主队按钮优化，bug修复 -->
+  v2.2.0 显示主队按钮优化，bug修复
+ v3.0.0 正式版再版，重新调整元素布局，修改所有样式，增加列表的相对页面滚动功能 -->
 
 <template>
   <my-nav></my-nav>
@@ -19,31 +20,38 @@
   </div> -->
 
   <!-- 左侧联赛选择器 -->
-  <div class="borderBoxLeft" style="left:5rem;">
+  <div class="borderBoxLeft" style="left:4.5rem;">
     <!-- 使用v-for指令循环生成联赛选择器内容 -->
     <div class="borderBoxLeague" v-for="(league, index) in leagues" :key="index"
-      :style="{ top: `${index * 5.4 + 1.9}rem`, background: ((index == league11) ? 'rgb(255, 160, 187)' : '') }"
+      :style="{ left: `${index * 12 + 1.5}rem`, background: ((index == league11) ? 'rgb(255, 160, 187)' : '') }"
       @click="leagueChoice(index)">
       <!-- 插入联赛LOGO图片 -->
       <img v-if="league.logo" :src="league.logo" class="imgLogo">
       <!-- 将top值调整为合适的位置，同时调整“全部赛事”和“其他赛事”的位置 -->
-      <p class="textTypoLeague" :style="{ top: '-1.5rem', left: ((0 == index || 7 == index) ? '2.5rem' : '6rem') }">{{
+      <p class="textTypoLeague" :style="{ top: '-1.5rem', left: ((0 == index || 7 == index) ? '1.6rem' : '5.3rem') }">{{
         league.name }}
       </p>
     </div>
   </div>
 
-  <!-- 中间列时间与赛事列表 -->
-  <div class="borderBoxMid" style="left:27rem">
-
+  <div class="timePickBox">
     <!-- test -->
-    <p class="textTypoLeague" style="left:0rem;width:30rem;">当前选择日期: {{ date11 }}</p>
+    <span class="textTypoLeague" style="top:0.5rem;left:3rem;width:30rem;">当前选择日期: {{ date11 }}</span>
+    <!-- 日期选择器 -->
+    <el-date-picker v-model="date11" type="date" placeholder="日期选择" :size="large" value-format="YYYY-MM-DD"
+      style="left:38.5rem;top:1rem"
+      @change="this.getMatches(this.date11, this.league11); console.log(this.matches.length);" />
+  </div>
 
-    <el-empty v-show="!matches.length" description="本日暂无赛事" style="margin-top: 10rem;" />
+  <!-- 中间列时间与赛事列表 -->
+  <div class="borderBoxMid" style="left:23rem;top:17rem">
+
+    <el-empty v-show="!matches.length" description="本日暂无赛事" style="margin-top: 2rem;" />
+
 
     <!-- 使用v-for循环生成赛事列表 -->
     <div class="borderBoxMatch" v-for="(match, index) in matches" :key="match.gameUid"
-      :style="{ top: `${index * 6 + 5}rem` }">
+      :style="{ top: `${index * 6 + 0.2}rem` }">
       <!-- 根据matches数据渲染赛事列表的内容 -->
       <div class="imgBox">
         <img :src="match.homeLogo">
@@ -60,19 +68,16 @@
         <p class="textTypoMatchTeam" style="left:auto;right:1rem">{{ match.guestTeamName }}</p>
         <p class="textTypoMatchStatus">{{ getMatchStatus(match.status) }}</p>
       </div>
+
     </div>
 
   </div>
   <!-- 右侧上方日期选择器容器 -->
-  <div class="borderBoxRightTop" style="left:74rem">
-    <!-- 日期选择器 -->
-    <el-date-picker v-model="date11" type="date" placeholder="日期选择" :size="large" value-format="YYYY-MM-DD"
-      style="left:1.5rem;top:5rem"
-      @change="this.getMatches(this.date11, this.league11); console.log(this.matches.length);" />
-  </div>
+  <!-- <div class="borderBoxRightTop" style="left:74rem;top:10rem;">
+  </div> -->
 
   <!-- 右侧下方主队容器 -->
-  <div class="borderBoxRightAD" style="left:74rem;">
+  <div class="borderBoxRightAD" style="left:68rem;">
     <!-- <button @click="console.log(recentMatches);">1</button>
     <button @click="getRecentMatches('利物浦');">2</button> -->
     <div class="showMainTeam" v-show="mainTeamButton" @click="mainTeamButtonAction">
@@ -90,9 +95,9 @@
       </div>
     </div>
     <div v-show="this.onAccount && this.mainTeam && (!mainTeamButton)">
-      <p class="textTypoLeague" style="left:0rem;width:20rem;top:-3rem">主队: {{ mainTeam }}</p>
+      <p class="textTypoLeague" style="right:1rem;width:20rem;top:0rem">主队: {{ mainTeam }}</p>
       <div class="borderBoxRecentMatch" v-for="(recentMatch, index) in recentMatches" :key="recentMatch.gameUid"
-        :style="{ top: `${index * 5.5 + 3}rem` }">
+        :style="{ top: `${index * 6 + 6.3}rem` }">
         <!-- <p>{{ recentMatch.gameUid }}</p> -->
         <div class="imgBox">
           <img :src="recentMatch.opponentLogo">
@@ -340,25 +345,44 @@ export default {
 /* 左侧容器框 */
 .borderBoxLeft {
   position: absolute;
-  width: 15rem;
-  height: 40.5rem;
+  top: 4.5rem;
+  width: 86rem;
+  height: 5rem;
   flex-shrink: 0;
   /* 正式版本 */
-  background: rgb(240, 240, 240);
+  background: white;
   /* 测试版本 */
   /* background: rgb(21, 227, 227); */
+  border: 2px solid #EAEAEA;
+  border-radius: 14px;
+}
+
+.timePickBox {
+  width: 55rem;
+  height: 4rem;
+  background-color: white;
+  top: 11rem;
+  left: 10rem;
+  position: absolute;
+  border: 2px solid #EAEAEA;
+  border-radius: 14px;
 }
 
 /* 中部容器框 */
 .borderBoxMid {
   position: absolute;
-  width: 40rem;
-  height: 40rem;
+  width: 42rem;
+  height: 29rem;
   flex-shrink: 0;
   /* 正式版本 */
   background: white;
   /* 测试版本 */
   /* background: aqua; */
+  overflow-y: auto;
+}
+
+.borderBoxMid::-webkit-scrollbar {
+  width: 0;
 }
 
 /* 右侧上方容器框 */
@@ -376,10 +400,10 @@ export default {
 /* 右侧下方容器框 */
 .borderBoxRightAD {
   position: absolute;
-  width: 17rem;
-  height: 20rem;
+  width: 19rem;
+  height: 25rem;
   flex-shrink: 0;
-  top: 20rem;
+  top: 11rem;
   /* 正式版本 */
 
   /* 测试版本 */
@@ -398,7 +422,7 @@ export default {
   left: 0rem;
   top: 4rem;
   width: 10rem;
-  height: 5.5rem;
+  height: 7rem;
   background-color: white;
   /* background-color: aqua; */
 }
@@ -406,12 +430,12 @@ export default {
 /* 联赛选择按钮 */
 .borderBoxLeague {
   position: absolute;
-  width: 13rem;
+  width: 11rem;
   height: 4rem;
   flex-shrink: 0;
   border-radius: 1.5rem;
   border: 1px solid var(--colors-light-eaeaea-100, #EAEAEA);
-  left: 1rem;
+  top: 0.5rem;
   background-color: #ffffff;
   transition: background-color 0.8s ease;
 }
@@ -455,8 +479,8 @@ export default {
   width: 17rem;
   height: 9rem;
   flex-shrink: 0;
-  border-radius: 1.5rem;
-  border: 0.05rem solid var(--colors-light-eaeaea-100, #d1d1d1);
+  border: 2px solid #EAEAEA;
+  border-radius: 14px;
   background: white;
   display: flex;
   justify-content: center;
@@ -467,7 +491,7 @@ export default {
   width: 17rem;
   height: 4rem;
   flex-shrink: 0;
-  border-radius: 1.5rem;
+  border-radius: 1.4rem;
   border: 0.05rem solid var(--colors-light-eaeaea-100, #d1d1d1);
   transition: background-color 0.8s ease;
   /* 正式版本 */
@@ -507,7 +531,7 @@ export default {
   position: absolute;
   width: 8rem;
   height: 2rem;
-  top: -1.3rem;
+  top: 2rem;
   left: 6rem;
   color: var(--colors-text-dark-172239100, #172239);
   font-feature-settings: 'clig' off, 'liga' off;

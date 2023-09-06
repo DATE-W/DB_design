@@ -1140,6 +1140,8 @@ namespace DBwebAPI.Controllers
             public string? status { get; set; }
             public string? homeTeamName { get; set; }
             public string? guestTeamName { get; set; }
+            public string? homeTeamLogo { get; set; }
+            public string? guestTeamLogo { get; set; }
             public int? guestScore { get; set; }
             public int? homeScore { get; set; }
             public string? gameUid { get; set; }
@@ -1178,6 +1180,8 @@ namespace DBwebAPI.Controllers
                             homeTeam = home.team_id,
                             guestTeam = guest.team_id,
                             guestTeamName = guest.chinesename,
+                            homeTeamLogo=home.logo,
+                            guestTeamLogo=guest.logo,
                             status = g.status
                         })
                         .ToListAsync();

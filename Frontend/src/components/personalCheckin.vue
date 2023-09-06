@@ -1,4 +1,4 @@
-<!-- 签到 v1.2 -->
+<!-- 签到 v2.0 -->
 <template>
   <!-- 添加外层的容器，并使用Flexbox布局 -->
   <div class="overflow-container">
@@ -76,7 +76,7 @@ export default {
           })
         } else {
           ElMessage({
-            message: '未知错误',
+            message: '服务器错误，获取过往签到日期失败',
             grouping: false,
             type: 'error',
           })
@@ -97,12 +97,23 @@ export default {
         //判断selectedDates数组里是否有当前日期
         if (this.selectedDates.includes(currentDate)) {
           //有则说明今日已经签到过 不和后端交互
-          ElMessageBox.alert('今日已签到过！');
+          ElMessageBox.confirm(
+            '签到失败，今日已经签到过！',
+            {
+              confirmButtonText: '确认',
+              cancelButtonText: '取消',
+              type: 'warning',
+            }
+          );
         } else {
           //没有则交互 添加日期
           response = await axios.post('/api/User/UserCheckin', {}, { headers });
           if (response.data.ok == 'yes') {
             this.selectedDates.push(currentDate);
+            ElMessage({
+              message: '签到成功，积分+5！',
+              type: 'success',
+            });
           }
         }
       } catch (err) {
@@ -114,7 +125,7 @@ export default {
           });
         } else {
           ElMessage({
-            message: '未知错误',
+            message: '服务器错误，签到失败',
             grouping: false,
             type: 'error',
           });
