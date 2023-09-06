@@ -1,4 +1,4 @@
-<!-- 2154314_郑楷_赛事列表 2023.09.05 20:30 v3.0.0
+<!-- 2154314_郑楷_赛事列表 2023.09.06 16:30 v3.1.0
  v1.0.0 页面画了一半 
   v1.1.0 画出了左侧的联赛选择器（未添加逻辑），布局了中部的比赛列表（已添加跳转逻辑），增加了各大联赛LOGO素材图，日期选择器和广告区待实现
   v1.2.0 优化了联赛选择器组件的代码、视觉效果、功能、数据通路
@@ -11,7 +11,8 @@
  v2.0.0 正式版首版，所有功能均已完成，删去了冗余代码
   v2.1.0 优化主队近期赛事板块，在用户无主队时跳转到设置主队界面
   v2.2.0 显示主队按钮优化，bug修复
- v3.0.0 正式版再版，重新调整元素布局，修改所有样式，增加列表的相对页面滚动功能 -->
+ v3.0.0 正式版再版，重新调整元素布局，修改所有样式，增加列表的相对页面滚动功能
+  v3.1.0 增加中部赛事列表的底线，修改时间选择器可以清除日期的BUG -->
 
 <template>
   <my-nav></my-nav>
@@ -39,19 +40,19 @@
     <span class="textTypoLeague" style="top:0.5rem;left:3rem;width:30rem;">当前选择日期: {{ date11 }}</span>
     <!-- 日期选择器 -->
     <el-date-picker v-model="date11" type="date" placeholder="日期选择" :size="large" value-format="YYYY-MM-DD"
-      style="left:38.5rem;top:1rem"
+      style="left:38.5rem;top:1rem" :clearable="false"
       @change="this.getMatches(this.date11, this.league11); console.log(this.matches.length);" />
   </div>
 
   <!-- 中间列时间与赛事列表 -->
-  <div class="borderBoxMid" style="left:23rem;top:17rem">
+  <div class="borderBoxMid" style="left:23rem;top:16.5rem">
 
     <el-empty v-show="!matches.length" description="本日暂无赛事" style="margin-top: 2rem;" />
 
 
     <!-- 使用v-for循环生成赛事列表 -->
     <div class="borderBoxMatch" v-for="(match, index) in matches" :key="match.gameUid"
-      :style="{ top: `${index * 6 + 0.2}rem` }">
+      :style="{ top: `${index * 6 + 0.8}rem` }" style="left:1rem">
       <!-- 根据matches数据渲染赛事列表的内容 -->
       <div class="imgBox">
         <img :src="match.homeLogo">
@@ -71,12 +72,14 @@
 
     </div>
 
-  </div>
-  <!-- 右侧上方日期选择器容器 -->
-  <!-- <div class="borderBoxRightTop" style="left:74rem;top:10rem;">
-  </div> -->
+    <div v-if="(matches.length >= 5)" style="position:absolute;left:17.9rem"
+      :style="{ top: `${matches.length * 6 + 2}rem` }">
+      <p>我是有底线的噢</p>
+    </div>
 
-  <!-- 右侧下方主队容器 -->
+  </div>
+
+  <!-- 右侧主队容器 -->
   <div class="borderBoxRightAD" style="left:68rem;">
     <!-- <button @click="console.log(recentMatches);">1</button>
     <button @click="getRecentMatches('利物浦');">2</button> -->
@@ -372,13 +375,15 @@ export default {
 .borderBoxMid {
   position: absolute;
   width: 42rem;
-  height: 29rem;
+  height: 29.5rem;
   flex-shrink: 0;
   /* 正式版本 */
   background: white;
   /* 测试版本 */
   /* background: aqua; */
   overflow-y: auto;
+  border: 2px solid #EAEAEA;
+  border-radius: 14px;
 }
 
 .borderBoxMid::-webkit-scrollbar {
@@ -548,7 +553,7 @@ export default {
   font-style: normal;
   font-weight: 600;
   line-height: normal;
-  color: darkblue;
+  color: black;
 }
 
 .textTypoMatchTime {
