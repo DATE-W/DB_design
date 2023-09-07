@@ -1,4 +1,4 @@
-<!-- 2154314_郑楷_赛事列表 2023.09.06 16:30 v3.1.0
+<!-- 2154314_郑楷_赛事列表 2023.09.07 18:30 v3.3.0
  v1.0.0 页面画了一半 
   v1.1.0 画出了左侧的联赛选择器（未添加逻辑），布局了中部的比赛列表（已添加跳转逻辑），增加了各大联赛LOGO素材图，日期选择器和广告区待实现
   v1.2.0 优化了联赛选择器组件的代码、视觉效果、功能、数据通路
@@ -13,7 +13,8 @@
   v2.2.0 显示主队按钮优化，bug修复
  v3.0.0 正式版再版，重新调整元素布局，修改所有样式，增加列表的相对页面滚动功能
   v3.1.0 增加中部赛事列表的底线，修改时间选择器可以清除日期的BUG
-  v3.2.0 规范代码格式，添加注释 -->
+  v3.2.0 规范代码格式，添加注释
+  v3.3.0 细微修改 -->
 
 <template>
   <!-- 顶部部导航栏 -->
@@ -40,8 +41,8 @@
     <span class="textTypoLeague date">当前选择日期: {{ date11 }}</span>
     <!-- 日期选择器 -->
     <el-date-picker v-model="date11" type="date" placeholder="日期选择" :size="large" value-format="YYYY-MM-DD"
-      style="left:38.5rem;top:1rem"
-      @change="this.getMatches(this.date11, this.league11); console.log(this.matches.length);" />
+      style="left:38.5rem;top:1rem" :clearable="false" :editable="false"
+      @change="this.getMatches(this.date11, this.league11);" />
   </div>
 
   <!-- 中部赛事列表 -->
