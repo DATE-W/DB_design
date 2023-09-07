@@ -27,7 +27,7 @@
             </el-col>
         </el-row>
         <div class="default-button">
-            <el-button type="primary" @click="recover" class="default-buttonsize">恢复默认配置</el-button>
+            <el-button type="primary" @click="recover" class="default-buttonsize">取消选择主队</el-button>
         </div>
     </div>
 </template>

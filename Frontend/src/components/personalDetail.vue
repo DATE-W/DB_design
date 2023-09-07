@@ -223,6 +223,10 @@ export default {
 </script>
 
 <style scoped>
+.el-main {
+    padding-top: 0;
+}
+
 .overflow-container {
     overflow-y: auto;
     max-height: 82vh;

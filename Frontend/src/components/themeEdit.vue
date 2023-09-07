@@ -81,7 +81,6 @@ export default {
                 showCancelButton: true,
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                type: 'warning',
                 dangerouslyUseHTMLString: true // 允许使用 HTML 字符串
             }).then(() => {
                 this.selectTheme(theme);
