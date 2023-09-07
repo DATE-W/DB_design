@@ -1315,7 +1315,6 @@ namespace DBwebAPI.Controllers
             public string image1 { get; set; } = "";
             public string image2 { get; set; } = "";
             public string image3 { get; set; } = "";
-            public string image4 { get; set; } = "";
         }
         [HttpPost]
         public async Task<IActionResult> getalltheme()
@@ -1458,7 +1457,6 @@ namespace DBwebAPI.Controllers
                 Console.WriteLine("userThemejson.image1:" + userThemejson.image1);
                 Console.WriteLine("userThemejson.image2:" + userThemejson.image2);
                 Console.WriteLine("userThemejson.image3:" + userThemejson.image3);
-                Console.WriteLine("userThemejson.image4:" + userThemejson.image4);
                 return Ok(userThemejson);
             }
             catch (Exception ex)

@@ -753,7 +753,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 int post_id = json.post_id;
-              
+              /*
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
@@ -779,12 +779,12 @@ namespace DBwebAPI.Controllers
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
 
-                int user_id = tempUsr.First().user_id;                
-  /*
+                int user_id = tempUsr.First().user_id;     */           
+  
                 int user_id = 12;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
-                    .ToListAsync();*/
+                    .ToListAsync();
 
                 //找到post
                 List<Posts> tempPosts = new List<Posts>();
