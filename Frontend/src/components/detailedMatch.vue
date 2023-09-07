@@ -1,26 +1,28 @@
-<!-- 2154314_郑楷_赛事详情页 2023.08.27 19:00 v1.5.0 
+<!-- 2154314_郑楷_赛事详情页 2023.09.07 19:00 v2.0.0 
  v1.0.0 添加页面，改路由，完成赛事列表向该页的UID传值 
  v1.1.0 向赛事列表主页面传值，使得之前的选择结果得到保存
  v1.2.0 画出基本页面功能，增加往球队详情页的跳转逻辑，增加往其他场次的跳转逻辑
  v1.3.0 通过Uid来调用接口，实时渲染页面内容，增加各场比赛之间的直接跳转功能
  v1.4.0 修复了返回比赛一级页面时不能保留原有选择的bug，美化了队标显示
- v1.5.0 直播入口跳转功能，页面美化 -->
+ v1.5.0 直播入口跳转功能，页面美化 
+v2.0.0 正式版首版，删去非必要代码，优化格式，添加注释 -->
 
 <template>
+  <!-- 顶部导航栏 -->
   <my-nav></my-nav>
 
+  <!-- 返回赛事总览界面的按钮 -->
   <el-button size="large" type="info" icon="back" @click="toGames(this.dateChoice, this.lgeChoice)">Back</el-button>
 
-  <!-- <p>{{ gameUid }}</p> -->
-
-
-  <div class="topTextBox" style="left: 35rem;top:5rem;">
+  <!-- 顶中部联赛时间状态信息框 -->
+  <div class="topTextBox">
     <p class="textDate">{{ this.match.dateTime }}&nbsp&nbsp{{ this.match.startTime }}</p>
     <p class="textStatus">{{ getMatchStatus(this.match.status) }}</p>
     <p class="textLeague">{{ getLeagueInfo(this.match.leagueType) }}</p>
   </div>
 
-  <div class="topTextBoxTRA" style="left: 13rem;top:5rem;width:20rem">
+  <!-- 顶左部主队信息框 -->
+  <div class="topTextBoxTRA leftBox">
     <img class="picTeam" :src=this.match.homeLogo style="left:2rem">
     <div class="modal1"></div>
     <div class="topTextBoxTRA1" style="width:20rem" @click="toTeams(this.match.homeTeamName)">
@@ -28,7 +30,8 @@
     </div>
   </div>
 
-  <div class="topTextBoxTRA" style="left: 64rem;top:5rem;width:20rem">
+  <!-- 顶右部客队信息框 -->
+  <div class="topTextBoxTRA rightBox">
     <img class="picTeam" :src=this.match.guestLogo style="right:2rem">
     <div class="modal1"></div>
     <div class="topTextBoxTRA1" style="width:20rem" @click="toTeams(this.match.guestTeamName)">
@@ -36,17 +39,20 @@
     </div>
   </div>
 
+  <!-- 顶左部主队得分 -->
   <div class="scoreBox" style="left: 31rem;top:8rem">
     <p class="textScore">{{ scoreCheck(this.match.homeScore) }}</p>
   </div>
 
+  <!-- 顶右部客队得分 -->
   <div class="scoreBox" style="left: 61rem;top:8rem">
     <p class="textScore">{{ scoreCheck(this.match.guestScore) }}</p>
   </div>
 
+  <!-- 标题 -->
   <p class="recentGameTypo" style="left:7rem">近期比赛</p>
-
   <p class="recentGameTypo" style="left:85rem">近期比赛</p>
+
 
   <div class="recentGameBoxLeft" v-for="(homeRecentGame, index) in match.homeRecentGames" :key="homeRecentGame.gameUid"
     :style="{ top: `${index * 7 + 22}rem` }" style="left:7rem;">
@@ -63,6 +69,7 @@
     </div>
   </div>
 
+  <!-- 中右部v-for生成客队近期三场赛事 -->
   <div class="recentGameBoxLeft" v-for="(guestRecentGame, index) in match.guestRecentGames" :key="guestRecentGame.gameUid"
     :style="{ top: `${index * 7 + 22}rem` }" style="left:70rem;">
     <div class="imgBox" style="right:9rem;">
@@ -77,6 +84,7 @@
     </div>
   </div>
 
+  <!-- 中部直播入口 -->
   <div>
     <img class="intoLiveImg" src="../assets/img/IntoLive.jpg">
     <div class="intoLiveModal" @click="goToVideo(this.match.liveStream);">
@@ -234,6 +242,8 @@ export default {
   background: white;
   border: 2px solid var(--colors-light-eaeaea-100, #EAEAEA);
   border-radius: 1rem;
+  left: 35rem;
+  top: 5rem;
 }
 
 .topTextBoxTRA {
@@ -245,6 +255,18 @@ export default {
   border: 2px solid var(--colors-light-eaeaea-100, #EAEAEA);
   border-radius: 1rem;
   transition: background-color 0.5s ease;
+
+  &.leftBox {
+    left: 13rem;
+    top: 5rem;
+    width: 20rem;
+  }
+
+  &.rightBox {
+    left: 64rem;
+    top: 5rem;
+    width: 20rem;
+  }
 }
 
 .topTextBoxTRA:hover {
