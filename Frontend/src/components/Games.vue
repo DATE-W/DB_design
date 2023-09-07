@@ -1,4 +1,4 @@
-<!-- 2154314_郑楷_赛事列表 2023.09.05 20:30 v3.0.0
+<!-- 2154314_郑楷_赛事列表 2023.09.06 16:30 v3.1.0
  v1.0.0 页面画了一半 
   v1.1.0 画出了左侧的联赛选择器（未添加逻辑），布局了中部的比赛列表（已添加跳转逻辑），增加了各大联赛LOGO素材图，日期选择器和广告区待实现
   v1.2.0 优化了联赛选择器组件的代码、视觉效果、功能、数据通路
@@ -40,7 +40,8 @@
     <span class="textTypoLeague date">当前选择日期: {{ date11 }}</span>
     <!-- 日期选择器 -->
     <el-date-picker v-model="date11" type="date" placeholder="日期选择" :size="large" value-format="YYYY-MM-DD"
-      style="left:38.5rem;top:1rem" :clearable="false" @change="this.getMatches(this.date11, this.league11);" />
+      style="left:38.5rem;top:1rem"
+      @change="this.getMatches(this.date11, this.league11); console.log(this.matches.length);" />
   </div>
 
   <!-- 中部赛事列表 -->
@@ -80,9 +81,6 @@
       <p>我是有底线的噢</p>
     </div>
   </div>
-  <!-- 右侧上方日期选择器容器 -->
-  <!-- <div class="borderBoxRightTop" style="left:74rem;top:10rem;">
-  </div> -->
 
   <!-- 右部主队容器 -->
   <div class="borderBoxRightAD">
@@ -379,7 +377,7 @@ export default {
 .borderBoxMid {
   position: absolute;
   width: 42rem;
-  height: 29rem;
+  height: 29.5rem;
   flex-shrink: 0;
   /* 正式版本 */
   background: white;
@@ -573,7 +571,7 @@ export default {
   font-style: normal;
   font-weight: 600;
   line-height: normal;
-  color: darkblue;
+  color: black;
 }
 
 .textTypoMatchTime {
