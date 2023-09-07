@@ -1,5 +1,11 @@
 <template>
   <my-nav></my-nav>
+  <!-- 返回按钮 -->
+  <el-button class="button" @click="goBack()">
+    <el-icon><Back /></el-icon>
+    <a>返回</a>
+  </el-button>
+  <!-- 上方数据 -->
   <el-card class="playerNameAndIcon">
     <img class="playerIconContainer" alt="This is player icon" :src="this.playerPhoto">
     <div class="playerNameContainer">
@@ -9,7 +15,7 @@
       {{ this.enName }}
     </div>
   </el-card>
-
+  <!-- 下方数据 -->
   <el-card class="playerInfo">
     <div class="firstBar">
       <div class="firstBlock">
@@ -59,7 +65,7 @@
       <p style="transform: translateY(-30%); ">赛季数据</p>
     </div>
   </div>
-
+  <!-- 球员数据 -->
   <el-table :data="eventData" style="width: 60vw; left: 10vw; top: 70vh;">
     <el-table-column align="center" prop="seasonName" label="赛季" width="158" />
     <el-table-column align="center" prop="appearance" label="上场" width="105" />
@@ -77,7 +83,7 @@
       <p style="transform: translateY(-30%); ">相关球员</p>
     </div>
   </div>
-
+  <!-- 相关球员 -->
   <el-table :data="relatedPlayers" style="width: 20vw; left: 74vw; top: -20vh;" @row-click="handleRowClick">
 
     <el-table-column align="right">
@@ -164,6 +170,9 @@ export default {
       this.direct2detailedPlayerMsg(row.playerName);
     },
 
+    goBack() {
+      this.$router.back();
+    },
   },
 
   data() {
@@ -189,7 +198,6 @@ export default {
 
     }
   }
-
 
 }
 </script>
@@ -302,14 +310,6 @@ export default {
   width: 44vw;
 }
 
-.briefIntroductionContainer {
-  position: absolute;
-  left: 3vw;
-  top: 23vh;
-  height: 13vh;
-  width: 55vw;
-}
-
 .titleContainer {
   position: absolute;
   border: none;
@@ -351,4 +351,13 @@ export default {
   object-fit: cover;
   border-radius: 20%;
 }
+
+.button{
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  left: 5vw;
+}
+
 </style>

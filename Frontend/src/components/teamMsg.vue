@@ -1,5 +1,11 @@
 <template>
   <my-nav></my-nav>
+  <!-- 返回按钮 -->
+  <el-button class="button" @click="goBack()">
+    <el-icon><Back /></el-icon>
+    <a>返回</a>
+  </el-button>
+  <!-- 上方数据 -->
   <el-card class="teamNameAndIcon">
     <img class="teamIconContainer" alt="This is team icon" :src="this.logo">
     <div class="teamNameContainer">
@@ -9,7 +15,7 @@
       {{ this.enName }}
     </div>
   </el-card>
-
+  <!-- 下方数据 -->
   <el-card class="teamInfo">
     <div class="firstBar">
       <div class="firstBlock">
@@ -67,7 +73,7 @@
       <p style="transform: translateY(-30%); ">球员信息</p>
     </div>
   </div>
-
+  <!-- 球员表格 -->
   <el-table :data="currentPlayerPage" style="width: 70vw; left: 16vw; top: 70vh;" @row-click="handleRowClick">
     <!-- 表格列配置 -->
     <el-table-column align="center" prop="playerNumber" label="号码" min-width="12%" />
@@ -88,13 +94,12 @@
     <el-table-column align="center" prop="playerNationality" label="国籍" min-width="12%" />
 
   </el-table>
-
+  <!-- 分页功能 -->
   <div class="pagination">
     <el-pagination :current-page="currentPage" :page-size="pageSize" :total="totalTeamMembers"
       @current-change="handlePageChange">
     </el-pagination>
   </div>
-
 </template>
 
 
@@ -176,6 +181,10 @@ export default {
     handlePageChange(newPage) {
       // 当用户切换页码时触发的方法
       this.currentPage = newPage;
+    },
+
+    goBack() {
+      this.$router.back();
     },
   },
 
@@ -306,12 +315,12 @@ export default {
 /* 横向第三条 */
 .thirdBlock {
   position: absolute;
-  left: 32vw;
+  left: 34vw;
 }
 
 .fourthBlock {
   position: absolute;
-  left: 47vw;
+  left: 49vw;
 }
 
 .fourthBarContent {
@@ -354,11 +363,19 @@ export default {
   border-radius: 20%;
 }
 
-.pagination{
+.pagination {
   position: absolute;
   left: 35vw;
   top: 155vh;
   width: 50px;
   height: 50px;
+}
+
+.button{
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  left: 10vw;
 }
 </style>
