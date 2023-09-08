@@ -7,6 +7,7 @@
   </el-button>
   <!-- 上方数据 -->
   <el-card class="playerNameAndIcon">
+    <!-- 球员图片 -->
     <img class="playerIconContainer" alt="This is player icon" :src="this.playerPhoto">
     <div class="playerNameContainer">
       {{ this.playerName }}
@@ -62,7 +63,7 @@
   <div class="titleContainer">
     <div class="titleBar"></div>
     <div class="title">
-      <p style="transform: translateY(-30%); ">赛季数据</p>
+      <p style="transform: translateY(-25%); ">赛季数据</p>
     </div>
   </div>
   <!-- 球员数据 -->
@@ -80,11 +81,11 @@
   <div class="titleContainer2">
     <div class="titleBar"></div>
     <div class="title">
-      <p style="transform: translateY(-30%); ">相关球员</p>
+      <p style="transform: translateY(-25%); ">相关球员</p>
     </div>
   </div>
   <!-- 相关球员 -->
-  <el-table :data="relatedPlayers" style="width: 20vw; left: 74vw; top: -20vh;" @row-click="handleRowClick">
+  <el-table :data="relatedPlayers" style="width: 20vw; left: 74vw; top: -15vh;" @row-click="handleRowClick">
 
     <el-table-column align="right">
       <template #default="scope">
