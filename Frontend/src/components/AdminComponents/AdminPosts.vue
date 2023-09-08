@@ -352,7 +352,6 @@ export default {
 }
 .single-post:hover {
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* 鼠标悬浮时的阴影效果 */
-    background-color: rgb(240, 241, 241); /* 鼠标悬浮时的背景颜色 */
 }
 .single-author:hover {
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* 鼠标悬浮时的阴影效果 */

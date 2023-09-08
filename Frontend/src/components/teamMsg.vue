@@ -70,7 +70,7 @@
   <div class="titleContainer">
     <div class="titleBar"></div>
     <div class="title">
-      <p style="transform: translateY(-30%); ">球员信息</p>
+      <p style="transform: translateY(-25%); ">球员信息</p>
     </div>
   </div>
   <!-- 球员表格 -->

@@ -19,7 +19,15 @@
 <template>
   <!-- 顶部部导航栏 -->
   <my-nav></my-nav>
-
+  <!-- 动态标题 -->
+  <div class="titleFlex">
+    <div class="artTitle" ref="artTitle">
+      <a>同济绿茵</a>
+    </div>
+    <div class="gameTitle" ref="gameTitle">
+      <a>&nbsp;&nbsp;&nbsp;赛事</a>
+    </div>
+  </div>
   <!-- 上部联赛选择器 -->
   <div class="borderBoxLeft topLeague">
     <!-- 使用v-for指令循环生成联赛选择器内容 -->
@@ -136,6 +144,7 @@ import MyNav from './nav.vue';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import { ref } from 'vue';
+import anime from 'animejs';
 
 export default {
 
@@ -152,7 +161,44 @@ export default {
     this.getMatches(this.date11, this.league11);
   },
 
+  mounted() {
+    this.animateArtTitle();
+    this.animateGameTitle();
+  },
+
   methods: {
+    animateArtTitle() {
+      const artTitle = this.$refs.artTitle; // 获取标题元素
+      artTitle.innerHTML = artTitle.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+
+      // 使用Anime.js创建动画效果
+      anime.timeline({ loop: false })
+        .add({
+          targets: '.letter',
+          scale: [0.3, 1],
+          opacity: [0, 1],
+          translateZ: 0,
+          easing: 'easeOutExpo',
+          duration: 600,
+          delay: (el, i) => 70 * (i + 1)
+        })
+    },
+    animateGameTitle() {
+      const gameTitle = this.$refs.gameTitle; // 获取标题元素
+      gameTitle.innerHTML = gameTitle.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+
+      // 使用Anime.js创建动画效果
+      anime.timeline({ loop: false })
+        .add({
+          targets: '.letter',
+          scale: [0.3, 1],
+          opacity: [0, 1],
+          translateZ: 0,
+          easing: 'easeOutExpo',
+          duration: 600,
+          delay: (el, i) => 70 * (i + 1)
+        })
+    },
     // 跳转到赛事详情页
     toMatchDetail(uid, leagueC, dateC) {
       //etTimeout(function(){ getSignature() },5000);//Test
@@ -344,6 +390,8 @@ export default {
 
 
 <style scoped>
+@import '../assets/font/font.css';
+
 /* 左侧容器框 */
 .borderBoxLeft {
   position: absolute;
@@ -359,7 +407,7 @@ export default {
   border-radius: 14px;
 
   &.topLeague {
-    left: 4.5rem;
+    left: 8.5rem;
   }
 }
 
@@ -367,8 +415,8 @@ export default {
   width: 55rem;
   height: 4rem;
   background-color: white;
-  top: 11rem;
-  left: 10rem;
+  top: 12rem;
+  left: 14rem;
   position: absolute;
   border: 2px solid #EAEAEA;
   border-radius: 14px;
@@ -389,8 +437,8 @@ export default {
   border-radius: 14px;
 
   &.midList {
-    left: 23rem;
-    top: 16.5rem;
+    left: 27rem;
+    top: 18.5rem;
   }
 }
 
@@ -403,9 +451,9 @@ export default {
   position: absolute;
   width: 19rem;
   height: 25rem;
-  left: 68rem;
+  left: 72rem;
   flex-shrink: 0;
-  top: 11rem;
+  top: 12rem;
   /* 正式版本 */
 
   /* 测试版本 */
@@ -677,5 +725,25 @@ export default {
   border-radius: 2rem;
   left: 1rem;
   object-fit: cover;
+}
+
+.titleFlex {
+  position: absolute;
+  top: 24rem;
+  left: 8rem;
+}
+
+.artTitle {
+  font-family: artfont;
+  font-size: 50px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.gameTitle {
+  font-family: artfont;
+  font-size: 50px;
+  font-style: normal;
+  font-weight: 400;
 }
 </style>

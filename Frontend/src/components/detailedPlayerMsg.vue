@@ -2,11 +2,14 @@
   <my-nav></my-nav>
   <!-- 返回按钮 -->
   <el-button class="button" @click="goBack()">
-    <el-icon><Back /></el-icon>
+    <el-icon>
+      <Back />
+    </el-icon>
     <a>返回</a>
   </el-button>
   <!-- 上方数据 -->
   <el-card class="playerNameAndIcon">
+    <!-- 球员图片 -->
     <img class="playerIconContainer" alt="This is player icon" :src="this.playerPhoto">
     <div class="playerNameContainer">
       {{ this.playerName }}
@@ -53,7 +56,7 @@
       <div class="fourthBarContent">
         {{ this.playerName }}，（英文名：{{ this.enName }}），现年{{ this.age }}，
         是一名{{ this.nationality }}的足球运动员。他身高{{ this.height }}，现效力于{{ this.club }}足球俱乐部。
-        他的惯用脚是{{ this.dominantFoot }}，在球队中担任{{ this.position }}的位置。他的球衣号码为{{ this.number }}。 
+        他的惯用脚是{{ this.dominantFoot }}，在球队中担任{{ this.position }}的位置。他的球衣号码为{{ this.number }}。
       </div>
     </div>
 
@@ -62,7 +65,7 @@
   <div class="titleContainer">
     <div class="titleBar"></div>
     <div class="title">
-      <p style="transform: translateY(-30%); ">赛季数据</p>
+      <p style="transform: translateY(-25%); ">赛季数据</p>
     </div>
   </div>
   <!-- 球员数据 -->
@@ -80,11 +83,11 @@
   <div class="titleContainer2">
     <div class="titleBar"></div>
     <div class="title">
-      <p style="transform: translateY(-30%); ">相关球员</p>
+      <p style="transform: translateY(-25%); ">相关球员</p>
     </div>
   </div>
   <!-- 相关球员 -->
-  <el-table :data="relatedPlayers" style="width: 20vw; left: 74vw; top: -20vh;" @row-click="handleRowClick">
+  <el-table :data="relatedPlayers" style="width: 20vw; left: 74vw; top: -15vh;" @row-click="handleRowClick">
 
     <el-table-column align="right">
       <template #default="scope">
@@ -352,12 +355,11 @@ export default {
   border-radius: 20%;
 }
 
-.button{
+.button {
   position: absolute;
   display: flex;
   justify-content: space-between;
   align-items: center;
   left: 5vw;
 }
-
 </style>

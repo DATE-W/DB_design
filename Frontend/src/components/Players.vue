@@ -37,18 +37,26 @@
         </el-aside>
         <div class="ShowResults">
           <div class="result-container"
-            v-for="(team, index) in TeamsinLeague.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+            v-for="(team, index) in NormalTeamsinLeague.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
             :key="index">
             <div class="result-info" @click="goToTeam(team.teamName)">
               <img :src="team.teamLogo" alt="Team Logo" class="result-logo" />
               <div class="result-name">{{ team.teamName }}</div>
             </div>
           </div>
-          <hr v-if="TeamsinLeague.length > 0 && PlayersinLeague.length > 0" class="grey-separator">
+          <div class="result-container"
+            v-for="(team, index) in SearchTeamsinLeague.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+            :key="index">
+            <div class="result-info" @click="goToTeam(team.teamName)">
+              <img :src="team.teamLogo" alt="Team Logo" class="result-logo" />
+              <div class="result-name">{{ team.teamName }}</div>
+            </div>
+          </div>
           <div class="result-container"
             v-for="(player, index) in PlayersinLeague.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
             :key="index">
-            <div class="result-info" @click="goToPlayer(player.searchedPlayerName)">
+            <div class="result-info" @click="goToPlayer(player.searchedPlayerName)"
+              v-if="player.searchedPlayerName !== 0">
               <img :src="player.searchedPlayerPhoto" alt="Team Logo" class="result-logo" />
               <div class="result-name">{{ player.searchedPlayerName }}</div>
             </div>
@@ -98,7 +106,8 @@ export default {
         { "name": "法甲", "logo": "/src/assets/img/le1logo.png", "description": "法国顶级足球联赛，巴黎圣日耳曼、马赛等球队竞争，新锐天才与老将共舞。" },
         { "name": "中超", "logo": "/src/assets/img/cslogo.png", "description": "中国顶级足球联赛，广州恒大、上海上港等球队，崛起中展现实力。" },
       ],//存储联赛名、联赛logo及介绍
-      TeamsinLeague: [],//存储当前联赛包含的球队(包含球队名和球队logo)
+      NormalTeamsinLeague: [], // 存储正常结果中的球队
+      SearchTeamsinLeague: [], // 存储搜索结果中的球队
       PlayersinLeague: [],//存储当前联赛包含的球员
       topScorers: [],//存储射手榜
       pageSize: 20,//每页最多20项
@@ -176,16 +185,15 @@ export default {
     },
     async getTeam(SelectedLeague) {
       this.PlayersinLeague = [];
+      this.SearchTeamsinLeague = [];
       let response
       try {
         response = await axios.post('/api/updateTeam/searchTeamInGameType', {
           gameType: SelectedLeague,
         });
-        this.TeamsinLeague = [];
-        this.TeamsinLeague = response.data;
-        this.totalTeams = this.TeamsinLeague.length;
-        console.log('球队为', this.TeamsinLeague);
-        console.log('球队数量为', this.totalTeams);
+        this.NormalTeamsinLeague = [];
+        this.NormalTeamsinLeague = response.data;
+        this.totalTeams = this.NormalTeamsinLeague.length;
       } catch (err) {
         ElMessage({
           message: '服务器错误，获取球队信息失败',
@@ -200,10 +208,11 @@ export default {
           key: keyword,
           gameType: SelectedLeague,
         });
-        this.TeamsinLeague = [];
+        this.NormalTeamsinLeague = [];
+        this.SearchTeamsinLeague = [];
         for (let i = 0; i < response.data.length; i++) {
           const newTeam = { teamLogo: response.data[i].searchedTeamLogo, teamName: response.data[i].searchedTeamName }; // 创建新对象并设置属性
-          this.TeamsinLeague.push(newTeam); // 将对象添加到数组中
+          this.SearchTeamsinLeague.push(newTeam); // 将对象添加到数组中
         }
       } catch (err) {
         ElMessage({
@@ -213,14 +222,27 @@ export default {
       }
     },
     async SearchForPlayer(keyword, SelectedLeague) {
-      let response
+      let response;
       try {
         response = await axios.post('/api/updateTeam/searchForPlayer', {
           key: keyword,
           gameType: SelectedLeague,
         });
-        this.PlayersinLeague = [];
-        this.PlayersinLeague = response.data;
+        // 检查SearchTeamsinLeague的长度并设置初始占位符的数量
+        let placeholdersCount = 0;
+        if (this.SearchTeamsinLeague.length > 0 && this.SearchTeamsinLeague.length <= 20) {
+          placeholdersCount = 20;
+        } else if (this.SearchTeamsinLeague.length > 20 && this.SearchTeamsinLeague.length <= 40) {
+          placeholdersCount = 40;
+        }
+        // 使用占位符填充PlayersinLeague
+        this.PlayersinLeague = Array(placeholdersCount).fill({ searchedPlayerPhoto: 0, searchedPlayerName: 0 });
+        // 将response.data附加到PlayersinLeague
+        this.PlayersinLeague = this.PlayersinLeague.concat(response.data);
+
+        this.totalTeams = this.PlayersinLeague.filter(player => player.searchedPlayerName !== 0).length +
+          (this.SearchTeamsinLeague.length > 0 && this.SearchTeamsinLeague.length <= 20 ? 20 : 0) +
+          (this.SearchTeamsinLeague.length > 20 && this.SearchTeamsinLeague.length <= 40 ? 40 : 0);
       } catch (err) {
         ElMessage({
           message: '服务器错误，搜索球员失败',

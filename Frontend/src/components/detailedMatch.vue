@@ -40,22 +40,22 @@ v2.0.0 正式版首版，删去非必要代码，优化格式，添加注释 -->
   </div>
 
   <!-- 顶左部主队得分 -->
-  <div class="scoreBox" style="left: 31rem;top:8rem">
+  <div class="scoreBox" style="left: 35rem;top:12rem">
     <p class="textScore">{{ scoreCheck(this.match.homeScore) }}</p>
   </div>
 
   <!-- 顶右部客队得分 -->
-  <div class="scoreBox" style="left: 61rem;top:8rem">
+  <div class="scoreBox" style="left: 65rem;top:12rem">
     <p class="textScore">{{ scoreCheck(this.match.guestScore) }}</p>
   </div>
 
   <!-- 标题 -->
-  <p class="recentGameTypo" style="left:7rem">近期比赛</p>
-  <p class="recentGameTypo" style="left:85rem">近期比赛</p>
+  <p class="recentGameTypo" style="left:11rem">近期比赛</p>
+  <p class="recentGameTypo" style="left:89rem">近期比赛</p>
 
 
   <div class="recentGameBoxLeft" v-for="(homeRecentGame, index) in match.homeRecentGames" :key="homeRecentGame.gameUid"
-    :style="{ top: `${index * 7 + 22}rem` }" style="left:7rem;">
+    :style="{ top: `${index * 7 + 26}rem` }" style="left:11rem;">
     <div class="imgBox" style="left:9rem;">
       <img :src="homeRecentGame.opponentLogo">
       <div class="modal2"></div>
@@ -71,7 +71,7 @@ v2.0.0 正式版首版，删去非必要代码，优化格式，添加注释 -->
 
   <!-- 中右部v-for生成客队近期三场赛事 -->
   <div class="recentGameBoxLeft" v-for="(guestRecentGame, index) in match.guestRecentGames" :key="guestRecentGame.gameUid"
-    :style="{ top: `${index * 7 + 22}rem` }" style="left:70rem;">
+    :style="{ top: `${index * 7 + 26}rem` }" style="left:74rem;">
     <div class="imgBox" style="right:9rem;">
       <img :src="guestRecentGame.opponentLogo">
       <div class="modal2"></div>
@@ -242,8 +242,8 @@ export default {
   background: white;
   border: 2px solid var(--colors-light-eaeaea-100, #EAEAEA);
   border-radius: 1rem;
-  left: 35rem;
-  top: 5rem;
+  left: 39rem;
+  top: 9rem;
 }
 
 .topTextBoxTRA {
@@ -257,14 +257,14 @@ export default {
   transition: background-color 0.5s ease;
 
   &.leftBox {
-    left: 13rem;
-    top: 5rem;
+    left: 17rem;
+    top: 9rem;
     width: 20rem;
   }
 
   &.rightBox {
-    left: 64rem;
-    top: 5rem;
+    left: 68rem;
+    top: 9rem;
     width: 20rem;
   }
 }
@@ -350,7 +350,7 @@ export default {
   left: 0rem;
   top: 5.1rem;
   width: 10rem;
-  height: 5.5rem;
+  height: 6rem;
   background-color: white;
 }
 
@@ -409,7 +409,7 @@ export default {
   color: var(--colors-text-dark-172239100, black);
   font-weight: 600;
   position: absolute;
-  top: 17rem;
+  top: 21rem;
 }
 
 .textMatchDate {
@@ -459,8 +459,8 @@ export default {
 
 .intoLiveImg {
   position: absolute;
-  top: 20rem;
-  left: 32.2rem;
+  top: 24rem;
+  left: 36.2rem;
   height: 23rem;
   border: 2px solid var(--colors-light-eaeaea-100, #EAEAEA);
   border-radius: 2rem;
@@ -468,8 +468,8 @@ export default {
 
 .intoLiveModal {
   position: absolute;
-  top: 20rem;
-  left: 32.2rem;
+  top: 24rem;
+  left: 36.2rem;
   height: 23.5rem;
   width: 33.4rem;
   border: 0px;
