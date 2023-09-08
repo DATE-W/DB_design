@@ -20,6 +20,12 @@
   <!-- 顶部部导航栏 -->
   <my-nav></my-nav>
 
+  <div class="art-title" ref="artTitle">
+    <a>同济绿茵</a>
+  </div>
+  <div class="game-title" ref="gameTitle">
+    <a>&nbsp;&nbsp;&nbsp;赛事</a>
+  </div>
   <!-- 上部联赛选择器 -->
   <div class="borderBoxLeft topLeague">
     <!-- 使用v-for指令循环生成联赛选择器内容 -->
@@ -136,6 +142,7 @@ import MyNav from './nav.vue';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import { ref } from 'vue';
+import anime from 'animejs';
 
 export default {
 
@@ -152,7 +159,44 @@ export default {
     this.getMatches(this.date11, this.league11);
   },
 
+  mounted() {
+    this.animateArtTitle();
+    this.animateGameTitle();
+  },
+
   methods: {
+    animateArtTitle() {
+      const artTitle = this.$refs.artTitle; // 获取标题元素
+      artTitle.innerHTML = artTitle.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+
+      // 使用Anime.js创建动画效果
+      anime.timeline({ loop: false })
+        .add({
+          targets: '.letter',
+          scale: [0.3, 1],
+          opacity: [0, 1],
+          translateZ: 0,
+          easing: 'easeOutExpo',
+          duration: 600,
+          delay: (el, i) => 70 * (i + 1)
+        })
+    },
+    animateGameTitle() {
+      const gameTitle = this.$refs.gameTitle; // 获取标题元素
+      gameTitle.innerHTML = gameTitle.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+
+      // 使用Anime.js创建动画效果
+      anime.timeline({ loop: false })
+        .add({
+          targets: '.letter',
+          scale: [0.3, 1],
+          opacity: [0, 1],
+          translateZ: 0,
+          easing: 'easeOutExpo',
+          duration: 600,
+          delay: (el, i) => 70 * (i + 1)
+        })
+    },
     // 跳转到赛事详情页
     toMatchDetail(uid, leagueC, dateC) {
       //etTimeout(function(){ getSignature() },5000);//Test
@@ -344,6 +388,8 @@ export default {
 
 
 <style scoped>
+@import '../assets/font/font.css';
+
 /* 左侧容器框 */
 .borderBoxLeft {
   position: absolute;
