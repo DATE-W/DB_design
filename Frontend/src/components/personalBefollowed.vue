@@ -6,8 +6,7 @@
                     <img :src="user.avatar" alt="User Avatar" class="avatar" />
                     <div class="user-details">
                         <p class="username">{{ user.userName }}</p>
-                        <p class="bio" v-if="user.signature != null">{{ truncateText(user.signature, 20) }}</p>
-                        <p class="bio" v-else>这个人很懒，什么都没留下~</p>
+                        <p class="bio">{{ truncateText(user.signature, 20) }}</p>
                     </div>
                 </div>
                 <div class="follow-button">

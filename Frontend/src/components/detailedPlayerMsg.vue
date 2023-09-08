@@ -2,7 +2,9 @@
   <my-nav></my-nav>
   <!-- 返回按钮 -->
   <el-button class="button" @click="goBack()">
-    <el-icon><Back /></el-icon>
+    <el-icon>
+      <Back />
+    </el-icon>
     <a>返回</a>
   </el-button>
   <!-- 上方数据 -->
@@ -53,7 +55,7 @@
       <div class="fourthBarContent">
         {{ this.playerName }}，（英文名：{{ this.enName }}），现年{{ this.age }}，
         是一名{{ this.nationality }}的足球运动员。他身高{{ this.height }}，现效力于{{ this.club }}足球俱乐部。
-        他的惯用脚是{{ this.dominantFoot }}，在球队中担任{{ this.position }}的位置。他的球衣号码为{{ this.number }}。 
+        他的惯用脚是{{ this.dominantFoot }}，在球队中担任{{ this.position }}的位置。他的球衣号码为{{ this.number }}。
       </div>
     </div>
 
@@ -352,12 +354,11 @@ export default {
   border-radius: 20%;
 }
 
-.button{
+.button {
   position: absolute;
   display: flex;
   justify-content: space-between;
   align-items: center;
   left: 5vw;
 }
-
 </style>

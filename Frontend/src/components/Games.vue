@@ -359,7 +359,7 @@ export default {
   border-radius: 14px;
 
   &.topLeague {
-    left: 4.5rem;
+    left: 8.5rem;
   }
 }
 
@@ -367,8 +367,8 @@ export default {
   width: 55rem;
   height: 4rem;
   background-color: white;
-  top: 11rem;
-  left: 10rem;
+  top: 12rem;
+  left: 14rem;
   position: absolute;
   border: 2px solid #EAEAEA;
   border-radius: 14px;
@@ -389,8 +389,8 @@ export default {
   border-radius: 14px;
 
   &.midList {
-    left: 23rem;
-    top: 16.5rem;
+    left: 27rem;
+    top: 18.5rem;
   }
 }
 
@@ -403,9 +403,9 @@ export default {
   position: absolute;
   width: 19rem;
   height: 25rem;
-  left: 68rem;
+  left: 72rem;
   flex-shrink: 0;
-  top: 11rem;
+  top: 12rem;
   /* 正式版本 */
 
   /* 测试版本 */
