@@ -185,9 +185,6 @@ export default {
             const sign = this.personalSign;
             this.avatarUrl = serverip + this.avatarUrl;
             const avatar = this.avatarUrl;
-            console.log(this.avatarUrl)
-            console.log('123456')
-            console.log(avatar);
             //这里加后端交互代码，然后刷新当前页面
             // 延迟刷新页面
             const token = localStorage.getItem('token');
@@ -229,9 +226,6 @@ export default {
                 })
                 // this.$router.push('/signin');
             }
-            // setTimeout(() => {
-            //     window.location.reload(); // 刷新当前页面
-            // }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
         }
     },
 }

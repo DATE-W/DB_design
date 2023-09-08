@@ -79,7 +79,6 @@ export default {
     </div>
     `;
             ElMessageBox({
-                title: '用户信息',
                 message: userInfoHTML,
                 showCancelButton: true,
                 confirmButtonText: confirmText,

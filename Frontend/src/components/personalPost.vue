@@ -215,7 +215,7 @@ export default {
   width: 100%;
   background: #d7ecffeb;
   border-radius: 20px;
-  height: 100%;
+  height: 82vh;
 }
 
 .posts-section {
