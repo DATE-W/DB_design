@@ -84,8 +84,8 @@ export default {
                                 <el-container class="notice-id">{{ pastAnc.notice_id }}</el-container>
                             </el-container>
                             <el-container class="single-notice-main">
-                                <el-container class="text">{{ pastAnc.text }}</el-container>
-                                <el-container class="publishdatetime">发布于<span style="color: rgb(77, 172, 207);">{{ pastAnc.publishdatetime }}</span></el-container>
+                                <el-container class="text"  style="padding-right:1vw;"><el-icon style="margin-top:0.5vh;margin-right:2vw;"><ChatLineSquare /></el-icon>{{ pastAnc.text }}</el-container>
+                                <el-container class="publishdatetime"><el-icon style="margin-top:0.5vh;"><Avatar /></el-icon>发布于<span style="color: rgb(77, 172, 207);">{{ pastAnc.publishdatetime }}</span></el-container>
                             </el-container>
                         </el-container>
                     </el-container>
