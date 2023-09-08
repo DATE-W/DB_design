@@ -82,7 +82,7 @@ namespace DBwebAPI.Controllers
                 //个性签名
                 String signature = tempUsr.FirstOrDefault()?.signature ??"";
                 //头像
-                String avatar = tempUsr.FirstOrDefault()?.avatar ?? "/";
+                String avatar = tempUsr.FirstOrDefault()?.avatar ?? "http://110.40.206.206/pictures/3ea6beec64369c2642b92c6726f1epng.png";
                 //关注数
                 int follower_num = tempUsr.FirstOrDefault()?.follownumber??0;
                 //粉丝数
