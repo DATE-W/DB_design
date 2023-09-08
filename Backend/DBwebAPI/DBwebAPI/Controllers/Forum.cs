@@ -127,16 +127,17 @@ namespace DBwebAPI.Controllers
                     user_id = tempUsr.First().user_id,
                     post_id = post.post_id
                 };
+
+                int count1 = await sqlORM.Insertable(post).ExecuteCommandAsync();
+                int count2 = await sqlORM.Insertable(publishPost).ExecuteCommandAsync();
                 //新建图片
-                foreach(var pic in json.pic)
+                foreach (var pic in json.pic)
                 {
                     PostPic postpic = new PostPic();
-                    postpic.post_id=post.post_id;
+                    postpic.post_id = post.post_id;
                     postpic.pic = pic;
                     await sqlORM.Insertable(postpic).ExecuteCommandAsync();
                 }
-                int count1 = await sqlORM.Insertable(post).ExecuteCommandAsync();
-                int count2 = await sqlORM.Insertable(publishPost).ExecuteCommandAsync();
                 // Update the point
                 var updateResult = await sqlORM.Updateable<Usr>()
                     .SetColumns(u => new Usr { userPoint = u.userPoint+10 })
