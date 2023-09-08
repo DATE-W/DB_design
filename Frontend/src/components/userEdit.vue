@@ -183,8 +183,13 @@ export default {
             const serverip = 'http://110.40.206.206/'
             const userName = this.userName;
             const sign = this.personalSign;
-            this.avatarUrl = serverip + this.avatarUrl;
+
+            if (this.avatarUrl != undefined) {
+                this.avatarUrl = serverip + this.avatarUrl;
+            }
+
             const avatar = this.avatarUrl;
+
             //这里加后端交互代码，然后刷新当前页面
             // 延迟刷新页面
             const token = localStorage.getItem('token');

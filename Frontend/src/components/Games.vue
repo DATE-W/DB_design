@@ -19,12 +19,14 @@
 <template>
   <!-- 顶部部导航栏 -->
   <my-nav></my-nav>
-
-  <div class="art-title" ref="artTitle">
-    <a>同济绿茵</a>
-  </div>
-  <div class="game-title" ref="gameTitle">
-    <a>&nbsp;&nbsp;&nbsp;赛事</a>
+  <!-- 动态标题 -->
+  <div class="titleFlex">
+    <div class="artTitle" ref="artTitle">
+      <a>同济绿茵</a>
+    </div>
+    <div class="gameTitle" ref="gameTitle">
+      <a>&nbsp;&nbsp;&nbsp;赛事</a>
+    </div>
   </div>
   <!-- 上部联赛选择器 -->
   <div class="borderBoxLeft topLeague">
@@ -723,5 +725,25 @@ export default {
   border-radius: 2rem;
   left: 1rem;
   object-fit: cover;
+}
+
+.titleFlex {
+  position: absolute;
+  top: 24rem;
+  left: 8rem;
+}
+
+.artTitle {
+  font-family: artfont;
+  font-size: 50px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.gameTitle {
+  font-family: artfont;
+  font-size: 50px;
+  font-style: normal;
+  font-weight: 400;
 }
 </style>
