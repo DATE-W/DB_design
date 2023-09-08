@@ -21,19 +21,19 @@ namespace DBwebAPI.Controllers
     {
         public class TeamInGameTimePara
         {
-            public string dateTime { get; set; }
+            public string dateTime { get; set; } = "";
             public int gameType { get; set; }
         }
         public class TeamInGameTimeVal
         {
             public string startTime { get; set; } = "null";
-            public int homeTeam { get; set; } = -1;
-            public int guestTeam { get; set; } = -1;
+            public int homeTeam { get; set; } = 0;
+            public int guestTeam { get; set; } = 0;
             public string homeTeamName { get; set; }= "null";
             public string guestTeamName { get; set; } = "null";
             public string status { get; set; }= "null";
-            public int homeScore { get; set; } = -1;
-            public int guestScore { get; set; } = -1;
+            public int homeScore { get; set; } = 0;
+            public int guestScore { get; set; } = 0;
             public string homeLogo { get; set; } = "null";
             public string guestLogo { get; set; } = "null";
             public string gameUid { get; set; } = "null";
@@ -69,57 +69,56 @@ namespace DBwebAPI.Controllers
                 int gameType = json.gameType;
                 Console.WriteLine("gameType = " + gameType.ToString());
 
-
-                DateTime temp;
-
                 ans = await sqlORM.Queryable<Game>()
                     .LeftJoin<Team>((g, home) => g.homeTeam == home.team_id)
                     .LeftJoin<Team>((g, home, guest) => g.guestTeam == guest.team_id)
                     .Where((g, home, guest) =>
-                    g.startTime.Value.ToString("yyyy-MM-dd") == dateTime
+                    g.startTime.ToString("yyyy-MM-dd") == dateTime
                     && ((gameType != 0 && g.type == gameNames[gameType]) || gameType == 0)
                     )
                     .Select((g, home, guest) => new TeamInGameTimeVal
                     {
                         gameUid = g.game_id.ToString(),
-                        startTime = g.startTime.Value.ToString("HH") + ":" + (g.startTime.Value.Minute < 10 ? "0" : "") + g.startTime.Value.Minute.ToString(),
+                        startTime = g.startTime.ToString("HH") + ":" + (g.startTime.Minute < 10 ? "0" : "") + g.startTime.Minute.ToString(),
                         homeTeamName = home.chinesename,
                         homeTeam = home.team_id,
                         guestTeam = guest.team_id,
                         guestTeamName = guest.chinesename,
                         status = g.status,
                         homeLogo = home.logo,
-                        guestLogo = guest.logo
+                        guestLogo = guest.logo,
+                        homeScore=g.homeScore,
+                        guestScore=g.guestScore
                     })
                     .ToListAsync();
 
                 Console.WriteLine("ansCnt = " + ans.Count().ToString());
 
 
-                // 接下来对比赛进行比分筛选
-                for (int i = 0; i < ans.Count(); i++)
-                {
-                    int? game_id = int.Parse(ans[i].gameUid);
-                    int? homeTeam = ans[i].homeTeam;
-                    int? guestTeam = ans[i].guestTeam;
+                //// 接下来对比赛进行比分筛选
+                //for (int i = 0; i < ans.Count(); i++)
+                //{
+                //    int? game_id = int.Parse(ans[i].gameUid);
+                //    int? homeTeam = ans[i].homeTeam;
+                //    int? guestTeam = ans[i].guestTeam;
 
 
-                    ans[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == homeTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
-                        .SumAsync((top, pjg) => pjg.goal);
+                //    ans[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                //        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == homeTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                //        .SumAsync((top, pjg) => pjg.goal);
 
 
-                    ans[i].guestScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == guestTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
-                        .SumAsync((top, pjg) => pjg.goal);
-                }
+                //    ans[i].guestScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                //        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == guestTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                //        .SumAsync((top, pjg) => pjg.goal);
+                //}
 
                 //排序
                 for (int i = 0; i < ans.Count(); i++)
                 {
                     for (int j = 0; j < ans.Count() - i - 1; j++)
                     {
-                        //if (ans[j].timeValue< ans[j + 1].timeValue)
+
                         if (System.String.Compare(ans[j].startTime, ans[j + 1].startTime) > 0)
                         {
                             TeamInGameTimeVal tempGame = new TeamInGameTimeVal();
@@ -151,35 +150,35 @@ namespace DBwebAPI.Controllers
         }
         public class recentGamesVal
         {
-            public string? gameDate { get; set; }
-            public string? opponentName { get; set; }
-            public int? opponentTeamId { get; set; }
-            public int? homeScore { get; set; }
-            public int? opponentScore { get; set; }
-            public string? opponentLogo { get; set; }
-            public string? gameUid { get; set; }
-            public string? gameType { get; set;}
+            public string gameDate { get; set; } = "";
+            public string opponentName { get; set; } = "";
+            public int opponentTeamId { get; set; }
+            public int homeScore { get; set; }
+            public int opponentScore { get; set; }
+            public string opponentLogo { get; set; } = "";
+            public string gameUid { get; set; } = "";
+            public string gameType { get; set; } = "";
         }
         public class getGameByUidVal
         {
-            public string dateTime { get; set; }
-            public string startTime { get; set; }
+            public string dateTime { get; set; } = "";
+            public string startTime { get; set; } = "";
             public int homeTeam { get; set; }
             public int guestTeam { get; set; }
-            public string homeTeamName { get; set; }
-            public string guestTeamName { get; set; }
-            public string leagueName { get; set; }
+            public string homeTeamName { get; set; } = "";
+            public string guestTeamName { get; set; } = "";
+            public string leagueName { get; set; } = "";
             public int leagueType { get; set; }
-            public string status { get; set; }
+            public string status { get; set; } = "";
             public int homeScore { get; set; }
             public int guestScore { get; set; }
-            public string homeLogo { get; set; }
-            public string guestLogo { get; set; }
-            public string homeLink { get; set; }
-            public string guestLink { get; set; }
-            public string liveStream { get; set; }
-            public List<recentGamesVal?>? homeRecentGames { get; set; }
-            public List<recentGamesVal?>? guestRecentGames { get; set; }
+            public string homeLogo { get; set; } = "";
+            public string guestLogo { get; set; } = "";
+            public string homeLink { get; set; } = "";
+            public string guestLink { get; set; } = "";
+            public string liveStream { get; set; } = "";
+            public List<recentGamesVal> homeRecentGames { get; set; }
+            public List<recentGamesVal> guestRecentGames { get; set; } 
 
         }
 
@@ -203,8 +202,8 @@ namespace DBwebAPI.Controllers
                     .Where((g, home, guest) => g.game_id == gameUid)
                     .Select((g, home, guest) => new getGameByUidVal
                     {
-                        dateTime = g.startTime.Value.ToString("yyyy-MM-dd"),
-                        startTime = g.startTime.Value.ToString("HH") + ":" + (g.startTime.Value.Minute < 10 ? "0" : "") + g.startTime.Value.Minute.ToString(),
+                        dateTime = g.startTime.ToString("yyyy-MM-dd"),
+                        startTime = g.startTime.ToString("HH") + ":" + (g.startTime.Minute < 10 ? "0" : "") + g.startTime.Minute.ToString(),
                         homeTeamName = home.chinesename,
                         guestTeamName = guest.chinesename,
                         leagueName = g.type,
@@ -215,7 +214,9 @@ namespace DBwebAPI.Controllers
                         guestTeam = guest.team_id,
                         homeLink = "www.baidu.com",
                         guestLink = "www.baidu.com",
-                        liveStream = g.liveUrl
+                        liveStream = g.liveUrl,
+                        homeScore=g.homeScore,
+                        guestScore=g.guestScore
                     })
                     .ToListAsync();
 
@@ -224,26 +225,26 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("found!");
                 }
                 //计算分数
-                if (ans.Count != 0)
-                {
-                    List<string> gameNames = new List<string> { "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
-                    for (int i = 0; i < gameNames.Count(); i++)
-                    {
-                        if (ans[0].leagueName == gameNames[i])
-                            ans[0].leagueType = i + 1;
-                    }
+                //if (ans.Count != 0)
+                //{
+                //    List<string> gameNames = new List<string> { "英超", "西甲", "意甲", "德甲", "法甲", "中超" };
+                //    for (int i = 0; i < gameNames.Count(); i++)
+                //    {
+                //        if (ans[0].leagueName == gameNames[i])
+                //            ans[0].leagueType = i + 1;
+                //    }
 
 
 
-                    ans[0].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == ans[0].homeTeam && top.player_id == pjg.player_id && pjg.game_id == gameUid)
-                        .SumAsync((top, pjg) => pjg.goal);
+                //    ans[0].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                //        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == ans[0].homeTeam && top.player_id == pjg.player_id && pjg.game_id == gameUid)
+                //        .SumAsync((top, pjg) => pjg.goal);
 
-                    ans[0].guestScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == ans[0].guestTeam && top.player_id == pjg.player_id && pjg.game_id == gameUid)
-                        .SumAsync((top, pjg) => pjg.goal);
+                //    ans[0].guestScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                //        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == ans[0].guestTeam && top.player_id == pjg.player_id && pjg.game_id == gameUid)
+                //        .SumAsync((top, pjg) => pjg.goal);
 
-                }
+                //}
 
 
                 //查询后面三场赛事
@@ -259,33 +260,36 @@ namespace DBwebAPI.Controllers
                         .Take(3)
                         .Select((gg, myTeam, opponentTeam) => new recentGamesVal
                         {
-                            gameDate = gg.startTime.Value.ToString("yyyy-MM-dd"),
+                            gameDate = gg.startTime.ToString("yyyy-MM-dd"),
                             opponentName = opponentTeam.chinesename,
                             opponentTeamId = opponentTeam.team_id,
                             opponentLogo = opponentTeam.logo,
-                            gameUid = gg.game_id.ToString()
+                            gameUid = gg.game_id.ToString(),
+                            gameType=gg.type,
+                            homeScore = gg.homeTeam == myTeam.team_id ? gg.homeScore : gg.guestScore,
+                            opponentScore = gg.homeTeam == myTeam.team_id ? gg.guestScore : gg.homeScore
 
                         })
                         .ToListAsync();
 
                     //计算近几场得分
-                    for (int i = 0; i < ans[0].homeRecentGames.Count(); i++)
-                    {
+                    //for (int i = 0; i < ans[0].homeRecentGames.Count(); i++)
+                    //{
 
 
-                        int? game_id = int.Parse(ans[0].homeRecentGames[i].gameUid);
-                        int? thisTeam = ans[0].homeTeam;
-                        int? opponentTeam = ans[0].homeRecentGames[i].opponentTeamId;
+                    //    int? game_id = int.Parse(ans[0].homeRecentGames[i].gameUid);
+                    //    int? thisTeam = ans[0].homeTeam;
+                    //    int? opponentTeam = ans[0].homeRecentGames[i].opponentTeamId;
 
 
-                        ans[0].homeRecentGames[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                            .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == thisTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
-                            .SumAsync((top, pjg) => pjg.goal);
+                    //    ans[0].homeRecentGames[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                    //        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == thisTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                    //        .SumAsync((top, pjg) => pjg.goal);
 
-                        ans[0].homeRecentGames[i].opponentScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                            .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == opponentTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
-                            .SumAsync((top, pjg) => pjg.goal);
-                    }
+                    //    ans[0].homeRecentGames[i].opponentScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                    //        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == opponentTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                    //        .SumAsync((top, pjg) => pjg.goal);
+                    //}
 
 
 
@@ -300,32 +304,35 @@ namespace DBwebAPI.Controllers
                         .Take(3)
                         .Select((gg, myTeam, opponentTeam) => new recentGamesVal
                         {
-                            gameDate = gg.startTime.Value.ToString("yyyy-MM-dd"),
+                            gameDate = gg.startTime.ToString("yyyy-MM-dd"),
                             opponentName = opponentTeam.chinesename,
                             opponentTeamId = opponentTeam.team_id,
                             opponentLogo = opponentTeam.logo,
-                            gameUid = gg.game_id.ToString()
+                            gameUid = gg.game_id.ToString(),
+                            gameType = gg.type,
+                            homeScore = gg.homeTeam == myTeam.team_id ? gg.homeScore : gg.guestScore,
+                            opponentScore = gg.homeTeam == myTeam.team_id ? gg.guestScore : gg.homeScore
                         })
                         .ToListAsync();
 
-                    //计算近几场得分
-                    for (int i = 0; i < ans[0].guestRecentGames.Count(); i++)
-                    {
+                    ////计算近几场得分
+                    //for (int i = 0; i < ans[0].guestRecentGames.Count(); i++)
+                    //{
 
 
-                        int? game_id = int.Parse(ans[0].guestRecentGames[i].gameUid);
-                        int? thisTeam = ans[0].guestTeam;
-                        int? opponentTeam = ans[0].guestRecentGames[i].opponentTeamId;
+                    //    int? game_id = int.Parse(ans[0].guestRecentGames[i].gameUid);
+                    //    int? thisTeam = ans[0].guestTeam;
+                    //    int? opponentTeam = ans[0].guestRecentGames[i].opponentTeamId;
 
 
-                        ans[0].guestRecentGames[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                            .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == thisTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
-                            .SumAsync((top, pjg) => pjg.goal);
+                    //    ans[0].guestRecentGames[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                    //        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == thisTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                    //        .SumAsync((top, pjg) => pjg.goal);
 
-                        ans[0].guestRecentGames[i].opponentScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                            .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == opponentTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
-                            .SumAsync((top, pjg) => pjg.goal);
-                    }
+                    //    ans[0].guestRecentGames[i].opponentScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                    //        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == opponentTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                    //        .SumAsync((top, pjg) => pjg.goal);
+                    //}
 
 
                     Console.WriteLine(ans.Count());
@@ -357,14 +364,14 @@ namespace DBwebAPI.Controllers
         }
         public class getTeamMatchesByNameVal
         {
-            public string? gameDate { get; set; }
-            public int? homeTeam { get; set; }
-            public int? opponentTeam { get; set; }
-            public string? opponentName { get; set; }
-            public int? homeScore { get; set; }
-            public int? opponentScore { get; set; }
-            public string? opponentLogo { get; set; }
-            public string? gameUid { get; set; }
+            public string gameDate { get; set; } = "";
+            public int homeTeam { get; set; }
+            public int opponentTeam { get; set; }
+            public string opponentName { get; set; } = "";
+            public int homeScore { get; set; }
+            public int opponentScore { get; set; }
+            public string opponentLogo { get; set; } = "";
+            public string gameUid { get; set; } = "";
 
         }
 
@@ -388,38 +395,39 @@ namespace DBwebAPI.Controllers
                     .LeftJoin<Team>((g, home) => g.homeTeam == home.team_id)
                     .LeftJoin<Team>((g, home, guest) => g.guestTeam == guest.team_id)
                     .Where((g, home, guest) => (home.chinesename == teamName || guest.chinesename == teamName) && g.status == "Played")
-                    .OrderBy((g, home, guest) => g.startTime.Value, OrderByType.Desc)
+                    .OrderBy((g, home, guest) => g.startTime, OrderByType.Desc)
                     .Take(3)
                     .Select((g, home, guest) => new getTeamMatchesByNameVal
                     {
-                        gameDate = g.startTime.Value.ToString("yyyy-MM-dd"),
+                        gameDate = g.startTime.ToString("yyyy-MM-dd"),
                         homeTeam = (home.chinesename == teamName ? home.team_id : guest.team_id),
                         opponentTeam = (home.chinesename == teamName ? guest.team_id : home.team_id),
                         opponentName = (home.chinesename == teamName ? guest.chinesename : home.chinesename),
                         opponentLogo = (home.chinesename == teamName ? guest.logo : home.logo),
-                        gameUid = g.game_id.ToString()
-
+                        gameUid = g.game_id.ToString(),
+                        homeScore= (home.chinesename == teamName ? g.homeScore : g.guestScore),
+                        opponentScore = (home.chinesename == teamName ? g.guestScore : g.homeScore)
                     })
                     .ToListAsync();
 
                 //计算分数
-                for (int i = 0; i < ans.Count; i++)
-                {
+                //for (int i = 0; i < ans.Count; i++)
+                //{
 
-                    int? game_id = int.Parse(ans[i].gameUid);
-                    int? homeTeam = ans[i].homeTeam;
-                    int? opponentTeam = ans[i].opponentTeam;
-
-
-                    ans[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == homeTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
-                        .SumAsync((top, pjg) => pjg.goal);
+                //    int? game_id = int.Parse(ans[i].gameUid);
+                //    int? homeTeam = ans[i].homeTeam;
+                //    int? opponentTeam = ans[i].opponentTeam;
 
 
-                    ans[i].opponentScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == opponentTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
-                        .SumAsync((top, pjg) => pjg.goal);
-                }
+                //    ans[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                //        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == homeTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                //        .SumAsync((top, pjg) => pjg.goal);
+
+
+                //    ans[i].opponentScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                //        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == opponentTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                //        .SumAsync((top, pjg) => pjg.goal);
+                //}
 
                 return ans;
 
@@ -445,10 +453,8 @@ namespace DBwebAPI.Controllers
 
         public class TeamInGameTypeVal
         {
-            //public string? gameName { get; set; }
             public string? teamName { get; set; }
             public string? teamLogo { get; set; }
-            //public string? guestTeamName { get; set; }
 
         }
 
@@ -493,10 +499,10 @@ namespace DBwebAPI.Controllers
 
                 Console.WriteLine("team Count = " + ans.Count().ToString());
 
-                for (int i = 0; i < ans.Count(); i++)
-                {
-                    Console.WriteLine("teamName=" + ans[i].teamName);
-                }
+                //for (int i = 0; i < ans.Count(); i++)
+                //{
+                //    Console.WriteLine("teamName=" + ans[i].teamName);
+                //}
                 return ans;
             }
             catch (Exception ex)
@@ -515,35 +521,35 @@ namespace DBwebAPI.Controllers
         }
         public class teamMemberVal
         {
-            public int? player_id { get; set; }
-            public string? playerName { get; set; }
-            public string? playerPhoto { get; set; }
-            public string? playerPosition { get; set; }
-            public string? playerNumber { get; set;}
+            public int player_id { get; set; }
+            public string playerName { get; set; } = "";
+            public string playerPhoto { get; set; } = "";
+            public string playerPosition { get; set; } = "";
+            public string playerNumber { get; set; } = "";
             public int? playerAppearance { get; set;}
             public int? playerShoot { get; set;}
             public int? playerGoal { get; set;}
-            public string? playerNationality { get; set;}
+            public string playerNationality { get; set; } = "";
         }
         public class getTeamInfoByNameVal
         {
             public string teamName { get; set; } = "null";
-            public int? team_id { get; set; }
-            public string? enName { get; set; }
-            public string? logo { get; set; }
-            public string? city { get; set; }
-            public int? foundYear { get; set; }
-            public string? coach { get; set; }
-            public string? country { get; set; }
-            public string? telephone { get; set; }
-            public string? address { get; set; }
-            public string? venue_name { get; set; }
-            public string? email { get; set; }
+            public int team_id { get; set; }
+            public string enName { get; set; } = "";
+            public string logo { get; set; } = "";
+            public string city { get; set; } = "";
+            public int foundYear { get; set; }
+            public string coach { get; set; } = "";
+            public string country { get; set; } = "";
+            public string telephone { get; set; } = "";
+            public string address { get; set; } = "";
+            public string venue_name { get; set; } = "";
+            public string email { get; set; } = "";
             public int? venue_capacity { get; set; }
-            public string? leagueType { get; set; }
+            public string leagueType { get; set; } = "";
 
             public List<teamMemberVal>? teamMember { get; set; }
-            public List<recentGamesVal?>? recentGames { get; set; }
+            public List<recentGamesVal>? recentGames { get; set; }
         }
         [HttpPost]
         public async Task<List<getTeamInfoByNameVal>> getTeamInfoByName([FromBody] getTeamInfoByNamePara json)
@@ -579,6 +585,7 @@ namespace DBwebAPI.Controllers
                 //添加最近赛事
                 if (ans.Count() != 0)
                 {
+
                     //先获取球员信息
                     ans[0].teamMember =await sqlORM.Queryable<TeamOwnPlayer>()
                         .LeftJoin<Players>((top, p) => top.player_id == p.player_id)
@@ -623,33 +630,42 @@ namespace DBwebAPI.Controllers
                          .Take(3)
                          .Select((gg, myTeam, opponentTeam) => new recentGamesVal
                          {
-                             gameDate = gg.startTime.Value.ToString("yyyy-MM-dd"),
+                             gameDate = gg.startTime.ToString("yyyy-MM-dd"),
                              opponentName = opponentTeam.chinesename,
                              opponentTeamId = opponentTeam.team_id,
                              opponentLogo = opponentTeam.logo,
                              gameUid = gg.game_id.ToString(),
-                             gameType=gg.type
+                             gameType=gg.type,
+                             homeScore=gg.homeTeam==ans[0].team_id?gg.homeScore:gg.guestScore,
+                             opponentScore = gg.homeTeam == ans[0].team_id ? gg.guestScore : gg.homeScore,
+
                          })
                          .ToListAsync();
 
-                    for (int i = 0; i < ans[0].recentGames.Count(); i++)
+                    if(ans[0].recentGames.Count() > 0)
                     {
-
-                        int? game_id = int.Parse(ans[0].recentGames[i].gameUid);
-                        int? thisTeam = ans[0].team_id;
-                        int? opponentTeam = ans[0].recentGames[i].opponentTeamId;
-
-
-                        ans[0].recentGames[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                            .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == thisTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
-                            .SumAsync((top, pjg) => pjg.goal);
-
-                        ans[0].recentGames[i].opponentScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                            .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == opponentTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
-                            .SumAsync((top, pjg) => pjg.goal);
-
-                        ans[0].leagueType = ans[0].recentGames[i].gameType;
+                        ans[0].leagueType = ans[0].recentGames[0].gameType;
                     }
+
+
+                    //for (int i = 0; i < ans[0].recentGames.Count(); i++)
+                    //{
+
+                    //int? game_id = int.Parse(ans[0].recentGames[i].gameUid);
+                    //int? thisTeam = ans[0].team_id;
+                    //int? opponentTeam = ans[0].recentGames[i].opponentTeamId;
+
+
+                    //ans[0].recentGames[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                    //    .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == thisTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                    //    .SumAsync((top, pjg) => pjg.goal);
+
+                    //ans[0].recentGames[i].opponentScore = await sqlORM.Queryable<TeamOwnPlayer>()
+                    //    .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == opponentTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
+                    //    .SumAsync((top, pjg) => pjg.goal);
+
+                    //    ans[0].leagueType = ans[0].recentGames[i].gameType;
+                    //}
 
 
                 }
@@ -671,7 +687,7 @@ namespace DBwebAPI.Controllers
 
         public class topScorerVal
         {
-            public string topScorerName { get; set; }
+            public string topScorerName { get; set; } = "";
             public int? goals { get; set; }
         }
         [HttpGet]
@@ -711,7 +727,7 @@ namespace DBwebAPI.Controllers
 
         public class topScorersInGameTypePara
         {
-            public string gameName { get; set; }
+            public string gameName { get; set; } = "";
 
         }
         public class topScorersInGameTypeVal
@@ -827,7 +843,7 @@ namespace DBwebAPI.Controllers
 
         public class searchTeamOrPlayerPara
         {
-            public string key { get; set; }
+            public string key { get; set; } = "";
             public int gameType { get; set; }
         }
         public class searchedTeamVal
@@ -1086,7 +1102,7 @@ namespace DBwebAPI.Controllers
                         var tempEvent = await sqlORM.Queryable<Players>()
                             .LeftJoin<PlayerJoinGame>((p, pjg) => p.player_id == pjg.player_id)
                             .LeftJoin<Game>((p, pjg, g) => pjg.game_id == g.game_id)
-                            .Where((p, pjg, g) => p.chineseName == playerName && g.startTime.Value < endTime && g.startTime.Value > startTime)
+                            .Where((p, pjg, g) => p.chineseName == playerName && g.startTime < endTime && g.startTime > startTime)
                             .Select((p, pjg, g) => new eventData
                             {
                                 seasonName = evenName,
@@ -1174,7 +1190,7 @@ namespace DBwebAPI.Controllers
                         .Select((g, home, guest) => new showRecentGamesVal
                         {
                             gameName = g.type,
-                            gameTime = g.startTime.Value.ToString("yyyy-mm-dd"),
+                            gameTime = g.startTime.ToString("yyyy-mm-dd"),
                             gameUid = g.game_id.ToString(),
                             homeTeamName = home.chinesename,
                             homeTeam = home.team_id,
@@ -1182,65 +1198,17 @@ namespace DBwebAPI.Controllers
                             guestTeamName = guest.chinesename,
                             homeTeamLogo=home.logo,
                             guestTeamLogo=guest.logo,
-                            status = g.status
+                            status = g.status,
+                            homeScore=g.homeScore,
+                            guestScore=g.guestScore
                         })
                         .ToListAsync();
                     ans.AddRange(temp);
                 }
 
-                //ans = await sqlORM.Queryable<Game>()
-                //    .LeftJoin<Team>((g, home) => g.homeTeam == home.team_id)
-                //    .LeftJoin<Team>((g, home, guest) => g.guestTeam == guest.team_id)
-                //    .Where((g, home, guest) => ((gameType != 0 && g.type == gameNames[gameType]) || gameType == 0) && g.status == "Played")
-                //    .OrderBy((g, home, guest) => g.startTime, OrderByType.Desc)
-                //    .Take(6)
-                //    .Select((g, home, guest) => new showRecentGamesVal
-                //    {
-                //        gameName = g.type,
-                //        gameTime = g.startTime.Value.ToString("yyyy-mm-dd"),
-                //        gameUid = g.game_id.ToString(),
-                //        homeTeamName = home.chinesename,
-                //        homeTeam = home.team_id,
-                //        guestTeam = guest.team_id,
-                //        guestTeamName = guest.chinesename,
-                //        status = g.status
-                //    })
-                //    .ToListAsync();
 
                 Console.WriteLine("ansCnt = " + ans.Count().ToString());
 
-
-
-                // 接下来对比赛进行比分筛选
-                for (int i = 0; i < ans.Count(); i++)
-                {
-                    int? game_id = int.Parse(ans[i].gameUid);
-                    int? homeTeam = ans[i].homeTeam;
-                    int? guestTeam = ans[i].guestTeam;
-                    //Console.WriteLine("homeTeam is " + ans[i].homeTeam);
-                    //Console.WriteLine("guestTeam is " + ans[i].guestTeam);
-
-                    ans[i].homeScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == homeTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
-                        .SumAsync((top, pjg) => pjg.goal);
-
-                    if (ans[i].homeScore == null)
-                    {
-                        ans[i].homeScore = 0;
-                    }
-
-
-                    ans[i].guestScore = await sqlORM.Queryable<TeamOwnPlayer>()
-                        .LeftJoin<PlayerJoinGame>((top, pjg) => top.team_id == guestTeam && top.player_id == pjg.player_id && pjg.game_id == game_id)
-                        .SumAsync((top, pjg) => pjg.goal);
-
-                    if (ans[i].guestScore == null)
-                    {
-                        ans[i].guestScore = 0;
-                    }
-
-
-                }
 
                 Console.WriteLine("recent games count = "+ans.Count);
 

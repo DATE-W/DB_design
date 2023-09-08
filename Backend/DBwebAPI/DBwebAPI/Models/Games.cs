@@ -35,7 +35,7 @@ namespace DBwebAPI.Models
         public string address { get; set; } = "null";
         public string venue_name { get; set; } = "null";
         public string email { get; set; } = "null";
-        public int venue_capacity { get; set; } = 0;
+        public int? venue_capacity { get; set; } 
     }
 
     //public class Coach
@@ -96,9 +96,11 @@ namespace DBwebAPI.Models
         public int homeTeam { get; set; }
         public int guestTeam { get; set; }
         public string type { get; set; } = "null";
-        public DateTime? startTime { get; set; } 
+        public DateTime startTime { get; set; } 
         public string status { get; set; } = "null";
         public string liveUrl { get; set; } = "null";
+        public int homeScore { get; set; } = 0;
+        public int guestScore { get; set; } = 0;
     }
 
 
@@ -108,25 +110,25 @@ namespace DBwebAPI.Models
         public int game_id { get; set; }
 
         [SugarColumn(IsPrimaryKey = true)]
-        public int player_id { get; set; }
+        public int player_id { get; set; } 
 
-        public int minutes { get; set; }
-        public int goal { get; set; }
-        public int assist { get; set; }
-        public int red { get; set; }
-        public int yellow { get; set; }
-        public int shoot { get; set; }
-        public int target { get; set; }
-        public int surpass { get; set; }
-        public int surpassSuccess { get; set; }
-        public int fouled { get; set; }
-        public int pass { get; set; }
-        public int passRate { get; set; }
-        public int tackle { get; set; }
-        public int intercept { get; set; }
-        public int foul { get; set; }
-        public int lost { get; set; }
-        public int surpassed { get; set; }
+        public int minutes { get; set; } = 0;
+        public int goal { get; set; } = 0;
+        public int assist { get; set; } = 0;
+        public int red { get; set; } = 0;
+        public int yellow { get; set; } = 0;
+        public int shoot { get; set; } = 0;
+        public int target { get; set; } = 0;
+        public int surpass { get; set; } = 0;
+        public int surpassSuccess { get; set; } = 0;        
+        public int fouled { get; set; } = 0;
+        public int pass { get; set; } = 0;
+        public int passRate { get; set; } = 0;
+        public int tackle { get; set; } = 0;
+        public int intercept { get; set; } = 0;
+        public int foul { get; set; } = 0;
+        public int lost { get; set; } = 0;
+        public int surpassed { get; set; } = 0;
     }
 
 
