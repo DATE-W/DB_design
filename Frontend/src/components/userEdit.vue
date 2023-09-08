@@ -175,21 +175,23 @@ export default {
                 })
                 return
             };
-            this.avatarUrl = response.data.value[0];
+            this.avatarUrl = response.data.value[response.data.value.length - 1];
             console.log(response);
         },
         async submitData() {
+            const temp = this.avatarUrl;
             await this.submitPic(); // 提交图片，获得返回的图片url
-            const serverip = 'http://110.40.206.206/'
+            const serverip = 'http://110.40.206.206/';
             const userName = this.userName;
             const sign = this.personalSign;
 
-            if (this.avatarUrl != undefined) {
+            if (this.avatarUrl == undefined) {
+                this.avatarUrl = temp;
+            }
+            else {
                 this.avatarUrl = serverip + this.avatarUrl;
             }
-
             const avatar = this.avatarUrl;
-
             //这里加后端交互代码，然后刷新当前页面
             // 延迟刷新页面
             const token = localStorage.getItem('token');
