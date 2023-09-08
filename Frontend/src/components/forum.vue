@@ -73,8 +73,8 @@
                         <el-row>
                             <el-col :span="24" v-for="(title, index) in post_title" :key="index">
                                 <el-card shadow="hover" class="post-card" @click="goToDetail(post_id[index])">
-                                    <div class="post-title">{{ title }}</div>
-                                    <div class="post-contain">{{ post_contains[index] }}</div>
+                                    <div class="post-title">{{ truncatedTitle(title) }}</div>
+                                    <div class="post-contain">{{ truncatedContent(post_contains[index]) }}</div>
                                     <div class="post-footer">
                                         <div class="approval-collect">
                                             <el-icon>
@@ -366,6 +366,12 @@ export default {
         this.animateForumTitle();
     },
     methods: {
+        truncatedTitle(title) {
+            return title.length > 12 ? title.slice(0, 12) + '...' : title;
+        },
+        truncatedContent(content) {
+            return content.length > 50 ? content.slice(0, 50) + '...' : content;
+        },
         SelectLeftTag(index) {
             switch (index) {
                 case '1':
