@@ -12,9 +12,6 @@
         logout() {
             localStorage.removeItem('token');
             this.$router.push('/');
-            setTimeout(() => {
-                window.location.reload(); // 刷新当前页面
-            }, 100); // 2000毫秒后刷新，你可以根据需要调整延迟时间
             return
         }
     }
