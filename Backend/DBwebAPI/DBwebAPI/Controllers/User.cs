@@ -1315,7 +1315,6 @@ namespace DBwebAPI.Controllers
             public string image1 { get; set; } = "";
             public string image2 { get; set; } = "";
             public string image3 { get; set; } = "";
-            public string image4 { get; set; } = "";
         }
         [HttpPost]
         public async Task<IActionResult> getalltheme()
@@ -1375,7 +1374,6 @@ namespace DBwebAPI.Controllers
                     tmp.image1 = t.image1;
                     tmp.image2 = t.image2;
                     tmp.image3 = t.image3;
-                    tmp.image4 = t.image4;
                     tmpThemes.Add(tmp);
                 }
                 tmpThemes=tmpThemes.OrderBy(t => t.id).ToList();
@@ -1387,7 +1385,6 @@ namespace DBwebAPI.Controllers
                 userThemejson.image1 = userTheme.image1;
                 userThemejson.image2 = userTheme.image2;
                 userThemejson.image3 = userTheme.image3;
-                userThemejson.image4 = userTheme.image4;
                 tmpThemes.Add(userThemejson);
 
                 ThemeJson[] themesJson = tmpThemes.ToArray();
@@ -1454,14 +1451,12 @@ namespace DBwebAPI.Controllers
                 userThemejson.image1 = userTheme.image1;
                 userThemejson.image2 = userTheme.image2;
                 userThemejson.image3 = userTheme.image3;
-                userThemejson.image4 = userTheme.image4;
                 Console.WriteLine("userAccount" +account);
                 Console.WriteLine("userThemejson.id:"+ userThemejson.id);
                 Console.WriteLine("userThemejson.name:" + userThemejson.name);
                 Console.WriteLine("userThemejson.image1:" + userThemejson.image1);
                 Console.WriteLine("userThemejson.image2:" + userThemejson.image2);
                 Console.WriteLine("userThemejson.image3:" + userThemejson.image3);
-                Console.WriteLine("userThemejson.image4:" + userThemejson.image4);
                 return Ok(userThemejson);
             }
             catch (Exception ex)

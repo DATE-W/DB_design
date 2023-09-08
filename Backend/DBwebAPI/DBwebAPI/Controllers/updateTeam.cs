@@ -741,67 +741,67 @@ namespace DBwebAPI.Controllers
                 DBconn test3 = new DBconn();
 
                 List<topScorersInGameTypeVal> ans = new List<topScorersInGameTypeVal>();
-                //ans = await sqlORM.Queryable<Players>()
-                //    .LeftJoin<PlayerJoinGame>((p, pjg) => p.player_id == pjg.player_id)
-                //    .LeftJoin<Game>((p, pjg, g) => g.game_id == pjg.game_id)
-                //    .Where((p, pjg, g) => g.type == gameName)
-                //    .GroupBy((p, pjg, g) => p.player_id)
-                //    .Select((p, pjg, g) => new topScorersInGameTypeVal
-                //    {
-                //        player_id = p.player_id,
-                //        goals = SqlFunc.AggregateSumNoNull(pjg.goal),
-                //    })
-                //    .MergeTable()
-                //    .OrderBy(it => it.goals, OrderByType.Desc)
-                //    .Take(15)
-                //    .ToListAsync();
+                ans = await sqlORM.Queryable<Players>()
+                    .LeftJoin<PlayerJoinGame>((p, pjg) => p.player_id == pjg.player_id)
+                    .LeftJoin<Game>((p, pjg, g) => g.game_id == pjg.game_id)
+                    .Where((p, pjg, g) => g.type == gameName)
+                    .GroupBy((p, pjg, g) => p.player_id)
+                    .Select((p, pjg, g) => new topScorersInGameTypeVal
+                    {
+                        player_id = p.player_id,
+                        goals = SqlFunc.AggregateSumNoNull(pjg.goal),
+                    })
+                    .MergeTable()
+                    .OrderBy(it => it.goals, OrderByType.Desc)
+                    .Take(15)
+                    .ToListAsync();
 
-                ans = await test1.Db.Queryable<Players>()
-    .LeftJoin<PlayerJoinGame>((p, pjg) => p.player_id == pjg.player_id)
-    .LeftJoin<Game>((p, pjg, g) => g.game_id == pjg.game_id)
-    .Where((p, pjg, g) => g.type == gameName)
-    .GroupBy((p, pjg, g) => p.player_id)
-    .Select((p, pjg, g) => new topScorersInGameTypeVal
-    {
-        player_id = p.player_id,
-        goals = SqlFunc.AggregateSumNoNull(pjg.goal),
-    })
-    .MergeTable()
-    .OrderBy(it => it.goals, OrderByType.Desc)
-    .Take(15)
-    .ToListAsync();
+                //            ans = await test1.Db.Queryable<Players>()
+                //.LeftJoin<PlayerJoinGame>((p, pjg) => p.player_id == pjg.player_id)
+                //.LeftJoin<Game>((p, pjg, g) => g.game_id == pjg.game_id)
+                //.Where((p, pjg, g) => g.type == gameName)
+                //.GroupBy((p, pjg, g) => p.player_id)
+                //.Select((p, pjg, g) => new topScorersInGameTypeVal
+                //{
+                //    player_id = p.player_id,
+                //    goals = SqlFunc.AggregateSumNoNull(pjg.goal),
+                //})
+                //.MergeTable()
+                //.OrderBy(it => it.goals, OrderByType.Desc)
+                //.Take(15)
+                //.ToListAsync();
 
 
 
                 for (int i = 0; i < ans.Count(); i++)
                 {
-                    //var temp =await sqlORM.Queryable<Players>()
-                    //    .LeftJoin<TeamOwnPlayer>((p, top) => p.player_id == top.player_id)
-                    //    .LeftJoin<Team>((p, top, t) => top.team_id == t.team_id)
-                    //    .Where((p, top, t) => p.player_id == ans[i].player_id)
-                    //    .Select((p, top, t) => new topScorersInGameTypeVal
-                    //    {
-                    //        teamLogo = t.logo,
-                    //        teamName = t.chinesename,
-                    //        playerName = p.chineseName,
-                    //        photo = p.photo
-                    //    })
-                    //    .ToListAsync();
-                    var temp_orm= new DBconn();
+                    var temp = await sqlORM.Queryable<Players>()
+                        .LeftJoin<TeamOwnPlayer>((p, top) => p.player_id == top.player_id)
+                        .LeftJoin<Team>((p, top, t) => top.team_id == t.team_id)
+                        .Where((p, top, t) => p.player_id == ans[i].player_id)
+                        .Select((p, top, t) => new topScorersInGameTypeVal
+                        {
+                            teamLogo = t.logo,
+                            teamName = t.chinesename,
+                            playerName = p.chineseName,
+                            photo = p.photo
+                        })
+                        .ToListAsync();
+                    //                var temp_orm= new DBconn();
 
 
-                    var temp = await temp_orm.Db.Queryable<Players>()
-    .LeftJoin<TeamOwnPlayer>((p, top) => p.player_id == top.player_id)
-    .LeftJoin<Team>((p, top, t) => top.team_id == t.team_id)
-    .Where((p, top, t) => p.player_id == ans[i].player_id)
-    .Select((p, top, t) => new topScorersInGameTypeVal
-    {
-        teamLogo = t.logo,
-        teamName = t.chinesename,
-        playerName = p.chineseName,
-        photo = p.photo
-    })
-    .ToListAsync();
+                    //                var temp = await temp_orm.Db.Queryable<Players>()
+                    //.LeftJoin<TeamOwnPlayer>((p, top) => p.player_id == top.player_id)
+                    //.LeftJoin<Team>((p, top, t) => top.team_id == t.team_id)
+                    //.Where((p, top, t) => p.player_id == ans[i].player_id)
+                    //.Select((p, top, t) => new topScorersInGameTypeVal
+                    //{
+                    //    teamLogo = t.logo,
+                    //    teamName = t.chinesename,
+                    //    playerName = p.chineseName,
+                    //    photo = p.photo
+                    //})
+                    //.ToListAsync();
 
                     ans[i].teamLogo = temp[0].teamLogo;
                     ans[i].teamName = temp[0].teamName;
@@ -1064,7 +1064,7 @@ namespace DBwebAPI.Controllers
                             playerPhoto = pp.photo,
                             type = pp.type,
                         })
-                        .Take(12)
+                        .Take(10)
                         .ToListAsync();
                     ans.relatedPlayer = players;
                     Console.WriteLine("related players count = " + ans.relatedPlayer.Count().ToString());
@@ -1164,8 +1164,8 @@ namespace DBwebAPI.Controllers
 
                 for (int i = 0; i < 6; i++)
                 {
-                    DBconn orm = new DBconn();
-                    List<showRecentGamesVal> temp=await orm.Db.Queryable<Game>()
+                    //DBconn orm = new DBconn();
+                    List<showRecentGamesVal> temp=await sqlORM.Queryable<Game>()
                         .LeftJoin<Team>((g, home) => g.homeTeam == home.team_id)
                         .LeftJoin<Team>((g, home, guest) => g.guestTeam == guest.team_id)
                         .Where((g, home, guest) => ((g.type == gameNames[i]) && g.status == "Played"))

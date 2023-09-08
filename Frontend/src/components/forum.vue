@@ -11,7 +11,7 @@
             </el-header>
             <div class="line"></div>
             <el-container>
-                <el-aside>
+                <el-aside style="background-color: aliceblue;">
                     <!-- 发帖按钮 -->
                     <div class="post-button-container">
                         <el-button class="post-button" @click="redirectToEditPost" round>
@@ -21,7 +21,7 @@
                     <div class="select-tips">
                         <span class="tips-text">点击下方不同联赛,查看对应主题帖...</span>
                     </div>
-                    <el-menu class="tags-container" @select="SelectLeftTag">
+                    <el-menu class="tags-container" @select="SelectLeftTag" default-active="1">
                         <el-menu-item index="1">
                             <img :src="leagues_logo[0].logo" class="logo-show">
                             <span class="tag-text">全部赛事</span>
@@ -52,7 +52,7 @@
                         </el-menu-item>
                     </el-menu>
                 </el-aside>
-                <el-main>
+                <el-main style="background-color: aliceblue;">
                     <div class="up-container">
                         <!-- 搜索和排序 -->
                         <el-icon class="search-icon">
@@ -131,11 +131,11 @@
 .forum-title {
     /* 论坛艺术字 */
     position: relative;
-    top: 15%;
+    top: 20%;
     flex-shrink: 0;
     text-align: center;
     font-family: artfont;
-    font-size: 45px;
+    font-size: 50px;
     font-style: normal;
     font-weight: 400;
     line-height: 10vh;

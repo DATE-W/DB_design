@@ -119,7 +119,6 @@ namespace DBwebAPI.Controllers
                     contains = contains,
                     isBanned = 0,
                     approvalNum = 0,
-                    disapprovalNum = 0,
                     favouriteNum = 0
                 };
                 //新建PublishPost
@@ -164,7 +163,6 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("contains= " + post.contains);
                     Console.WriteLine("isBanned= " + post.isBanned);
                     Console.WriteLine("approvalNum= " + post.approvalNum);
-                    Console.WriteLine("disapprovalNum= " + post.disapprovalNum);
                     Console.WriteLine("favouriteNum= " + post.favouriteNum);
                     return Ok(new CustomResponse { ok = "yes", value = "Success" });
                 }
@@ -719,6 +717,7 @@ namespace DBwebAPI.Controllers
         {
             public int user_id { get; set; }
             public string userName { get; set; }
+            public string avatar { get; set; }
             public string contains { get; set; }
             public DateTime publishDateTime { get; set; }
         }
@@ -754,7 +753,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 int post_id = json.post_id;
-              
+              /*
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
@@ -780,12 +779,12 @@ namespace DBwebAPI.Controllers
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
 
-                int user_id = tempUsr.First().user_id;                
-  /*
+                int user_id = tempUsr.First().user_id;     */           
+  
                 int user_id = 12;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
-                    .ToListAsync();*/
+                    .ToListAsync();
 
                 //找到post
                 List<Posts> tempPosts = new List<Posts>();
@@ -854,6 +853,7 @@ namespace DBwebAPI.Controllers
                         .ToListAsync();
                     Comment tmpComment = new Comment();
                     tmpComment.user_id = comment.user_id;
+                    tmpComment.avatar = ComUsr.First().avatar;
                     tmpComment.userName = ComUsr.First().userName;
                     tmpComment.contains = comment.contains;
                     tmpComment.publishDateTime = comment.publishDateTime;
@@ -937,13 +937,10 @@ namespace DBwebAPI.Controllers
                 List<PublishPost> tempPublicshPosts = new List<PublishPost>();
                 tempPublicshPosts = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == post_id)
                     .ToListAsync();
-                //获取新的comment_id
-                int comment_id = sqlORM.Queryable<Comments>().Max(it => it.comment_id) + 1;
                 //解析json文件
                 //新建post
                 Comments comment = new Comments
                 {
-                    comment_id = comment_id,
                     publishDateTime = DateTime.Now,
                     contains = contains,
                     user_id = tempUsr.First().user_id,
