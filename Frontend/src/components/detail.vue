@@ -53,6 +53,7 @@ export default {
 
             //评论相关
             jId:[],
+            jAvatar:[],
             jNames:[],
             jTexts:[],
             jDates:[],
@@ -100,6 +101,7 @@ export default {
 
             //评论相关
             this.jId=[]
+            this.jAvatar=[]
             this.jNames=[]
             this.jTexts=[]
             this.jDates=[]
@@ -178,21 +180,17 @@ export default {
                 }
                 return
             }
+            console.log("PostInfo - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
             if(response.data.ok=='no')
             {
                 this.$router.push('/signin');  
                 ElMessage.error("请先登录");
             }else{
                 this.title = response.data.title ;
-                if(response.data.avatar!="/"){
-                    this.avatar = response.data.avatar;
-                }else{
-                    this.avatar = 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png';
-                }
+                this.avatar = response.data.avatar;
                 this.author_id = response.data.author_id;
                 this.uName = response.data.name;
                 this.uText = response.data.contains;
-                
                 this.date = this.analyse_date(response.data.publishDateTime);
                 if(response.data.islike == 1)
                 {
@@ -207,9 +205,18 @@ export default {
                     this.isFollowed = true
                 }
                 this.approvalNum = response.data.approvalNum;
-                console.log("posterId = "+response.data.author_id)
+                if(this.getLength(response.data.comments)==0)
+                {
+                    this.jAvatar.push('https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png')
+                    this.jNames.push("亲爱的用户")
+                    this.jTexts.push("暂无评论哟，快来占领评论区吧！")
+                }
                 response.data.comments.forEach(jInfo => {
-                    console.log("jInfo.user_id = "+jInfo.user_id)
+                    if(jInfo.avatar!="/"){
+                        this.jAvatar.push(jInfo.avatar);
+                    }else{
+                        this.jAvatar.push('https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png');
+                    }
                     this.jId.push(jInfo.user_id);
                     this.jNames.push(jInfo.userName);
                     this.jTexts.push(jInfo.contains);
@@ -237,13 +244,13 @@ export default {
                 }
                 return
             }
-            console.log("AllPost - JSON.stringify(response) = "+JSON.stringify(response, null, 2))
+            
             // 遍历传来的数据并进行转换
             response.data.forEach(item => {
                 const convertedItem = {
                     post_id: item.post_id,
-                    title: item.title,
-                    contains: item.contains.slice(0,7),
+                    title: item.title.slice(0,7),
+                    contains: item.contains.slice(0,14),
                     author_name:item.author_name,
                     publishtime: this.analyse_date(item.publishtime),
                     approvalnum: item.approvalnum
@@ -334,7 +341,7 @@ export default {
             console.log("发送评论 " + response.data.value);
             this.userJudge="";
             if(response.data.ok=='yes'){
-                location.reload();
+                window.location.reload();
             }
             return;
         },
@@ -417,7 +424,6 @@ export default {
                 ElMessage.error("举报失败");
             }
             this.report_descriptions="";
-            this.goBack();
             return
         },
         async follow()
@@ -498,7 +504,11 @@ export default {
                 ElMessage.error("获取发帖人信息失败");
             }else{
                 this.show_name=response.data.name;
-                this.show_avatar=response.data.avatar;
+                if(response.data.avatar!="/"){
+                    this.show_avatar = response.data.avatar;
+                }else{
+                    this.show_avatar = 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png';
+                }
                 this.show_uft=response.data.uft;
                 this.show_signature=response.data.signature;
                 this.show_follownum=response.data.follownum;
@@ -548,6 +558,10 @@ export default {
             this.GetPostDetail(post_id);
             return;
         },
+        getLength(array)
+        {
+            return array.length;
+        },
     }
 }
 </script>
@@ -583,23 +597,23 @@ export default {
                         <span>{{ title }}</span><br>
                     </div>
                     <div class="header-buttons">
-                        <span style="position: relative;margin-top: 1.5vh;" class="header-info">
-                            <el-icon><User /></el-icon>
+                        <span style="position: relative;margin-top: 1.5vh;display: flex;align-items: center;" class="header-info">
+                            <el-icon size="1rem" style="margin-right:0.5vw;margin-top: 0.2vh;position: relative;"><avatar /></el-icon>
                             <span style="cursor: pointer;color:#2A3E63" @click="showUserInfo(this.author_id)">{{uName}}</span>
                             发布于{{ date }}
                         </span>
                         <div style="width:40vw;justify-content: right;display: flex;">
                             <el-button class="header-respond-btn" @click="collectPost()">
-                            <span v-if="isCollected == false"><el-icon><Star /></el-icon>收藏</span>
-                            <span v-if="isCollected == true"><el-icon><StarFilled /></el-icon>已收藏</span>
+                                <span v-if="isCollected == false"><el-icon size="1rem" style="margin-right: 0.2vw;position: relative;top:0.3vh"><Star /></el-icon>收藏</span>
+                                <span v-if="isCollected == true"><el-icon size="1rem" style="margin-right: 0.2vw;position: relative;top:0.3vh"><StarFilled /></el-icon>已收藏</span>
                             </el-button>
                             <el-button :class="isApproved == false?'header-respond-btn':'header-respond-btn-active'" id="approveBtn" @click="approvePost()">
-                            <img style="width: 1vw;" src="../assets/img/approve.png">
-                                点赞 {{ approvalNum }}
+                                <img style="width: 1vw;position: relative;top:0.3vh;margin-right: 0.5vw;" src="../assets/img/approve.png">
+                                <span style="position: relative;top:0.3vh">点赞 {{ approvalNum }}</span>
                             </el-button>
                             <el-button class="header-respond-btn" @click="this.dialogFormVisible = true">
-                                <span v-if="isReported == false"><el-icon><Warning /></el-icon>举报</span>
-                                <span v-if="isReported == true"><el-icon><WarningFilled /></el-icon>已举报</span>
+                                <span v-if="isReported == false"><el-icon size="1rem" style="margin-right: 0.2vw;position: relative;top:0.4vh"><Warning /></el-icon>举报</span>
+                                <span v-if="isReported == true"><el-icon size="1rem" style="margin-right: 0.2vw;position: relative;top:0.4vh"><WarningFilled /></el-icon>已举报</span>
                             </el-button>
                         </div>
                     </div>
@@ -611,35 +625,40 @@ export default {
                     <div class="author-container">
                         <div style="cursor: pointer; height: 29vh;" @click="showUserInfo(this.author_id)">
                             <img class="rooter-img" :src='avatar'>
-                            <div class="rooter-name">
+                            <div class="rooter-name" style="width:100%">
                                 <p class="rooter-name-typography">{{ uName }}</p>
                             </div>
                         </div>
                         <el-button class="aside-follow-btn" style="width:6vw;" @click="follow()">
-                            <span v-if="isFollowed == false"><el-icon><CircleCheck /></el-icon>关注</span>
-                            <span v-if="isFollowed == true"><el-icon><CircleCheckFilled /></el-icon>已关注</span>
+                            <span v-if="isFollowed == false"><el-icon size="1rem" style="margin-right: 0.2vw;position: relative;top:0.4vh"><CircleCheck /></el-icon>关注</span>
+                            <span v-if="isFollowed == true"><el-icon size="1rem" style="margin-right: 0.2vw;position: relative;top:0.4vh"><CircleCheckFilled /></el-icon>已关注</span>
                         </el-button>
                     </div>
                 </el-aside>
                 <el-main>
                     <!-- 主帖 -->
-                    <div>
+                    <div style="min-height: 22vh;">
                         {{ uText }}
-                        <div style="display: flex;flex-direction: row;">
+                        <!-- <div style="display: flex;flex-direction: row;"> -->
+                        <div style="display: flex;flex-direction: column;">
                             <div v-for="item in pic">
-                                <img style="width:12vw;height:12vw;margin-top: 5vh;margin-left: 2vw;" :src='item'>
+                                <!-- <img v-if="getLength(this.pic)==3" style="width:12vw;height:12vw;margin-top: 5vh;margin-left: 2vw;" :src='item'>
+                                <img v-if="getLength(this.pic)==2" style="width:17vw;height:17vw;margin-top: 5vh;margin-left: 6vw;" :src='item'>
+                                <img v-if="getLength(this.pic)==1" style="width:21vw;height:auto;margin-top: 5vh;margin-left: 15vw;" :src='item'> -->
+                                <img style="width:21vw;height:auto;margin-top: 5vh;margin-left: 15vw;" :src='item'>
                             </div>
                         </div>
-                        <!-- <div class="bottom-detail">
-                            <div>{{ date }}</div>
-                        </div> -->
                     </div>
                     <!-- 评论 -->
-                    <div class="judger-post">
+                    <div class="judger-post" style="display: flex;flex-direction: column;">
                         <div v-for="(jName,index) in jNames"> 
-                            <el-divider style="color: black;height:2vw"></el-divider>
-                            <p><text style="color: #2A3E63;cursor: pointer;" @click="showUserInfo(this.jId[index])">{{ jName }} ：</text><text>{{ jTexts[index] }}</text></p>
-                            <p style="top:3vw;">{{ jDates[index] }}</p>
+                            <el-divider style="color: black;height:2vh"></el-divider>
+                            <el-container style="height:7vh">
+                                <img style="width: 3vw;height:3vw;border-radius: 50%;" :src='jAvatar[index]'>
+                                <span style="color: #2A3E63;cursor: pointer;margin-left: 1.5vw;margin-top: 2vh;" @click="showUserInfo(this.jId[index])">{{ jName }} ：</span>
+                            </el-container>
+                            <el-container style="margin-left: 7vw;">{{ jTexts[index] }}</el-container>
+                            <el-container style="margin-top:3vh;font-size: 0.85rem;margin-left: 1vw;">{{ jDates[index] }}</el-container>
                         </div>
                     </div>
                     <div style="height: 13vw;"></div>
@@ -658,7 +677,7 @@ export default {
                     <el-container style="margin-top:0px;font-size: 0.9rem;margin-left: 0.5vw;">{{hotPost.contains}}</el-container>
                     <el-container>
                         <span style="height:1vh;font-family: KaiTi;font-size: 1rem;">
-                            <span style="color:rgb(41, 93, 151);">{{ hotPost.author_name}}</span>
+                            <span style="color:rgb(41, 93, 151);font-size: 0.8rem;">{{ hotPost.author_name}}</span>
                             发布于{{hotPost.publishtime}}
                         </span>
                     </el-container>
@@ -667,7 +686,7 @@ export default {
         </el-container>
         <!--评论输入框-->
         <div class="input-respond-container">
-            <div style="margin: 20px 0">
+            <div style="margin: 18px 0">
                 <el-input
                     v-model="userJudge"
                     :rows="5"
@@ -726,10 +745,11 @@ export default {
 }
 
 .header-respond-btn{
-    text-align: center;
     background-color: aliceblue;
     position: relative;
     margin-right: 0.5vw;
+    display: flex;
+    align-items: center;
 }
 .header-respond-btn-active
 {
@@ -764,6 +784,8 @@ export default {
     width:6vw;
     height:6vw;
     top: 6vh;
+    align-items: center; /* 垂直居中对齐 */
+    justify-content: center; /* 水平居中对齐 */
 }
 .rooter-name{
     position: relative;
@@ -782,6 +804,8 @@ export default {
 .aside-follow-btn{
     text-align: center;
     background-color: aliceblue;
+    display: flex;
+    align-items: center;
 }
 
 /*主信息板块*/
@@ -806,7 +830,7 @@ export default {
     bottom: 0;
     width:70vw;
     height:13vw;
-    left: 12vw;
+    left: 11.5vw;
 }
 .input-respond-btn{
     text-align: center;
@@ -857,6 +881,5 @@ export default {
 }
 .single-hot-post:hover {
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* 鼠标悬浮时的阴影效果 */
-    background-color: rgb(207, 228, 247); /* 鼠标悬浮时的背景颜色 */
 }
 </style>

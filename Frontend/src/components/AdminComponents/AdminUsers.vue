@@ -14,11 +14,13 @@ export default {
             ReportedUsers:[],
             searchkeyAll:"",
             searchkeyBanned:"",
+            suspectedUser:[],
         };
     },
     mounted(){
         this.getAllUsers();
         this.getReportedUsers();
+        this.getReportedPost();
     },
     methods:{
         analyse_date(date){
@@ -256,6 +258,31 @@ export default {
             }
             return
         },
+        async getReportedPost(){
+            console.log("start get reported post")
+            let response
+            try {
+                response = await axios.get('api/report/getReportInfo');
+            } catch (err) {
+                console.error(err);
+                if (err.response.data.result == 'fail') {
+                    ElMessage.error(err.response.data.msg)
+                } else {
+                    ElMessage.error("未知错误")
+                }
+                return
+            }
+            if(response.data.ok=='no')
+            {
+                ElMessage.error("获取被举报帖子列表失败");
+            }else if(response.data.ok=='yes'){
+               // 遍历传来的数据并进行转换
+                response.data.value.forEach(item => {
+                        this.suspectedUser.push(item.publisherName)
+                });
+            }
+            return
+        },
     }
 }
 </script>
@@ -271,7 +298,7 @@ export default {
             <dashboard/>
             </el-aside>
             <el-main style="overflow-y: auto;background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;">
-                <el-table :data="AllUsers" border height="300" style="width: 100%;border-radius: 10px;">
+                <el-table :data="AllUsers" border height="280" style="width: 100%;border-radius: 10px;">
                     <el-table-column :label="`所有用户名单`" align="center">
                         <el-table-column align="center" prop="user_id" label="用户Id" width="100" />
                         <el-table-column prop="userName" label="用户昵称" width="150" />
@@ -290,7 +317,7 @@ export default {
                         </el-table-column>
                     </el-table-column>
                 </el-table>
-                <el-table :data="ReportedUsers" border height="300" style="width: 100%;border-radius: 10px;margin-top: 5vh;">
+                <el-table :data="ReportedUsers" border height="280" style="width: 100%;border-radius: 10px;margin-top: 3vh;">
                     <el-table-column :label="`被封禁用户名单`" align="center">
                         <el-table-column align="center" prop="user_id" label="用户Id" width="100" />
                         <el-table-column prop="userName" label="用户昵称" width="150" />
@@ -309,6 +336,10 @@ export default {
                         </el-table-column>
                     </el-table-column>
                 </el-table>
+                <el-container style="margin-top: 3vh;margin-left: 1vw;">
+                    以下用户疑似有违规行为，请管理员核实：
+                    <el-container v-for="items in suspectedUser" class="suspected-name">{{ items }}</el-container>
+                </el-container>
             </el-main>
         </el-container>
         </el-container>
@@ -340,17 +371,9 @@ export default {
     height:100vh;
     left: 10vw;
 }
-</style>
-
-<!-- <style scoped>
-.main-lower-box{
-    margin-top: 2vh;
-    margin-right:1vw;
-    border-radius: 10px;
-    position: relative;
-    width:98%;
-    height:46%;
-    background-color: white;
+.suspected-name{
+    font-family: KaiTi;
+    font-size:1.1rem;
+    color:#2A3E63;
 }
-
-</style> -->
+</style>
