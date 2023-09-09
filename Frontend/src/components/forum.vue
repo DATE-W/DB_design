@@ -11,7 +11,7 @@
             </el-header>
             <div class="line"></div>
             <el-container>
-                <el-aside style="background-color: aliceblue;">
+                <el-aside>
                     <!-- 发帖按钮 -->
                     <div class="post-button-container">
                         <el-button class="post-button" @click="redirectToEditPost" round>
@@ -52,7 +52,7 @@
                         </el-menu-item>
                     </el-menu>
                 </el-aside>
-                <el-main style="background-color: aliceblue;">
+                <el-main>
                     <div class="up-container">
                         <!-- 搜索和排序 -->
                         <el-icon class="search-icon">
@@ -111,6 +111,17 @@
 
 <style scoped>
 @import '../assets/font/font.css';
+
+.el-aside {
+    background-color: aliceblue;
+    height: 580px;
+}
+
+.el-main {
+    background-color: aliceblue;
+    height: 580px;
+}
+
 
 .header-container {
     /* 顶部论坛标题 */

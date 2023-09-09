@@ -33,6 +33,7 @@
                   <el-dropdown-item command="意甲">意甲</el-dropdown-item>
                   <el-dropdown-item command="法甲">法甲</el-dropdown-item>
                   <el-dropdown-item command="中超">中超</el-dropdown-item>
+                  <el-dropdown-item command="英超">英超</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -235,6 +236,7 @@ export default {
     deleteDraft() {
       this.postText = '';
       this.selectedPics = [];
+      this.showPics = [];
     },
     removeTag(tag) {
       const index = this.selectedTags.indexOf(tag);
