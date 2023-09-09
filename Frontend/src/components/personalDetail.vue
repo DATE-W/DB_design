@@ -248,6 +248,7 @@ export default {
     height: 250px;
     background-repeat: no-repeat;
     background-size: cover;
+    margin-bottom: 5px;
 }
 
 .dynamic-group {
