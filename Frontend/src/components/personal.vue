@@ -169,8 +169,8 @@ export default {
       this.$router.push('/personalEdit');
     },
     logout() {
-      localStorage.removeItem('token');
       this.$router.push('/');
+      localStorage.removeItem('token');
     },
     performLogin() {
       // 在这里执行登录操作的逻辑

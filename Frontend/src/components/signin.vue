@@ -256,6 +256,13 @@ export default {
               type: 'error',
             })
           }
+          else if (response.data.value == "banned") {
+            ElMessage({
+              message: '该账号已被封禁！！!',
+              grouping: false,
+              type: 'error',
+            })
+          }
           // 延迟刷新页面
           setTimeout(() => {
             window.location.reload(); // 刷新当前页面

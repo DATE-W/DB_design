@@ -197,6 +197,7 @@ export default {
 }
 
 .post-list {
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -313,5 +314,6 @@ export default {
   font-weight: bold;
   color: white;
   margin-top: 10px;
-}</style>
+}
+</style>
   
