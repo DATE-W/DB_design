@@ -82,6 +82,9 @@ namespace DBwebAPI.Controllers
                 DateTime yestdayStart = new DateTime(now.Year,now.Month,now.Day-1);
                 DateTime yestdayEnd = new DateTime(now.Year, now.Month, now.Day);
 
+                DateTime todayStart = new DateTime(now.Year, now.Month, now.Day);
+                DateTime todayEnd = new DateTime(now.Year, now.Month, now.Day+1);
+
                 var newUsrNum = await sqlORM.Queryable<Usr>()
                     .Where(it=>it.createDateTime.Value>= yestdayStart&& it.createDateTime.Value < yestdayEnd)
                     .Select(it => SqlFunc.AggregateCount(it.user_id))
@@ -99,7 +102,7 @@ namespace DBwebAPI.Controllers
                 Console.WriteLine("new post count = " + ans.newPostNum.ToString());
 
                 var signInNum = await sqlORM.Queryable<Checkins>()
-                    .Where(it => it.sign_in_date>= yestdayStart && it.sign_in_date < yestdayEnd)
+                    .Where(it => it.sign_in_date>= todayStart && it.sign_in_date < todayEnd)
                     .Select(it => SqlFunc.AggregateCount(it.user_id))
                     .ToListAsync();
 

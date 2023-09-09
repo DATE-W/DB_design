@@ -1066,7 +1066,7 @@ namespace DBwebAPI.Controllers
                     //tempPosts.FirstOrDefault().approvalNum++;
                     // Update the point
                     var updateResult = await sqlORM.Updateable<Usr>()
-                        .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
+                        .SetColumns(u => new Usr { userPoint = u.userPoint + 1 })
                         .Where(u => u.userAccount == account)
                         .ExecuteCommandAsync();
                     Console.WriteLine("点赞 积分+1");
@@ -1082,6 +1082,11 @@ namespace DBwebAPI.Controllers
                     int deletedCount = await sqlORM.Deleteable<LikePost>()
                         .Where(it => it.post_id == post_id && it.user_id == tempUsr.First().user_id)
                         .ExecuteCommandAsync();
+                    var updateResult = await sqlORM.Updateable<Usr>()
+                        .SetColumns(u => new Usr { userPoint = u.userPoint - 1 })
+                        .Where(u => u.userAccount == account)
+                        .ExecuteCommandAsync();
+                    Console.WriteLine("点赞 积分-1");
                     if (deletedCount > 0)
                     {
                         Console.WriteLine("delike success");
@@ -1177,10 +1182,10 @@ namespace DBwebAPI.Controllers
                     //tempPosts.FirstOrDefault().favouriteNum++;
                     // Update the point
                     var updateResult = await sqlORM.Updateable<Usr>()
-                        .SetColumns(u => new Usr { userPoint = u.userPoint + 3 })
+                        .SetColumns(u => new Usr { userPoint = u.userPoint + 1 })
                         .Where(u => u.userAccount == account)
                         .ExecuteCommandAsync();
-                    Console.WriteLine("收藏 积分+3");
+                    Console.WriteLine("收藏 积分+1");
                     //int updateCount = await sqlORM.Updateable(tempPosts.FirstOrDefault()).ExecuteCommandAsync();
                     if (count > 0) { Console.WriteLine("collect success"); return Ok(new CustomResponse { ok = "yes", value = "收藏成功" }); }
                     else { Console.WriteLine("collect fail"); return Ok(new CustomResponse { ok = "no", value = "收藏失败" }); }
@@ -1194,6 +1199,11 @@ namespace DBwebAPI.Controllers
                     int deletedCount = await sqlORM.Deleteable<CollectPost>()
                         .Where(it => it.post_id == post_id && it.user_id == tempUsr.First().user_id)
                         .ExecuteCommandAsync();
+                    var updateResult = await sqlORM.Updateable<Usr>()
+                        .SetColumns(u => new Usr { userPoint = u.userPoint - 1 })
+                        .Where(u => u.userAccount == account)
+                        .ExecuteCommandAsync();
+                    Console.WriteLine("收藏 积分+1");
                     if (deletedCount > 0)
                     {
                         Console.WriteLine("decollect success");
