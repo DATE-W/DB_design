@@ -93,8 +93,8 @@ namespace DBwebAPI.Models
         [SugarColumn(IsPrimaryKey = true)]
         public int game_id { get; set; }
 
-        public int homeTeam { get; set; }
-        public int guestTeam { get; set; }
+        //public int homeTeam { get; set; }
+        //public int guestTeam { get; set; }
         public string type { get; set; } = "null";
         public DateTime startTime { get; set; } 
         public string status { get; set; } = "null";
@@ -102,6 +102,16 @@ namespace DBwebAPI.Models
         public int homeScore { get; set; } = 0;
         public int guestScore { get; set; } = 0;
     }
+
+    public class GameTeam
+    {
+        [SugarColumn(IsPrimaryKey = true)]
+        public int game_id { get; set; }
+        public int homeTeam { get; set; }
+        public int guestTeam { get; set; }
+
+    }
+
 
 
     public class PlayerJoinGame
