@@ -754,7 +754,7 @@ namespace DBwebAPI.Controllers
                 SqlSugarScope sqlORM = ORACLEConnectTry.sqlORM;
                 
                 int post_id = json.post_id;
-           
+          
                 // 从请求头中获取传递的JWT令牌
                 string authorizationHeader = Request.Headers["Authorization"].First();
                 //验证 Authorization 请求头是否包含 JWT 令牌
@@ -779,14 +779,14 @@ namespace DBwebAPI.Controllers
                     Console.WriteLine("用户不存在");
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
-
-                int user_id = tempUsr.First().user_id;             
-     /*
+          
+                int user_id = tempUsr.First().user_id;              
+      /*
                 int user_id = 12;
                 List<Usr> tempUsr = new List<Usr>();
                 tempUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == user_id)
                     .ToListAsync();
- */  
+*/
                 //找到post
                 List<Posts> tempPosts = new List<Posts>();
                 tempPosts = await sqlORM.Queryable<Posts>().Where(it => it.post_id == post_id)
@@ -798,18 +798,28 @@ namespace DBwebAPI.Controllers
                     return Ok(new CustomResponse { ok = "no", value = "帖子不存在" });
                 }
 
-                //找到发帖人ID
-                List<PublishPost> tempPublicshPosts = new List<PublishPost>();
-                tempPublicshPosts = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == post_id)
-                    .ToListAsync();
 
-                //找到发帖人
-                List<Usr> PostUsr = new List<Usr>();
-                PostUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tempPublicshPosts.First().user_id)
-                    .ToListAsync();
+
+                Usr PostUsr = await sqlORM.Queryable<Usr>()
+                    .LeftJoin<PublishPost>((u, pp) => u.user_id == pp.user_id)
+                    .Where((u, pp) => pp.post_id == post_id)
+                    .SingleAsync();
+
+
+                ////找到发帖人ID
+                //List<PublishPost> tempPublicshPosts = new List<PublishPost>();
+                //tempPublicshPosts = await sqlORM.Queryable<PublishPost>().Where(it => it.post_id == post_id)
+                //    .ToListAsync();
+
+                ////找到发帖人
+                //List<Usr> PostUsr = new List<Usr>();
+                //PostUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == tempPublicshPosts.First().user_id)
+                //    .ToListAsync();
+
+
                 //找到关注
                 List<Follow> follow = new List<Follow>();
-                follow = await sqlORM.Queryable<Follow>().Where(it => it.follow_id == PostUsr.First().user_id && it.follower_id == user_id)
+                follow = await sqlORM.Queryable<Follow>().Where(it => it.follow_id == PostUsr.user_id && it.follower_id == user_id)
                     .ToListAsync();
                 //找到评论
                 List<Comments> PostComments = new List<Comments>();
@@ -835,36 +845,51 @@ namespace DBwebAPI.Controllers
                 sentpostinfo.islike = tempLike.Count != 0? 1: 0;
                 sentpostinfo.isfollow = follow.Count != 0 ? 1 : 0;
                 sentpostinfo.ok = "yes";
-                sentpostinfo.userpoint = PostUsr.First().userPoint;
-                sentpostinfo.name = PostUsr.First().userName;//string
+                sentpostinfo.userpoint = PostUsr.userPoint;
+                sentpostinfo.name = PostUsr.userName;//string
                 sentpostinfo.title = tempPosts.First().title;//string
                 sentpostinfo.contains = tempPosts.First().contains;//string
                 sentpostinfo.publishDateTime = tempPosts.First().publishDateTime;//DataTime
                 sentpostinfo.approvalNum = (int)tempPosts.First().approvalNum;//int
                 sentpostinfo.comments = new Comment[0];
-                sentpostinfo.avatar = PostUsr.First().avatar;
-                sentpostinfo.author_id = PostUsr.First().user_id;
+                sentpostinfo.avatar = PostUsr.avatar;
+                sentpostinfo.author_id = PostUsr.user_id;
                 sentpostinfo.pic = pics.ToArray();
                 List <Comment> commentsList = new List<Comment>();
-                foreach (var comment in PostComments)
-                {
-                    //找到评论人username
-                    List<Usr> ComUsr = new List<Usr>();
-                    ComUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == comment.user_id)
-                        .ToListAsync();
-                    Comment tmpComment = new Comment();
-                    tmpComment.user_id = comment.user_id;
-                    tmpComment.avatar = ComUsr.First().avatar;
-                    tmpComment.userName = ComUsr.First().userName;
-                    tmpComment.contains = comment.contains;
-                    tmpComment.publishDateTime = comment.publishDateTime;
-                    Console.WriteLine();
-                    Console.WriteLine("userName: " + tmpComment.userName);
-                    Console.WriteLine("contains: " + tmpComment.contains);
-                    Console.WriteLine("publishDateTime: " + tmpComment.publishDateTime);
-                    commentsList.Add(tmpComment);
-                }
-                sentpostinfo.comments = commentsList.ToArray();
+                //foreach (var comment in PostComments)
+                //{
+                //    //找到评论人username
+                //    List<Usr> ComUsr = new List<Usr>();
+                //    ComUsr = await sqlORM.Queryable<Usr>().Where(it => it.user_id == comment.user_id)
+                //        .ToListAsync();
+                //    Comment tmpComment = new Comment();
+                //    tmpComment.user_id = comment.user_id;
+                //    tmpComment.avatar = ComUsr.First().avatar;
+                //    tmpComment.userName = ComUsr.First().userName;
+                //    tmpComment.contains = comment.contains;
+                //    tmpComment.publishDateTime = comment.publishDateTime;
+                //    Console.WriteLine();
+                //    Console.WriteLine("userName: " + tmpComment.userName);
+                //    Console.WriteLine("contains: " + tmpComment.contains);
+                //    Console.WriteLine("publishDateTime: " + tmpComment.publishDateTime);
+                //    commentsList.Add(tmpComment);
+                //}
+                sentpostinfo.comments = await  sqlORM.Queryable<Usr>()
+                    .LeftJoin<Comments>((u, c) => u.user_id == c.user_id)
+                    .LeftJoin<Posts>((u, c, p) => c.post_id == p.post_id)
+                    .Where((u, c, p) => p.post_id == post_id)
+                    .Select((u, c, p) => new Comment
+                    {
+                        user_id = c.user_id,
+                        avatar = u.avatar,
+                        userName = u.userName,
+                        contains = c.contains,
+                        publishDateTime = c.publishDateTime
+                    })
+                    .ToArrayAsync();
+
+                //sentpostinfo.comments = temp.ToArray();
+                //sentpostinfo.comments = commentsList.ToArray();
 
                 return Ok(sentpostinfo);
             }
