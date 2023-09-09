@@ -98,8 +98,8 @@ namespace DBwebAPI.Controllers
                 ans.newPostNum = newPostNum[0];
                 Console.WriteLine("new post count = " + ans.newPostNum.ToString());
 
-                var signInNum = await sqlORM.Queryable<Usr>()
-                    .Where(it => it.signDate.Value >= yestdayStart && it.signDate.Value < yestdayEnd)
+                var signInNum = await sqlORM.Queryable<Checkins>()
+                    .Where(it => it.sign_in_date>= yestdayStart && it.sign_in_date < yestdayEnd)
                     .Select(it => SqlFunc.AggregateCount(it.user_id))
                     .ToListAsync();
 

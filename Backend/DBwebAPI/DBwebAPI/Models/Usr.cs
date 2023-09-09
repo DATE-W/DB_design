@@ -18,7 +18,7 @@ namespace DBwebAPI.Models
         public int? themeType { get; set; }
         public string avatar { get; set; } = "";
         public string signature { get; set; } = "";
-        public DateTime? signDate { get; set; }
+        //public DateTime? signDate { get; set; }
         public DateTime? createDateTime { get; set; }
         public string userSecQue { get; set; } = "";
         public string userSecAns { get; set; } = "";

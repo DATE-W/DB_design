@@ -16,10 +16,21 @@ using System.Text.RegularExpressions;
 
 namespace DBwebAPI.Controllers
 {
+
+
     [ApiController]
     [Route("api/[controller]/[action]")]
     public class updateTeamController : ControllerBase
     {
+        //private SqlSugarScope sqlORM;
+
+        //public updateTeamController()
+        //{
+        //    ORACLEconn ORACLEConnectTry = new ORACLEconn();
+        //    ORACLEConnectTry.getConn();
+        //    sqlORM = ORACLEConnectTry.sqlORM;
+        //}
+
         public class TeamInGameTimePara
         {
             public string dateTime { get; set; } = "";
