@@ -21,8 +21,8 @@
           <!-- 输入账号 -->
           <div class="subBox" style="top: 38vh;">
             <label for="account" class="inputText">账号：</label>
-            <el-input type="text" id="account" v-model="account" pattern="[a-zA-Z0-9]+" maxlength="10" class="inputBox"
-              placeholder="账号只能由数字和字母组成，且长度不超过10个字符"></el-input>
+            <el-input type="text" id="account" v-model="account" maxlength="10" class="inputBox"
+              placeholder="账号只能由数字和字母组成，且长度不超过10个字符" @input="validateInput"></el-input>
           </div>
           <!-- 输入密码 -->
           <div class="subBox" style="top:50vh;">
@@ -73,6 +73,14 @@ export default {
     localStorage.removeItem('token')
   },
   methods: {
+    validateInput() {
+      // 使用正则表达式检查输入是否符合要求
+      const regex = /^[a-zA-Z0-9]+$/;
+      if (!regex.test(this.account)) {
+        // 如果输入不符合要求，将其修正为仅包含数字和字母的内容
+        this.account = this.account.replace(/[^a-zA-Z0-9]+/g, '');
+      }
+    },
     redirectToRegister() {
       // 跳转到注册页面的逻辑
       this.$router.push('/signup');
