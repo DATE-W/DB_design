@@ -71,6 +71,10 @@ const router = createRouter({
       component: () => import('../components/AdminComponents/AdminAnnouncement.vue')
     },
     {
+      path: '/AdminPastAnc',
+      component: () => import('../components/AdminComponents/AdminPastAnc.vue')
+    },
+    {
       path: '/teamMsg',
       component: () => import('../components/teamMsg.vue')
     },
@@ -100,5 +104,4 @@ const router = createRouter({
     },
   ]
 })
-
 export default router;

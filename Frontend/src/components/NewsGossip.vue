@@ -13,11 +13,12 @@
           <div class="GossipButton">
             <el-row class="mb-4">
               <el-button plain @click="selectGossip('中超')">中超</el-button>
-              <el-button type="primary" plain @click="selectGossip('中超')">英超</el-button>
-              <el-button type="success" plain @click="selectGossip('中超')">西甲</el-button>
-              <el-button type="info" plain @click="selectGossip('中超')">意甲</el-button>
-              <el-button type="warning" plain @click="selectGossip('中超')">德甲</el-button>
-              <el-button type="danger" plain @click="selectGossip('中超')">法甲</el-button>
+              <el-button type="primary" plain @click="selectGossip('英超')">英超</el-button>
+              <el-button type="success" plain @click="selectGossip('西甲')">西甲</el-button>
+              <el-button type="info" plain @click="selectGossip('意甲')">意甲</el-button>
+              <el-button type="warning" plain @click="selectGossip('德甲')">德甲</el-button>
+              <el-button type="danger" plain @click="selectGossip('法甲')">法甲</el-button>
+              <el-button plain @click="selectGossip('')">ALL</el-button>
             </el-row>
           </div>
           <div class="line" style="width: 40vw;height: 0.2px;top:-9vh;left:8%;"></div>
@@ -26,7 +27,8 @@
               <img v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == false"
                 referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="Image" class="imgSearch">
               <video v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true"
-                referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]" class="imgSearch" controls />
+                referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]"
+                class="imgSearch imgForVideo" />
             </div>
             <div class="TextWrapper" @click="openNewsDetails(item)">
               <div class="titleSearch">{{ item.newsBody.title }}</div>
@@ -107,7 +109,9 @@ export default {
         // console.log(dataItems);
         // console.log(this.items);
       } catch (error) {
-        console.error(error);
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       };
       return;
     },
@@ -134,7 +138,9 @@ export default {
         console.log(dataItems);
         // console.log(this.items);
       } catch (error) {
-        console.error(error);
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       };
       return;
     },
@@ -351,5 +357,12 @@ export default {
   position: relative;
   top: 2vh;
   left: -6%;
+}
+
+.imgForVideo {
+  background-image: url("https://img2.baidu.com/it/u=3484181004,3499441771&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500");
+  /* 指定背景图片为一个播放图标 */
+  background-size: cover;
+  /* 让背景图片适应伪元素的大小 */
 }
 </style>

@@ -26,6 +26,9 @@
             <div>{{ account }}</div>
         </div>
     </el-card>
+    <div class="submit-button">
+        <el-button type="primary" @click="showSubmitDialog" class="large-button">提交</el-button>
+    </div>
     <el-dialog v-model="dialogVisible" :title="dialogTitle">
         <el-input v-model="tempInput"></el-input>
         <template #footer>
@@ -38,9 +41,6 @@
         </template>
     </el-dialog>
     <!-- 按钮放置在右下角 -->
-    <div class="submit-button">
-        <el-button type="primary" @click="showSubmitDialog" class="large-button">提交</el-button>
-    </div>
 </template>
 
 <script>
@@ -175,19 +175,23 @@ export default {
                 })
                 return
             };
-            this.avatarUrl = response.data.value[0];
+            this.avatarUrl = response.data.value[response.data.value.length - 1];
             console.log(response);
         },
         async submitData() {
+            const temp = this.avatarUrl;
             await this.submitPic(); // 提交图片，获得返回的图片url
-            const serverip = 'http://110.40.206.206/'
+            const serverip = 'http://110.40.206.206/';
             const userName = this.userName;
             const sign = this.personalSign;
-            this.avatarUrl = serverip + this.avatarUrl;
+
+            if (this.avatarUrl == undefined) {
+                this.avatarUrl = temp;
+            }
+            else {
+                this.avatarUrl = serverip + this.avatarUrl;
+            }
             const avatar = this.avatarUrl;
-            console.log(this.avatarUrl)
-            console.log('123456')
-            console.log(avatar);
             //这里加后端交互代码，然后刷新当前页面
             // 延迟刷新页面
             const token = localStorage.getItem('token');
@@ -229,9 +233,6 @@ export default {
                 })
                 // this.$router.push('/signin');
             }
-            // setTimeout(() => {
-            //     window.location.reload(); // 刷新当前页面
-            // }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
         }
     },
 }
@@ -268,9 +269,10 @@ export default {
 
 /* 按钮样式 */
 .submit-button {
-    position: fixed;
-    bottom: 100px;
-    right: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15vh;
 }
 
 /* 新增按钮样式 */

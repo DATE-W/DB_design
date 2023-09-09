@@ -57,6 +57,7 @@ import carousel from './signinCarousel.vue';
 
 import { ElMessage, ElMessageBox } from 'element-plus';
 
+import { sha256 } from 'js-sha256'
 export default {
   data() {
     return {
@@ -94,19 +95,11 @@ export default {
           })
           console.log(response)
         } catch (err) {
-          if (err.response.data.result == 'fail') {
-            ElMessage({
-              message: err.response.data.msg,
-              grouping: false,
-              type: 'error',
-            })
-          } else {
-            ElMessage({
-              message: '未知错误',
-              grouping: false,
-              type: 'error',
-            })
-          }
+          ElMessage({
+            message: '未知错误',
+            grouping: false,
+            type: 'error',
+          })
           return
         }
         if (response.data.ok == "yes") {
@@ -169,8 +162,7 @@ export default {
         return
       }
       console.log(this.$route.query.isAdmin);
-      if(this.$route.query.isAdmin==1)
-      {
+      if (this.$route.query.isAdmin == 1) {
         console.log("start admin login")
         let response
         try {
@@ -178,27 +170,19 @@ export default {
             account: String(this.account),
             //后端管理员用户登录未加密
             //password: String(this.password),
-            password: String(await this.sha256(this.password)),
+            password: String(await sha256(this.password)),
           })
         } catch (err) {
-          if (err.response.data.result == 'fail') {
-            ElMessage({
-              message: err.response.data.msg,
-              grouping: false,
-              type: 'error',
-            })
-          } else {
-            ElMessage({
-              message: '未知错误',
-              grouping: false,
-              type: 'error',
-            })
-            // 延迟刷新页面
-            setTimeout(() => {
-              window.location.reload(); // 刷新当前页面
-            }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
-            return
-          }
+          console.log(err)
+          ElMessage({
+            message: '未知错误',
+            grouping: false,
+            type: 'error',
+          })
+          // 延迟刷新页面
+          setTimeout(() => {
+            window.location.reload(); // 刷新当前页面
+          }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
           return
         }
         if (response.data.ok == 'no') {
@@ -233,36 +217,28 @@ export default {
           this.$router.push('/AdminUsers')
         }
       }
-      else
-      {
+      else {
         console.log("start user login")
         let response
         try {
           response = await axios.post('/api/Login/LoginPassword', {
             account: String(this.account),
             // password: String(this.password),
-            password: String(await this.sha256(this.password)),
+            password: String(await sha256(this.password)),
           })
         } catch (err) {
-          if (err.response.data.result == 'fail') {
-            ElMessage({
-              message: err.response.data.msg,
-              grouping: false,
-              type: 'error',
-            })
-          } else {
-            ElMessage({
-              message: '未知错误',
-              grouping: false,
-              type: 'error',
-            })
-            // 延迟刷新页面
-            setTimeout(() => {
-              window.location.reload(); // 刷新当前页面
-            }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
-            return
-          }
+          console.log(err)
+          ElMessage({
+            message: '未知错误',
+            grouping: false,
+            type: 'error',
+          })
+          // 延迟刷新页面
+          setTimeout(() => {
+            window.location.reload(); // 刷新当前页面
+          }, 2000); // 2000毫秒后刷新，你可以根据需要调整延迟时间
           return
+
         }
         console.log(response)
         if (response.data.ok == 'no') {
@@ -298,13 +274,6 @@ export default {
         }
       }
 
-    },
-    async sha256(message) {
-      const msgBuffer = new TextEncoder().encode(message);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      return hashHex;
     },
   },
 };

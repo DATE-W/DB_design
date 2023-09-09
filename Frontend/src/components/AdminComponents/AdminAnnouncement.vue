@@ -69,24 +69,43 @@ export default {
             <el-aside width="20vw" class="hide-aside">
             <dashboard/>
             </el-aside>
-            <el-main style="overflow: hidden;background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;display: flex;flex-direction: column;justify-content: center;">
-                <span class="announcement-tittle">发布公告</span>
-                <el-container style="height:20vh;position: relative;top:10vh;left:3vw;">
-                    <el-input  
-                        class="announcement-input-box"
-                        v-model="announcement"
-                        :rows="8"
-                        type="textarea"
-                        placeholder="请输入公告内容"
-                    />
+            <el-main style="overflow: hidden;background-color:white;margin-top: 2vh;margin-left: 0.7vw;border-radius: 15px 15px 0 0;">
+                <el-container class="main-container">
+                    <el-container class="announcement-tittle">发布公告</el-container>
+                    <el-container>
+                        <el-input  
+                            class="announcement-input-box"
+                            v-model="announcement"
+                            :rows="8"
+                            type="textarea"
+                            placeholder="请输入公告内容"
+                        />
+                    </el-container>
+                    <el-container>
+                        <el-button  style="margin-left:12vw;" class="announcement-btn" @click=" clearAnnouncementInput">
+                            <span class="announcement-btn-text">清空</span>
+                        </el-button>
+                        <el-button class="announcement-btn" @click="subbmitAnnouncement">
+                            <span class="announcement-btn-text">发布</span>
+                        </el-button>
+                    </el-container>
                 </el-container>
-                <el-container style="height:20vh;position: relative;left:13vw;">
-                    <el-button class="announcement-btn" @click=" clearAnnouncementInput">
-                        <span class="announcement-btn-text">清空</span>
-                    </el-button>
-                    <el-button class="announcement-btn" @click="subbmitAnnouncement">
-                        <span class="announcement-btn-text">发布</span>
-                    </el-button>
+                <el-container class="rules">
+                    <el-container style="margin-bottom:2vh;padding-left:15vw;font-weight:bold;font-size:1.3rem;">
+                        管理员公告守则
+                    </el-container>
+                    <el-container style="margin-bottom:2vh;">
+                        第一条&nbsp;&nbsp;一切以事实为依据。
+                    </el-container>
+                    <el-container style="margin-bottom:2vh;">
+                        第二条&nbsp;&nbsp;行文完整，体现具体内容。
+                    </el-container>
+                    <el-container style="margin-bottom:2vh;">
+                        第三条&nbsp;&nbsp;相关数据，引文和文字表述准确，恰当。
+                    </el-container>
+                    <el-container style="margin-bottom:2vh;">
+                        第四条&nbsp;&nbsp;汉字，标点符号，计量单位等用法符合公文处理条例的有关规定。
+                    </el-container>
                 </el-container>
             </el-main>
         </el-container>
@@ -122,16 +141,19 @@ export default {
 /*发布公告栏*/
 .announcement-tittle{
     font-family: 'Courier New', Courier, monospace;
-    color: #555555;
+    color: #404A57;
+    font-weight: bold;
     font-weight: 2rem;
     font-size: 1.5rem;
     text-align: center;
     margin-top: 2vh;
     position: relative;
+    left: 24vw;
 }
 .announcement-input-box{
     position: relative;
     width:90%;
+    left: 2.5vw;
 }
 .announcement-btn{
     border-radius: 3rem;
@@ -146,5 +168,20 @@ export default {
     font-weight: 2rem;
     font-size: 1rem;
     position: relative;
+}
+.main-container{
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.rules{
+    border:1px dashed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+    padding-left:8vw;
+    padding-top: 2vh;
 }
 </style>

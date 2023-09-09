@@ -82,7 +82,7 @@ namespace DBwebAPI.Controllers
                 //个性签名
                 String signature = tempUsr.FirstOrDefault()?.signature ??"";
                 //头像
-                String avatar = tempUsr.FirstOrDefault()?.avatar ?? "/";
+                String avatar = tempUsr.FirstOrDefault()?.avatar ?? "http://110.40.206.206/pictures/3ea6beec64369c2642b92c6726f1epng.png";
                 //关注数
                 int follower_num = tempUsr.FirstOrDefault()?.follownumber??0;
                 //粉丝数
@@ -603,7 +603,8 @@ namespace DBwebAPI.Controllers
                     return Ok(new CustomResponse { ok = "no", value = "错误的用户信息" });//用户账户或密码错误
                 }
                 int user_id = tempUsr.First().user_id;
-
+                /*
+                int user_id = 12;                8=*/
                 // 创建 ActionJson 实例
                 PointJson pointJson = new PointJson();
 
@@ -656,6 +657,7 @@ namespace DBwebAPI.Controllers
                     tmpac.type = "comment";
                     pointJson.points.Add(tmpac);
                 }
+                /*
                 //关注用户
                 List<Follow> tmpFU = new List<Follow>();
                 tmpFU = await sqlORM.Queryable<Follow>().Where(it => it.follower_id == user_id)
@@ -666,6 +668,17 @@ namespace DBwebAPI.Controllers
                     tmpac.datetime = ap.createDateTime;
                     tmpac.type = "follow";
                     pointJson.points.Add(tmpac);
+                }*/
+                //签到
+                List<Checkins> tmpCK = new List<Checkins>();
+                tmpCK = await sqlORM.Queryable<Checkins>().Where(it=>it.user_id == user_id)
+                    .ToListAsync();
+                foreach (var ck in tmpCK)
+                {
+                    PointJson.point tmpck = new PointJson.point();
+                    tmpck.datetime = ck.sign_in_date;
+                    tmpck.type = "checkin";
+                    pointJson.points.Add(tmpck);
                 }
                 // 对 points 数组按照 datetime 降序排序
                 pointJson.points = pointJson.points.OrderByDescending(a => a.datetime).ToList();
@@ -908,12 +921,23 @@ namespace DBwebAPI.Controllers
                 Checkins checkins = new Checkins();
                 checkins.user_id = user_id;
                 checkins.sign_in_date = dateTime;
+                Usr user = tempUsr.First();
+                user.userPoint += 5;
                 int count = await sqlORM.Insertable(checkins).ExecuteCommandAsync();
                 if(count > 0)
                 {
-                    Console.WriteLine("checkin success");
-                    Console.WriteLine("userid:  "+user_id+"  checkinTime:   "+dateTime);
-                    return Ok(new CustomResponse { ok = "yes", value = "签到成功" });
+                    int count2 = await sqlORM.Updateable(user).ExecuteCommandAsync();
+                    if(count2 > 0) {
+                        Console.WriteLine("签到 积分+5");
+                        Console.WriteLine("checkin success");
+                        Console.WriteLine("userid:  " + user_id + "  checkinTime:   " + dateTime);
+                        return Ok(new CustomResponse { ok = "yes", value = "签到成功" });
+                    }
+                    else
+                    {
+                        Console.WriteLine("checkin fail");
+                        return Ok(new CustomResponse { ok = "yes", value = "签到失败" });
+                    }
                 }
                 else
                 {
@@ -1291,7 +1315,6 @@ namespace DBwebAPI.Controllers
             public string image1 { get; set; } = "";
             public string image2 { get; set; } = "";
             public string image3 { get; set; } = "";
-            public string image4 { get; set; } = "";
         }
         [HttpPost]
         public async Task<IActionResult> getalltheme()
@@ -1351,7 +1374,6 @@ namespace DBwebAPI.Controllers
                     tmp.image1 = t.image1;
                     tmp.image2 = t.image2;
                     tmp.image3 = t.image3;
-                    tmp.image4 = t.image4;
                     tmpThemes.Add(tmp);
                 }
                 tmpThemes=tmpThemes.OrderBy(t => t.id).ToList();
@@ -1363,7 +1385,6 @@ namespace DBwebAPI.Controllers
                 userThemejson.image1 = userTheme.image1;
                 userThemejson.image2 = userTheme.image2;
                 userThemejson.image3 = userTheme.image3;
-                userThemejson.image4 = userTheme.image4;
                 tmpThemes.Add(userThemejson);
 
                 ThemeJson[] themesJson = tmpThemes.ToArray();
@@ -1430,14 +1451,12 @@ namespace DBwebAPI.Controllers
                 userThemejson.image1 = userTheme.image1;
                 userThemejson.image2 = userTheme.image2;
                 userThemejson.image3 = userTheme.image3;
-                userThemejson.image4 = userTheme.image4;
                 Console.WriteLine("userAccount" +account);
                 Console.WriteLine("userThemejson.id:"+ userThemejson.id);
                 Console.WriteLine("userThemejson.name:" + userThemejson.name);
                 Console.WriteLine("userThemejson.image1:" + userThemejson.image1);
                 Console.WriteLine("userThemejson.image2:" + userThemejson.image2);
                 Console.WriteLine("userThemejson.image3:" + userThemejson.image3);
-                Console.WriteLine("userThemejson.image4:" + userThemejson.image4);
                 return Ok(userThemejson);
             }
             catch (Exception ex)

@@ -1,7 +1,7 @@
 <template>
+  <!-- 顶部导航栏 -->
+  <my-nav></my-nav>
   <div class="total">
-    <!-- 顶部导航栏 -->
-    <my-nav></my-nav>
     <div class="line" style="left:2%; width: 45%;height: 0.05px;"></div>
     <div class="common-layout">
       <el-container>
@@ -27,7 +27,6 @@
               <div class="line" style="left:1%; width: 102%;height: 3px;"></div>
               <!-- 新闻导航栏 -->
               <el-main>
-                <!-- <li @click="activeTab = 'home'" :class="{ 'active': activeTab === 'home' }">Home</li>  @select="handleMenuSelect"-->
                 <el-menu mode="horizontal" active-text-color="#409eff">
                   <el-menu-item @click="activeTab = 'home'" :class="{ 'active': activeTab === 'home' }"
                     class="menu">首页</el-menu-item>
@@ -63,7 +62,7 @@
                   <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
                     :src="item.pictureRoutes[0]" alt="carousel image" class="imgANO" @click="openNewsDetails(item)">
                   <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer' ref="videoPlayer"
-                    :src="item.pictureRoutes[0]" class="imgANO" @click="openNewsDetails(item)" controls />
+                    :src="item.pictureRoutes[0]" class="imgANO imgForVideo" @click="openNewsDetails(item)" />
                   <div class="description" @click="openNewsDetails(item)">{{
                     truncateText(truncateText(item.newsBody.title, 16), 16) }}</div>
                 </el-carousel-item>
@@ -78,7 +77,7 @@
                     <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
                       :src="item.pictureRoutes[0]" alt="Image" class="imgRecommend">
                     <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer' ref="videoPlayer"
-                      :src="item.pictureRoutes[0]" class="imgRecommend" controls />
+                      :src="item.pictureRoutes[0]" class="imgRecommend imgForVideo" />
                     <div class="descriptionRecommend">{{ truncateText(item.newsBody.title, 16) }}</div>
                   </div>
                 </el-col>
@@ -225,8 +224,8 @@
                         <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
                           :src="item.pictureRoutes[0]" alt="carousel image" class="imgANO" @click="openNewsDetails(item)">
                         <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer'
-                          ref="videoPlayer" :src="item.pictureRoutes[0]" class="imgANO" @click="openNewsDetails(item)"
-                          controls />
+                          ref="videoPlayer" :src="item.pictureRoutes[0]" class="imgANO imgForVideo"
+                          @click="openNewsDetails(item)" />
                         <div class="description" @click="openNewsDetails(item)">{{ truncateText(item.newsBody.title, 16)
                         }}
                         </div>
@@ -244,12 +243,12 @@
                             @click="openNewsDetails(item)">
                           <video v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true"
                             referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]"
-                            @click="openNewsDetails(item)" class="imgGossip" controls />
+                            @click="openNewsDetails(item)" class="imgGossip imgForVideo" />
                         </el-col>
                         <el-col :span="8">
                           <div v-if="item.newsBody != null" class="descriptionGossip" @click="openNewsDetails(item)">{{
                             truncateText(item.newsBody.title,
-                              16) }}</div>
+                              25) }}</div>
                         </el-col>
                       </el-row>
                     </div>
@@ -303,7 +302,7 @@
                     <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
                       :src="item.pictureRoutes[0]" alt="Image" class="imgSearch">
                     <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer' ref="videoPlayer"
-                      :src="item.pictureRoutes[0]" class="imgSearch" controls />
+                      :src="item.pictureRoutes[0]" class="imgSearch imgForVideo" />
                   </div>
                   <div class="TextWrapper" @click="openNewsDetails(item)" style="left:-8vw;">
                     <div class="titleSearch">{{ truncateText(item.newsBody.title, 20) }}</div>
@@ -334,10 +333,11 @@
                 <div class="Down-Block">
                   <p class="titleLeagueLeft" style="font-size: 25px;left:-4vw;">射手榜</p>
                   <div class="line" style="width: 22vw;height: 0.2px;top:-13vh;left:-4vw;"></div>
-                  <el-table :data="LeagueShooter" stripe style="width: 22vw" class="shooter">
+                  <el-table :data="LeagueShooter" stripe style="width: 22vw" class="shooter"
+                    @cell-click="handleCellClick">
                     <el-table-column label="排名" type="index" width="55" />
-                    <el-table-column prop="playerName" label="球员姓名" @click="openPlayerDetails(playerName)" width="120" />
-                    <el-table-column prop="teamName" label="所属球队" @click="openTeamDetails(teamName)" width="120" />
+                    <el-table-column prop="playerName" label="球员姓名" width="120" />
+                    <el-table-column prop="teamName" label="所属球队" width="120" />
                     <el-table-column prop="goals" label="进球数" />
                   </el-table>
                 </div>
@@ -359,8 +359,8 @@
                   <img v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == false"
                     referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="Image" class="imgSearch">
                   <video v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true"
-                    referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]" class="imgSearch"
-                    controls />
+                    referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]"
+                    class="imgSearch imgForVideo" />
                 </div>
                 <div class="TextWrapper" @click="openNewsDetails(item)">
                   <div v-if="item.newsBody != null" class="titleSearch" style="top:-9vh;left:-11vw;">{{
@@ -465,24 +465,7 @@ export default {
 
   //进入页面后调取接口，从而获得一组数据
   created() {
-    // this.getData(4, '', '普通', this.carouselRecommendItems);    //主页面左上角走马灯
-    // this.getData(2, '', '普通', this.recommendItems1);          //主页面左上角走马灯下推荐内容
-    // this.getData(2, '', '普通', this.recommendItems2);          //主页面中部推荐内容
-
-    // this.getVideoData(4, '', '', this.carouselVideoItems);      //主页面视频走马灯
-    // this.getVideoData(2, '', '', this.videoItems1);            //主页面视频图文
-    // this.getVideoData(5, '', '', this.videoItems2);            //主页面视频纯文字
-
-    // this.getData(4, '中超', '普通', this.ChinaItems);            //主页面中超新闻
-    // this.getData(4, '英超', '普通', this.ENGLANDItems);          //主页面英超新闻
-    // this.getData(4, '西甲', '普通', this.SpainItems);          //主页面西甲新闻
-    // this.getData(4, '德甲', '普通', this.GermanyItems);          //主页面德甲新闻
-    // this.getData(4, '意甲', '普通', this.ItalyItems);          //主页面意甲新闻
-    // this.getData(4, '法甲', '普通', this.FranceItems);          //主页面法甲新闻
-
-    // this.getData(4, '', '八卦', this.carouselGossipItems);      //主页面右侧八卦走马灯
-    // this.getData(3, '', '八卦', this.gossipItems1);      //主页面右侧八卦图文
-    // this.getData(5, '', '八卦', this.gossipItems2);      //主页面右侧八卦纯文字
+    // if (this.SpainItems.length == 0)
     this.initNewsData();
   },
 
@@ -522,6 +505,8 @@ export default {
         this.videoItems2 = response.data.value.videos[2];
       } catch (error) {
         // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       };
       return;
     },
@@ -561,7 +546,9 @@ export default {
         // console.log(this.searchNewsResults);
         // console.log(this.searchVideoResults);
       } catch (error) {
-        console.error(error);
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       };
       return;
     },
@@ -632,7 +619,9 @@ export default {
         console.log(dataItems);
         // console.log(this.items);
       } catch (error) {
-        console.error(error);
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       };
       return;
     },
@@ -658,13 +647,9 @@ export default {
         // console.log(dataItems);
         // console.log(this.items);
       } catch (error) {
-        console.error(error);
-
-        ElMessage({
-          message: err.response.data.msg,
-          grouping: false,
-          type: 'error',
-        })
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       }
       return;
     },
@@ -688,13 +673,9 @@ export default {
         // console.log(dataItems);
         // console.log(this.LeagueTeam);
       } catch (error) {
-        console.error(error);
-        ElMessage({
-          message: err.response.data.msg,
-          grouping: false,
-          type: 'error',
-        })
-        return
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       }
       return;
     },
@@ -718,13 +699,9 @@ export default {
         // console.log(dataItems);
         // console.log(this.LeagueShooter);
       } catch (error) {
-        console.error(error);
-        ElMessage({
-          message: err.response.data.msg,
-          grouping: false,
-          type: 'error',
-        })
-        return;
+        // console.error(error);
+        // 处理获取失败的情况
+        this.$message.error('数据获取失败，请重试！');
       }
       return;
     },
@@ -757,7 +734,9 @@ export default {
     openNewsDetails(item) {
       console.log(item);
       const queryString = encodeURIComponent(JSON.stringify(item));
-      this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
+      // this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
+      const url = `${window.location.origin}/NewsDetails?data=${queryString}`;
+      window.open(url, '_blank');
     },
 
     //打开球队详情页
@@ -777,6 +756,20 @@ export default {
           playerName: playerName
         }
       });
+    },
+
+    // 处理射手榜表格单元格的点击事件
+    handleCellClick(row, column, cell, event) {
+      // 获取当前点击的单元格的属性名
+      const prop = column.property;
+      // 判断属性名是否是playerName或teamName
+      if (prop === "playerName") {
+        // 如果是playerName，就调用openPlayerDetails函数，并传入当前行的playerName属性值
+        this.openPlayerDetails(row.playerName);
+      } else if (prop === "teamName") {
+        // 如果是teamName，就调用openTeamDetails函数，并传入当前行的teamName属性值
+        this.openTeamDetails(row.teamName);
+      }
     }
   }
 }
@@ -1026,7 +1019,7 @@ export default {
 .descriptionGossip {
   width: 100%;
   height: 40%;
-  flex-shrink: 0;
+  /* flex-shrink: 0; */
   color: #000;
   font-family: Mogra;
   font-size: 16px;
@@ -1386,6 +1379,13 @@ export default {
   top: -12vh;
   left: -3.5vw;
   width: 12vw;
+}
+
+.imgForVideo {
+  background-image: url("https://img2.baidu.com/it/u=3484181004,3499441771&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500");
+  /* 指定背景图片为一个播放图标 */
+  background-size: cover;
+  /* 让背景图片适应伪元素的大小 */
 }
 
 /* <--<--联赛样式结束-->--> */

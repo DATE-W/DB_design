@@ -1,4 +1,4 @@
-<!-- 我的动态 v1.2 -->
+<!-- 我的动态 v2.0 -->
 <template>
     <!-- 上方展示背景图 -->
     <el-container class="main-container">
@@ -38,6 +38,12 @@
                                 {{ FormatDate(dynamic.time) }}
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div v-if="dynamics.length === 0" class="dynamic-empty-container">
+                    <el-empty description="当前暂无动态，请去论坛看看吧!" />
+                    <div class="empty-button">
+                        <el-button class="dynamic-empty" @click="goToForum" type="text">点击此处前往论坛</el-button>
                     </div>
                 </div>
             </div>
@@ -108,6 +114,9 @@ export default {
                 requestAnimationFrame(animateScroll);
             }
         },
+        goToForum() {
+            this.$router.push('/forum');
+        },
         // 根据动态类型返回相应的文本内容
         getActionText(dynamic) {
             switch (dynamic.type) {
@@ -132,14 +141,14 @@ export default {
         getUserAvatar(dynamic) {
             if (dynamic.type === 'follow') {
                 // 根据需要设置用户头像的 URL
-                return './src/assets/img/carousel1.png';
+                return 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';
             }
             return null;
         },
         getAuthorAvatar(dynamic) {
             if (dynamic.object.author) {
                 // 根据需要设置帖子作者头像的 URL
-                return './src/assets/img/carousel1.png';
+                return 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';
             }
             return null;
         },
@@ -186,7 +195,7 @@ export default {
                 });
             } catch (err) {
                 ElMessage({
-                    message: '失败',
+                    message: '服务器错误，获取动态失败',
                     grouping: false,
                     type: 'error',
                 });
@@ -208,7 +217,7 @@ export default {
             } catch (err) {
                 console.log(err);
                 ElMessage({
-                    message: '未知错误',
+                    message: '服务器错误，获取主题失败',
                     grouping: false,
                     type: 'error',
                 })
@@ -223,10 +232,6 @@ export default {
 </script>
 
 <style scoped>
-.el-main {
-    padding-top: 0;
-}
-
 .overflow-container {
     overflow-y: auto;
     max-height: 82vh;
@@ -243,6 +248,7 @@ export default {
     height: 250px;
     background-repeat: no-repeat;
     background-size: cover;
+    margin-bottom: 5px;
 }
 
 .dynamic-group {
@@ -254,6 +260,25 @@ export default {
     border: 1px solid #ccc;
     margin-bottom: 10px;
     padding: 10px;
+}
+
+.dynamic-empty-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.empty-button {
+    display: flex;
+    justify-content: center;
+    margin-top: -30px;
+}
+
+
+.dynamic-empty {
+    font-size: 15px;
 }
 
 .dynamic-content {

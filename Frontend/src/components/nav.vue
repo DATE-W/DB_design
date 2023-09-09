@@ -3,12 +3,15 @@
     <div class="nav-container">
       <div class="nav-left">
         <div class="nav-logo">Logo</div>
-        <el-menu class="el-menu-demo" mode="horizontal" active-text-color="#409eff" :ellipsis="false">
-          <el-menu-item index="1" @click="redirectToMain">首页</el-menu-item>
-          <el-menu-item index="2" @click="redirectToNews">新闻</el-menu-item>
-          <el-menu-item index="3" @click="redirectToForum">论坛</el-menu-item>
-          <el-menu-item index="4" @click="redirectToGames"> 赛事</el-menu-item>
-          <el-menu-item index="5" @click="redirectToPlayers">球员信息</el-menu-item>
+        <el-menu mode="horizontal" :ellipsis="false">
+          <el-menu-item :index="1" @click="redirectToMain" :class="{ 'blue-text': menutextcolor === 2 }">首页</el-menu-item>
+          <el-menu-item :index="2" @click="redirectToNews" :class="{ 'blue-text': menutextcolor === 3 }">新闻</el-menu-item>
+          <el-menu-item :index="3" @click="redirectToForum"
+            :class="{ 'blue-text': menutextcolor === 4 }">论坛</el-menu-item>
+          <el-menu-item :index="4" @click="redirectToGames"
+            :class="{ 'blue-text': menutextcolor === 5 }">赛事</el-menu-item>
+          <el-menu-item :index="5" @click="redirectToPlayers"
+            :class="{ 'blue-text': menutextcolor === 6 }">球员信息</el-menu-item>
         </el-menu>
       </div>
       <div class="nav-right">
@@ -38,12 +41,27 @@ export default {
   data() {
     return {
       islog: false,
-      avatarurl: "./src/assets/img/carousel1.png",
+      avatarurl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
       userName: '',
     }
   },
   mounted() {
     this.JudgeAccount();
+  },
+  computed: {
+    menutextcolor() {
+      if (this.$route.path === '/') {
+        return 2;
+      } else if (this.$route.path === '/News') {
+        return 3;
+      } else if (this.$route.path === '/forum') {
+        return 4;
+      } else if (this.$route.path === '/Games') {
+        return 5;
+      } else if (this.$route.path === '/Players') {
+        return 6;
+      }
+    },
   },
   methods: {
     async JudgeAccount() {
@@ -135,7 +153,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 .nav-container {
   display: flex;
   justify-content: space-between;
@@ -171,6 +189,10 @@ export default {
 
 .user-nickname {
   margin-right: 20px;
+}
+
+.blue-text {
+  color: #3ba7ea;
 }
 </style>
   

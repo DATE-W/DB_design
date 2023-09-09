@@ -42,7 +42,6 @@ namespace DBwebAPI.Models
             public int reporter_id { get; set; }
             [SugarColumn(IsPrimaryKey = true)]
             public int? post_id { get; set; }
-            public int? admin_id { get; set; }
             public string? descriptions { get; set; }
             public string? reply { get; set; }
             public string? status { get; set; }

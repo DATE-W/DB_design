@@ -47,8 +47,8 @@ namespace DBwebAPI.Controllers
                     usr.follownumber = 0;
                     usr.themeType = 1;
                     usr.followednumber = 0;
-                    usr.avatar = "/";
-                    usr.signature = "...";
+                    usr.avatar = "http://110.40.206.206/pictures/3ea6beec64369c2642b92c6726f1epng.png";
+                    usr.signature = "这个人很懒，什么都没有留下";
                     usr.createDateTime = DateTime.Now;
                     Console.WriteLine("user_id= " + user_id);
                     Console.WriteLine("userName= " + usr.userName);

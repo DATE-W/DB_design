@@ -16,7 +16,6 @@ namespace DBwebAPI.Models
 
             [SugarColumn(IsNullable = false, Length = 50)]
             public string? adminPassword { get; set; }
-            public byte[]? avatar { get; set; }
             public DateTime? createDateTime { get; set; }
         }
 

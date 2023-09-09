@@ -1,4 +1,4 @@
-<!-- 消息通知 v1.2 -->
+<!-- 消息通知 v2.0 -->
 <template>
   <div class="overflow-container">
     <div class="notice-container">
@@ -203,7 +203,7 @@ export default {
         console.log('通知', response);
       } catch (err) {
         ElMessage({
-          message: '获取通知失败',
+          message: '服务器错误，获取通知失败',
           grouping: false,
           type: 'error',
         });
