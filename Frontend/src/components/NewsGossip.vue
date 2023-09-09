@@ -50,10 +50,11 @@
               <el-row :gutter="20">
                 <el-col :span="11">
                   <img referrerPolicy='no-referrer' :src="item.cover" alt="Image" class="imgVideoSearch"
-                    @click=" openLink(urllink)">
+                    @click=" openLink(item.urllink)">
                 </el-col>
                 <el-col :span="8">
-                  <div class="descriptionVideoSearch" @click=" openLink(urllink)">{{ truncateText(item.title, 25) }}</div>
+                  <div class="descriptionVideoSearch" @click=" openLink(item.urllink)">{{ truncateText(item.title, 25) }}
+                  </div>
                 </el-col>
               </el-row>
             </div>
@@ -161,10 +162,14 @@ export default {
 
     //打开新闻详情页
     openNewsDetails(item) {
-      console.log(item);
+      // console.log("123");
+      // console.log(item);
       const queryString = encodeURIComponent(JSON.stringify(item));
-      this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
+      // this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
+      const url = `${window.location.origin}/NewsDetails?data=${queryString}`;
+      window.open(url, '_blank');
     },
+
 
     //打开链接的页面
     openLink(url) {

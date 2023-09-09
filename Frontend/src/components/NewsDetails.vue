@@ -88,7 +88,7 @@ export default {
     created() {
         const queryString = this.$route.query.data;
         if (queryString) {
-            const decodedString = decodeURIComponent(queryString);
+            const decodedString = decodeURIComponent(queryString.replace(/%/g, '%25'));
             this.Details = JSON.parse(decodedString);
         }
     },
