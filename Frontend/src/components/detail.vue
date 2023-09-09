@@ -475,9 +475,14 @@ export default {
             }
             return
         },
-        async showUserInfo(id) {
+        async followJudger()
+        {
+
+        },
+        async showUserInfo(id,mode) {
             console.log("show user info")
             console.log("id = "+id)
+            console.log(mode)
             let response
             try {
                 response = await axios.post('/api/User/UserInfo',  {
@@ -534,18 +539,32 @@ export default {
         <p style="color: #666;">点赞数：${this.show_likenum}</p>
       </div>
     </div>
-    `;
-            ElMessageBox({
-                title: '用户信息',
-                message: userInfoHTML,
-                showCancelButton: true,
-                confirmButtonText: confirmText,
-                cancelButtonText: '取消',
-                dangerouslyUseHTMLString: true // 允许使用 HTML 字符串
-            }).then(() => {
-                this.follow()
-            }).catch(() => {
-            });
+    `;      
+            if(mode==1)
+            {
+                ElMessageBox({
+                    title: '用户信息',
+                    message: userInfoHTML,
+                    showCancelButton: true,
+                    confirmButtonText: confirmText,
+                    cancelButtonText: '取消',
+                    dangerouslyUseHTMLString: true // 允许使用 HTML 字符串
+                }).then(() => {
+                    this.follow()
+                }).catch(() => {
+                });
+            }else{
+                ElMessageBox({
+                    title: '用户信息',
+                    message: userInfoHTML,
+                    showCancelButton: false,
+                    confirmButtonText: '关闭',
+                    dangerouslyUseHTMLString: true // 允许使用 HTML 字符串
+                }).then(() => {
+    
+                }).catch(() => {
+                });
+            }
             return
         },
         gotoPost(post_id)
@@ -599,7 +618,7 @@ export default {
                     <div class="header-buttons">
                         <span style="position: relative;margin-top: 1.5vh;display: flex;align-items: center;" class="header-info">
                             <el-icon size="1rem" style="margin-right:0.5vw;margin-top: 0.2vh;position: relative;"><avatar /></el-icon>
-                            <span style="cursor: pointer;color:#2A3E63" @click="showUserInfo(this.author_id)">{{uName}}</span>
+                            <span style="cursor: pointer;color:#2A3E63" @click="showUserInfo(this.author_id,1)">{{uName}}</span>
                             发布于{{ date }}
                         </span>
                         <div style="width:40vw;justify-content: right;display: flex;">
@@ -623,7 +642,7 @@ export default {
             <el-container style="border: none;">
                 <el-aside>
                     <div class="author-container">
-                        <div style="cursor: pointer; height: 29vh;" @click="showUserInfo(this.author_id)">
+                        <div style="cursor: pointer; height: 29vh;" @click="showUserInfo(this.author_id,1)">
                             <img class="rooter-img" :src='avatar'>
                             <div class="rooter-name" style="width:100%">
                                 <p class="rooter-name-typography">{{ uName }}</p>
@@ -655,7 +674,7 @@ export default {
                             <el-divider style="color: black;height:2vh"></el-divider>
                             <el-container style="height:7vh">
                                 <img style="width: 3vw;height:3vw;border-radius: 50%;" :src='jAvatar[index]'>
-                                <span style="color: #2A3E63;cursor: pointer;margin-left: 1.5vw;margin-top: 2vh;" @click="showUserInfo(this.jId[index])">{{ jName }} ：</span>
+                                <span style="color: #2A3E63;cursor: pointer;margin-left: 1.5vw;margin-top: 2vh;" @click="showUserInfo(this.jId[index],0)">{{ jName }} ：</span>
                             </el-container>
                             <el-container style="margin-left: 7vw;">{{ jTexts[index] }}</el-container>
                             <el-container style="margin-top:3vh;font-size: 0.85rem;margin-left: 1vw;">{{ jDates[index] }}</el-container>
