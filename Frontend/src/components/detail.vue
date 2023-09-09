@@ -637,7 +637,7 @@ export default {
                 </el-aside>
                 <el-main>
                     <!-- 主帖 -->
-                    <div style="min-height: 22vh;">
+                    <div style="min-height: 22vh;white-space:pre-wrap;">
                         {{ uText }}
                         <!-- <div style="display: flex;flex-direction: row;"> -->
                         <div style="display: flex;flex-direction: column;">
