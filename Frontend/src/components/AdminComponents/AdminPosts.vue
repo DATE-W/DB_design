@@ -186,7 +186,7 @@ export default {
                     author_avatar:item.author_avatar === "/" ? "https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png" : item.author_avatar,
                     author_name:item.author_name,
                     title: item.title,
-                    contains: item.contains,
+                    contains: item.contains.slice(0,68),
                     publishtime:this.analyse_date(item.publishtime),
                     approvalnum:item.approvalnum,
                     isbanned:item.isbanned,

@@ -114,12 +114,12 @@
 
 .el-aside {
     background-color: aliceblue;
-    height: 580px;
+    height: 650px;
 }
 
 .el-main {
     background-color: aliceblue;
-    height: 580px;
+    height: 650px;
 }
 
 

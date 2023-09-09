@@ -224,6 +224,7 @@ export default {
 }
 
 .post-list {
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
   justify-content: center;

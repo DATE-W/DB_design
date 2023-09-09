@@ -2,7 +2,9 @@
   <el-header>
     <div class="nav-container">
       <div class="nav-left">
-        <div class="nav-logo">Logo</div>
+        <div class="nav-logo">
+          <el-image src="/src/assets/img/tjlogo.png" style="width: 50px;height: 50px;"></el-image>
+        </div>
         <el-menu mode="horizontal" :ellipsis="false">
           <el-menu-item :index="1" @click="redirectToMain" :class="{ 'blue-text': menutextcolor === 2 }">首页</el-menu-item>
           <el-menu-item :index="2" @click="redirectToNews" :class="{ 'blue-text': menutextcolor === 3 }">新闻</el-menu-item>
