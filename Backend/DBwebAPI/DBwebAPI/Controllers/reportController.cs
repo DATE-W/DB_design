@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 //using static DBwebAPI.Controllers.noticeController;
 using static DBwebAPI.Models.NoticeModel;
 using static DBwebAPI.Controllers.Register;
+using System.Runtime.CompilerServices;
 
 namespace DBwebAPI.Controllers
 {
@@ -22,6 +23,7 @@ namespace DBwebAPI.Controllers
             public int? userPoint { get; set; }
             public string? regDate { get; set; }
             public int? followedNumber { get; set; }
+            public int? isbanned { get; set; }
         }
 
         [HttpGet]
@@ -40,6 +42,7 @@ namespace DBwebAPI.Controllers
                         userName = it.userName,
                         userPoint = it.userPoint,
                         followedNumber = it.followednumber,
+                        isbanned = it.isBanned,
                         regDate = it.createDateTime.Value.ToString("yyyy-MM-dd")
                     })
                     .ToListAsync();
