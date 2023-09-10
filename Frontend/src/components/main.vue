@@ -39,7 +39,7 @@
         <div class="content-wrapper">
           <div class="top-section">
             <!-- 赛事信息筛选菜单 -->
-            <el-menu class="Games-menu">
+            <el-menu class="Games-menu" default-active="2">
               <div class="menu-wrapper">
                 <el-menu-item index="2">
                   <p class="menu-title" @click="selectLeague('中超')">{{ $t('CSL') }}</p>

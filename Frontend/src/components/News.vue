@@ -732,6 +732,7 @@ export default {
 
     //打开新闻详情页
     openNewsDetails(item) {
+      console.log("123");
       console.log(item);
       const queryString = encodeURIComponent(JSON.stringify(item));
       // this.$router.push({ path: '/NewsDetails', query: { data: queryString } });
@@ -741,21 +742,25 @@ export default {
 
     //打开球队详情页
     openTeamDetails(teamName) {
-      this.$router.push({
-        path: '/teamMsg',
-        query: {
-          teamName: teamName
-        }
-      });
+      // this.$router.push({
+      //   path: '/teamMsg',
+      //   query: {
+      //     teamName: teamName
+      //   }
+      // });
+      const url = `${window.location.origin}/teamMsg?teamName=${teamName}`;
+      window.open(url, '_blank');
     },
     //打开球员详情页
     openPlayerDetails(playerName) {
-      this.$router.push({
-        path: '/detailedPlayerMsg',
-        query: {
-          playerName: playerName
-        }
-      });
+      // this.$router.push({
+      //   path: '/detailedPlayerMsg',
+      //   query: {
+      //     playerName: playerName
+      //   }
+      // });
+      const url = `${window.location.origin}/detailedPlayerMsg?playerName=${playerName}`;
+      window.open(url, '_blank');
     },
 
     // 处理射手榜表格单元格的点击事件

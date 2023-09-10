@@ -18,6 +18,14 @@ export default {
     'my-carousel': carousel
   },
   methods: {
+    validateInput() {
+      // 使用正则表达式检查输入是否符合要求
+      const regex = /^[a-zA-Z0-9]+$/;
+      if (!regex.test(this.account)) {
+        // 如果输入不符合要求，将其修正为仅包含数字和字母的内容
+        this.account = this.account.replace(/[^a-zA-Z0-9]+/g, '');
+      }
+    },
     async register() {
       if (!this.account) {
         ElMessage({
@@ -127,14 +135,15 @@ export default {
             <!-- 输入账号 -->
             <div class="subBox">
               <label for="account" class="inputText" left=10.3vw;>账号：</label>
-              <el-input type="text" id="account" v-model="account" pattern="[a-zA-Z0-9]+" required maxlength="10"
-                class="inputBox" placeholder="账号只能由数字和字母组成，且长度不超过10个字符" />
+              <el-input type="text" id="account" v-model="account" required maxlength="10" class="inputBox"
+                placeholder="账号只能由数字和字母组成，且长度不超过10个字符" @input="validateInput" />
+
             </div>
             <!-- 输入密码 -->
             <div class="subBox">
               <label for="password" class="inputText" left=10.3vw;>密码：</label>
               <el-input type="password" id="password" v-model="password" pattern="[a-zA-Z0-9]+" required maxlength="15"
-                class="inputBox" show-password placeholder="密码只能由数字和字母组成，且长度不超过15个字符" />
+                class="inputBox" show-password placeholder="密码只能由数字和字母组成，且长度不超过15个字符" @input="validateInput" />
             </div>
             <!-- 再次输入密码 -->
             <div class="subBox">
