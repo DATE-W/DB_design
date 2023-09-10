@@ -24,9 +24,11 @@
           <div class="line" style="width: 40vw;height: 0.2px;top:-9vh;left:8%;"></div>
           <div v-if="GossipNews.length != 0" v-for="item in GossipNews" :key="item.id" class="itemSearch">
             <div class="imgWrapper" @click="openNewsDetails(item)">
-              <img v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == false"
+              <img
+                v-if="item.pictureRoutes != null && (matchMP4(item.pictureRoutes[0]) == false || item.newsBody.news_id > 150)"
                 referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="Image" class="imgSearch">
-              <video v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true"
+              <video
+                v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true && item.newsBody.news_id < 150"
                 referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]"
                 class="imgSearch imgForVideo" />
             </div>

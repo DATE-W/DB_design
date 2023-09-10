@@ -41,10 +41,10 @@
                 <!-- 图片 -->
                 <div>
                     <el-col :span="6" v-for="item in  Details.pictureRoutes">
-                        <img v-if="item != null && matchMP4(item) == false" referrerPolicy='no-referrer' :src="item"
-                            alt="Image" class="imgItem">
-                        <video v-if="item != null && matchMP4(item) == true" referrerPolicy='no-referrer' ref="videoPlayer"
-                            :src="item" class="imgItem" controls />
+                        <img v-if="item != null && (matchMP4(item) == false || Details.newsBody.news_id > 150)"
+                            referrerPolicy='no-referrer' :src="item" alt="Image" class="imgItem">
+                        <video v-if="item != null && matchMP4(item) == true && Details.newsBody.news_id < 150"
+                            referrerPolicy='no-referrer' ref="videoPlayer" :src="item" class="imgItem" controls />
                     </el-col>
                 </div>
             </div>
@@ -90,6 +90,9 @@ export default {
         if (queryString) {
             const decodedString = decodeURIComponent(queryString.replace(/%/g, '%25'));
             this.Details = JSON.parse(decodedString);
+
+            console.log('123');
+            console.log(this.Details.pictureRoutes);
         }
     },
 

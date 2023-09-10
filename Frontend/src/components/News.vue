@@ -59,10 +59,12 @@
               <el-carousel :interval="3000" class="Carousel">
                 <el-carousel-item v-if="carouselRecommendItems.length != 0"
                   v-for="(item, index) in carouselRecommendItems" :key="index">
-                  <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
-                    :src="item.pictureRoutes[0]" alt="carousel image" class="imgANO" @click="openNewsDetails(item)">
-                  <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer' ref="videoPlayer"
-                    :src="item.pictureRoutes[0]" class="imgANO imgForVideo" @click="openNewsDetails(item)" />
+                  <img v-if="matchMP4(item.pictureRoutes[0]) == false || item.newsBody.news_id > 150"
+                    referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="carousel image" class="imgANO"
+                    @click="openNewsDetails(item)">
+                  <video v-if="matchMP4(item.pictureRoutes[0]) == true && item.newsBody.news_id < 150"
+                    referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]" class="imgANO imgForVideo"
+                    @click="openNewsDetails(item)" />
                   <div class="description" @click="openNewsDetails(item)">{{
                     truncateText(truncateText(item.newsBody.title, 16), 16) }}</div>
                 </el-carousel-item>
@@ -74,10 +76,11 @@
                 <el-col :span="12" v-if="recommendItems1.length != 0" v-for="(item, index) in recommendItems1"
                   :key="index">
                   <div class="imgItem1" @click="openNewsDetails(item)">
-                    <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
-                      :src="item.pictureRoutes[0]" alt="Image" class="imgRecommend">
-                    <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer' ref="videoPlayer"
-                      :src="item.pictureRoutes[0]" class="imgRecommend imgForVideo" />
+                    <img v-if="matchMP4(item.pictureRoutes[0]) == false || item.newsBody.news_id > 150"
+                      referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="Image" class="imgRecommend">
+                    <video v-if="matchMP4(item.pictureRoutes[0]) == true && item.newsBody.news_id < 150"
+                      referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]"
+                      class="imgRecommend imgForVideo" />
                     <div class="descriptionRecommend">{{ truncateText(item.newsBody.title, 16) }}</div>
                   </div>
                 </el-col>
@@ -221,11 +224,12 @@
                     <el-carousel :interval="3000" class="CarouselRight">
                       <el-carousel-item v-if="recommendItems1.length != 0" v-for="(item, index) in carouselGossipItems"
                         :key="index">
-                        <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
-                          :src="item.pictureRoutes[0]" alt="carousel image" class="imgANO" @click="openNewsDetails(item)">
-                        <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer'
-                          ref="videoPlayer" :src="item.pictureRoutes[0]" class="imgANO imgForVideo"
-                          @click="openNewsDetails(item)" />
+                        <img v-if="matchMP4(item.pictureRoutes[0]) == false || item.newsBody.news_id > 150"
+                          referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="carousel image" class="imgANO"
+                          @click="openNewsDetails(item)">
+                        <video v-if="matchMP4(item.pictureRoutes[0]) == true && item.newsBody.news_id < 150"
+                          referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]"
+                          class="imgANO imgForVideo" @click="openNewsDetails(item)" />
                         <div class="description" @click="openNewsDetails(item)">{{ truncateText(item.newsBody.title, 16)
                         }}
                         </div>
@@ -238,10 +242,12 @@
                       class="imgItem2">
                       <el-row :gutter="20">
                         <el-col :span="11">
-                          <img v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == false"
+                          <img
+                            v-if="item.pictureRoutes != null && (matchMP4(item.pictureRoutes[0]) == false || item.newsBody.news_id > 150)"
                             referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="Image" class="imgGossip"
                             @click="openNewsDetails(item)">
-                          <video v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true"
+                          <video
+                            v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true && item.newsBody.news_id < 150"
                             referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]"
                             @click="openNewsDetails(item)" class="imgGossip imgForVideo" />
                         </el-col>
@@ -299,10 +305,11 @@
                 <div class="line" style="width: 40vw;height: 0.2px;top:-12vh;left:5vw;"></div>
                 <div v-if="recommendItems1.length != 0" v-for=" item  in  LeagueNews " :key="item.id" class="itemLeague">
                   <div class="imgWrapper" @click="openNewsDetails(item)">
-                    <img v-if="matchMP4(item.pictureRoutes[0]) == false" referrerPolicy='no-referrer'
-                      :src="item.pictureRoutes[0]" alt="Image" class="imgSearch">
-                    <video v-if="matchMP4(item.pictureRoutes[0]) == true" referrerPolicy='no-referrer' ref="videoPlayer"
-                      :src="item.pictureRoutes[0]" class="imgSearch imgForVideo" />
+                    <img v-if="matchMP4(item.pictureRoutes[0]) == false || item.newsBody.news_id > 150"
+                      referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="Image" class="imgSearch">
+                    <video v-if="matchMP4(item.pictureRoutes[0]) == true && item.newsBody.news_id < 150"
+                      referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]"
+                      class="imgSearch imgForVideo" />
                   </div>
                   <div class="TextWrapper" @click="openNewsDetails(item)" style="left:-8vw;">
                     <div class="titleSearch">{{ truncateText(item.newsBody.title, 20) }}</div>
@@ -356,9 +363,11 @@
               <div v-if="searchNewsResults.length != 0" v-for=" item  in  searchNewsResults " :key="item.id"
                 class="itemSearch">
                 <div class="imgWrapper" style=" position: relative;top: -10vh;left: -4vw;" @click="openNewsDetails(item)">
-                  <img v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == false"
+                  <img
+                    v-if="item.pictureRoutes != null && (matchMP4(item.pictureRoutes[0]) == false || item.newsBody.news_id > 150)"
                     referrerPolicy='no-referrer' :src="item.pictureRoutes[0]" alt="Image" class="imgSearch">
-                  <video v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true"
+                  <video
+                    v-if="item.pictureRoutes != null && matchMP4(item.pictureRoutes[0]) == true && item.newsBody.news_id < 150"
                     referrerPolicy='no-referrer' ref="videoPlayer" :src="item.pictureRoutes[0]"
                     class="imgSearch imgForVideo" />
                 </div>
